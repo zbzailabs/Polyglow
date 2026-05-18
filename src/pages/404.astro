@@ -1,130 +1,19 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Prose from '@/features/Prose.astro';
-import Search from 'astro-pagefind/components/Search';
-import { getRelativeLocaleUrl } from 'astro:i18n';
-import { t } from '@/utils/translations';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
+import Layout from "@/layouts/main.astro"
+import NotFoundContent from "@/components/pages/NotFoundContent.astro"
+import { t } from "@/utils/translations"
 
-export const prerender = true;
-
-const lang = DEFAULT_LANG;
-const title = t(lang, 'notFound.title');
-const message = t(lang, 'notFound.message');
-const searchHint = t(lang, 'search.subtitle');
-const homePath = getRelativeLocaleUrl(lang, '/');
-const postsPath = getRelativeLocaleUrl(lang, '/posts/');
-const TEXTS = SUPPORTED_LANGS.reduce<
-  Record<
-    string,
-    {
-      title: string;
-      message: string;
-      search: string;
-      back: string;
-      browse: string;
-      home: string;
-      posts: string;
-    }
-  >
->((acc, l) => {
-  acc[l] = {
-    title: t(l as any, 'notFound.title'),
-    message: t(l as any, 'notFound.message'),
-    search: t(l as any, 'search.subtitle'),
-    back: t(l as any, 'notFound.backToHome'),
-    browse: t(l as any, 'notFound.browsePosts'),
-    home: getRelativeLocaleUrl(l as any, '/'),
-    posts: getRelativeLocaleUrl(l as any, '/posts/'),
-  };
-  return acc;
-}, {});
-const supportedLangsJson = JSON.stringify(SUPPORTED_LANGS);
-const textsJson = JSON.stringify(TEXTS);
-const defaultLangJson = JSON.stringify(DEFAULT_LANG);
+const lang = "en"
+const title = t(lang, "notFound.title")
+const description = t(lang, "notFound.message")
 ---
 
-<LandingLayout lang={lang} title={title} description={message} noindex>
-  <Prose>
-    <p id="i18n-search-hint" class="text-center text-sm text-gray-500 dark:text-gray-400">
-      {searchHint}
-    </p>
-  </Prose>
-
-  <div class="mt-6">
-    <div class="mx-auto w-full max-w-2xl">
-      <Search id="search-404" className="pagefind-ui w-full" uiOptions={{ showImages: false }} />
-    </div>
-  </div>
-
-  <div class="mt-6 text-center">
-    <div class="inline-flex flex-wrap items-center justify-center gap-2">
-      <a
-        id="i18n-home-link-1"
-        href={homePath}
-        class="inline-flex items-center gap-2 rounded-md border border-gray-200/70 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-800/70 dark:text-gray-300 dark:hover:bg-gray-800"
-      >
-        <span aria-hidden>←</span>
-        <span id="i18n-back">{t(lang, 'notFound.backToHome')}</span>
-      </a>
-      <a
-        id="i18n-home-link-2"
-        href={postsPath}
-        class="inline-flex items-center gap-2 rounded-md border border-gray-200/70 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-800/70 dark:text-gray-300 dark:hover:bg-gray-800"
-      >
-        <span aria-hidden>🧭</span>
-        <span id="i18n-browse">{t(lang, 'notFound.browsePosts')}</span>
-      </a>
-    </div>
-  </div>
-</LandingLayout>
-
-<script
-  is:inline
-  data-supported-langs={supportedLangsJson}
-  data-texts={textsJson}
-  data-default-lang={defaultLangJson}
+<Layout
+  lang={lang}
+  path="/404/"
+  title={title}
+  description={description}
+  noindex
 >
-  const scriptEl = document.currentScript;
-  const SUPPORTED = JSON.parse(scriptEl?.getAttribute('data-supported-langs') ?? '[]');
-  const TEXTS = JSON.parse(scriptEl?.getAttribute('data-texts') ?? '{}');
-  const DEFAULT_LANG = JSON.parse(scriptEl?.getAttribute('data-default-lang') ?? '"en"');
-  (function () {
-    try {
-      function pickLang() {
-        var path = window.location.pathname || '/';
-        var seg = (path.split('/').filter(Boolean)[0] || '').toLowerCase();
-        if (SUPPORTED.includes(seg)) return seg;
-        var nav = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
-        if (SUPPORTED.includes(nav)) return nav;
-        return DEFAULT_LANG;
-      }
-      var l = pickLang();
-      var t = TEXTS[l] || TEXTS[DEFAULT_LANG];
-      if (!t) return;
-      // Update title and meta description
-      try {
-        document.title = t.title;
-      } catch (e) {}
-      var desc = document.querySelector('meta[name="description"]');
-      if (desc)
-        try {
-          desc.setAttribute('content', t.message);
-        } catch (e) {}
-      // Swap texts
-      var sh = document.getElementById('i18n-search-hint');
-      if (sh) sh.textContent = t.search;
-      var back = document.getElementById('i18n-back');
-      if (back) back.textContent = t.back;
-      var browse = document.getElementById('i18n-browse');
-      if (browse) browse.textContent = t.browse;
-      // Update links
-      var a1 = document.getElementById('i18n-home-link-1');
-      if (a1) a1.setAttribute('href', t.home);
-      var a2 = document.getElementById('i18n-home-link-2');
-      if (a2) a2.setAttribute('href', t.posts);
-    } catch (e) {
-      // no-op
-    }
-  })();
-</script>
+  <NotFoundContent lang={lang} />
+</Layout>

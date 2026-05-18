@@ -1,69 +1,76 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Pagination from '@/features/Pagination.astro';
-import PostCardCover from '@/cards/PostCardCover.astro';
-import CardWithPriority from '@/features/CardWithPriority.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsByCategory, postUrl, type PostEntry } from '@/utils/posts';
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import TaxonomyPillNav from "@/components/navigation/TaxonomyPillNav.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
+import { TAXONOMY, getCategory, getTagsForCategory } from "@/config/taxonomy"
+import { getPostsByCategory } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
-import type { GetStaticPaths } from 'astro';
-
-export const prerender = true;
-
-export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-  const CATEGORY_KEYS = ['build', 'invest', 'life'] as const;
-
-  const byLangAndCategory = SUPPORTED_LANGS.flatMap((lang) =>
-    CATEGORY_KEYS.flatMap((key) =>
-      paginate(getPostsByCategory(lang as Lang, key), { pageSize: 12, params: { lang, slug: key } }),
-    ),
-  );
-
-  return byLangAndCategory;
-};
-
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const slug = String(Astro.params.slug || '');
-const pageParam = Astro.params.page as string | undefined;
-if (pageParam === '1') {
-  return Astro.redirect(`/${lang}/category/${slug}/`, 301);
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const paths = []
+  for (const lang of LOCALES) {
+    for (const category of TAXONOMY.categories)
+      paths.push(
+        ...paginate(await getPostsByCategory(lang, category.slug), {
+          params: { lang, slug: category.slug },
+          props: { lang, slug: category.slug },
+          pageSize: TAXONOMY_POSTS_PER_PAGE,
+        })
+      )
+  }
+  return paths
 }
-const { page } = Astro.props as { page: any };
-const items = (page?.data as PostEntry[]) || [];
 
-const h1 = t(lang, `headings.${slug}.h1`) || t(lang, `navigation.${slug}`) || slug;
-const h2 = t(lang, `headings.${slug}.h2`);
-const title = h1;
-const description = h2;
+const { lang, slug, page } = Astro.props as {
+  lang: Locale
+  slug: string
+  page: {
+    data: Awaited<ReturnType<typeof getPostsByCategory>>
+    currentPage: number
+    url: { prev?: string; next?: string }
+  }
+}
+const category = getCategory(slug)
+const relatedTags = getTagsForCategory(slug)
+const relatedTagLinks = relatedTags.map((tag) => ({
+  href: `/${lang}/tags/${tag.slug}/`,
+  label: tag.labelByLocale[lang],
+}))
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  <fragment slot="header">
-    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{h1}</h1>
-    <h2 class="mt-2 text-xl text-gray-600 dark:text-gray-300">{h2}</h2>
-  </fragment>
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {
-      items.map((p, idx) => (
-        <CardWithPriority
-          component={PostCardCover}
-          index={idx}
-          props={{
-            href: postUrl(p, lang),
-            imageSrc: p.data.heroImage,
-            imageAlt: p.data.heroImageAlt,
-            title: p.data.title,
-            date: p.data.pubDate,
-            category: p.data.category,
-            lang,
-            class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-          }}
-        />
-      ))
-    }
-  </div>
-
-  <Pagination page={page} class="mt-10" />
-</LandingLayout>
+<Layout
+  lang={lang}
+  path={`/category/${slug}/${page.currentPage}/`}
+  title={`${category?.labelByLocale[lang] ?? slug} ${page.currentPage}`}
+>
+  <PageSection>
+    <PageHeader
+      eyebrow={t(lang, "pages.categories.eyebrow")}
+      title={category?.labelByLocale[lang] ?? slug}
+      subtitle={category?.descriptionByLocale[lang]}
+      description={t(lang, "common.pagination.pageLabel", {
+        page: page.currentPage,
+      })}
+      stat={t(lang, "common.pagination.postsCount", {
+        count: page.data.length,
+      })}
+    />
+    <TaxonomyPillNav
+      items={relatedTagLinks}
+      label={t(lang, "pages.categories.relatedTags")}
+    />
+    <PostCardGrid posts={page.data} />
+    <Pagination
+      prev={page.currentPage === 2
+        ? `/${lang}/category/${slug}/`
+        : page.url.prev}
+      next={page.url.next}
+      currentPage={page.currentPage}
+    />
+  </PageSection>
+</Layout>

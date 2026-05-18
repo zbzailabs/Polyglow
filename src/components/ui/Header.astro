@@ -1,87 +1,93 @@
 ---
-import type { Lang } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import LanguageSwitcher from '@/features/LanguageSwitcher.astro';
-import ThemeSwitcher from '@/features/ThemeSwitcher.astro';
-import MainNav from '@/ui/MainNav.astro';
-import MobileNav from '@/ui/MobileNav.astro';
-import { Icon } from 'astro-icon/components';
-import { getRelativeLocaleUrl } from 'astro:i18n';
-import { Image } from 'astro:assets';
-import logo from '@/assets/logo.svg';
+import { Image } from "astro:assets"
+import type { Locale } from "@/config/locales"
+import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
+import { SITE_CONFIG } from "@/config/site"
+import { localePath } from "@/utils/routes"
+import Icon from "@/components/icons/Icon.astro"
+import MobileNav from "@/components/islands/MobileNav.astro"
+import LanguageSwitcher from "@/components/islands/LanguageSwitcher.astro"
+import ThemeSwitcher from "@/components/islands/ThemeSwitcher.astro"
+import logo from "@/assets/logo.svg"
 
-const resolvedLang = ((Astro.currentLocale as Lang | undefined) ??
-  (Astro.props.lang as Lang | undefined) ??
-  'zh') as Lang;
+interface Props {
+  lang: Locale
+  path?: string
+}
 
-const siteName = t(resolvedLang, 'site.name');
+const { lang, path = "/" } = Astro.props
+const primaryCategories = getPrimaryCategories()
 ---
 
-<header class="header-glass w-full">
-  <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <div class="grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-3">
+<header
+  class="header-glass relative z-40 w-full border-b border-white/10"
+  data-pagefind-ignore
+>
+  <div
+    class="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr]"
+  >
+    <a
+      href={localePath(lang, "/")}
+      class="flex min-w-0 items-center gap-2.5 justify-self-start text-lg font-semibold tracking-tight text-foreground"
+      data-header-brand
+    >
+      <Image
+        src={logo}
+        alt=""
+        width={24}
+        height={24}
+        class="size-6"
+        loading="eager"
+      />
+      <span class="truncate">{SITE_CONFIG.name}</span>
+    </a>
+    <nav
+      class="hidden items-center gap-7 justify-self-center text-sm lg:col-start-2 lg:flex"
+      aria-label="Primary navigation"
+    >
+      {
+        primaryCategories.map((item) => (
+          <div class="group relative py-4">
+            <a
+              class="nav-link font-medium"
+              href={localePath(lang, `/category/${item.slug}/`)}
+            >
+              {item.labelByLocale[lang]}
+            </a>
+            <div class="nav-dropdown pointer-events-none absolute top-full left-1/2 grid min-w-48 -translate-x-1/2 translate-y-2 gap-1 rounded-xl border border-white/10 p-2 opacity-0 shadow-xl transition-all duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+              <a
+                class="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                href={localePath(lang, `/category/${item.slug}/`)}
+              >
+                {item.labelByLocale[lang]}
+              </a>
+              {getTagsForCategory(item.slug).map((tag) => (
+                <a
+                  class="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                  href={localePath(lang, `/tags/${tag.slug}/`)}
+                >
+                  {tag.labelByLocale[lang]}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </nav>
+    <div
+      class="col-start-2 flex items-center gap-1 justify-self-end sm:gap-2 lg:col-start-3"
+      data-header-actions
+    >
       <a
-        href={getRelativeLocaleUrl(resolvedLang, '/')}
-        class="flex items-center gap-2.5 justify-self-start text-xl font-semibold tracking-tight hover:opacity-90"
+        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        href={localePath(lang, "/search/")}
+        aria-label="Search"
       >
-        <Image src={logo} alt="Logo" class="h-6 w-6" loading="eager" />
-        <span class="text-xl text-gray-950 dark:text-gray-100">
-          {siteName}
-        </span>
+        <Icon name="search" class="size-4" dataIcon="inline-start" />
       </a>
-
-      <div class="justify-self-center">
-        <MainNav lang={resolvedLang} />
-      </div>
-
-      <div class="flex items-center gap-2 justify-self-end">
-        <a
-          href="https://chat.idimi.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={t(resolvedLang, 'chat.title')}
-          title={t(resolvedLang, 'chat.title')}
-          class="rounded-md p-2 text-gray-600 transition-colors hover:bg-black/5 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
-        >
-          <Icon name="lucide:search" />
-        </a>
-
-        <LanguageSwitcher lang={resolvedLang} />
-
-        <ThemeSwitcher lang={resolvedLang} />
-
-        <button
-          type="button"
-          class="rounded-md p-2 text-gray-600 transition-colors hover:bg-black/5 hover:text-gray-950 lg:hidden dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
-          aria-label="Menu"
-          data-mobile-trigger
-        >
-          <Icon name="lucide:menu" />
-        </button>
-      </div>
+      <LanguageSwitcher lang={lang} path={path} />
+      <ThemeSwitcher lang={lang} />
+      <MobileNav lang={lang} />
     </div>
   </div>
-
-  <MobileNav lang={resolvedLang} />
 </header>
-
-<script>
-  import { registerPageInit } from '@/utils/page-init';
-
-  registerPageInit('mobileMenu', () => {
-    const btn = document.querySelector('[data-mobile-trigger]');
-    if (!btn) return;
-
-    function handleMobileToggle() {
-      const panel = document.querySelector('[data-mobile-panel]');
-      if (panel) panel.classList.toggle('hidden');
-    }
-
-    btn.addEventListener('click', handleMobileToggle);
-
-    // Return cleanup function
-    return () => {
-      btn.removeEventListener('click', handleMobileToggle);
-    };
-  });
-</script>

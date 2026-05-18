@@ -1,0 +1,89 @@
+---
+interface Props {
+  prev?: string
+  next?: string
+  currentPage?: number
+}
+
+const { prev, next, currentPage } = Astro.props
+const itemClass =
+  "inline-flex size-10 items-center justify-center rounded-lg border border-border bg-background/80 text-sm font-medium text-foreground shadow-sm backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-accent disabled:pointer-events-none disabled:opacity-40 dark:bg-white/5"
+const disabledClass = `${itemClass} opacity-35`
+const nextPage = currentPage ? currentPage + 1 : undefined
+---
+
+<nav
+  class="mt-10 flex items-center justify-center gap-3"
+  aria-label="Pagination"
+>
+  {
+    prev ? (
+      <a class={itemClass} href={prev} aria-label="Earlier pages">
+        &laquo;
+      </a>
+    ) : (
+      <span
+        class={disabledClass}
+        aria-disabled="true"
+        aria-label="Earlier pages"
+      >
+        &laquo;
+      </span>
+    )
+  }
+  {
+    prev ? (
+      <a class={itemClass} href={prev} rel="prev" aria-label="Previous page">
+        &lsaquo;
+      </a>
+    ) : (
+      <span
+        class={disabledClass}
+        aria-disabled="true"
+        aria-label="Previous page"
+      >
+        &lsaquo;
+      </span>
+    )
+  }
+  {
+    currentPage && (
+      <span
+        class="inline-flex size-10 items-center justify-center rounded-lg bg-foreground text-sm font-semibold text-background shadow-sm"
+        aria-current="page"
+      >
+        {currentPage}
+      </span>
+    )
+  }
+  {
+    next ? (
+      <>
+        {nextPage && (
+          <a class={itemClass} href={next} aria-label={`Page ${nextPage}`}>
+            {nextPage}
+          </a>
+        )}
+        <a class={itemClass} href={next} rel="next" aria-label="Next page">
+          &rsaquo;
+        </a>
+        <a class={itemClass} href={next} aria-label="Later pages">
+          &raquo;
+        </a>
+      </>
+    ) : (
+      <>
+        <span class={disabledClass} aria-disabled="true" aria-label="Next page">
+          &rsaquo;
+        </span>
+        <span
+          class={disabledClass}
+          aria-disabled="true"
+          aria-label="Later pages"
+        >
+          &raquo;
+        </span>
+      </>
+    )
+  }
+</nav>

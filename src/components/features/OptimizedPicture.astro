@@ -1,141 +1,69 @@
 ---
-import { Image, Picture } from 'astro:assets';
-
-type LayoutType = 'constrained' | 'full-width' | 'fixed' | 'none';
-type FitType = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+import { Picture } from "astro:assets"
+import { optimizeRemoteImageUrl } from "@/config/assets"
 
 interface Props {
-  src: any;
-  alt: string;
-
-  layout?: LayoutType;
-  fit?: FitType;
-  position?: string;
-  priority?: boolean;
-  inferSize?: boolean;
-  sizes?: string;
-  loading?: 'lazy' | 'eager';
-  decoding?: 'async' | 'sync' | 'auto';
-  fetchpriority?: 'high' | 'low' | 'auto';
-
-  class?: string;
-  width?: number;
-  height?: number;
-  rounded?: boolean;
-
-  asPicture?: boolean;
+  src: string | ImageMetadata
+  alt: string
+  width?: number
+  height?: number
+  class?: string
+  loading?: "eager" | "lazy"
 }
 
 const {
   src,
   alt,
-  class: className,
-  layout,
-  fit,
-  position,
-  priority = false,
-  inferSize,
-  sizes,
-  loading,
-  decoding,
-  fetchpriority,
   width,
   height,
-  asPicture = true,
-  rounded = true,
-} = Astro.props as Props;
-
-const pictureFormats: Array<'avif'> = ['avif'];
-
-const isRemote = typeof src === 'string' && /^(https?:)?\/\/.*/.test(src);
-
-const shouldInfer = inferSize ?? isRemote;
-
-// CSS object-fit and object-position styles (ensure proper browser-side cropping)
-const fitClass =
-  fit === 'cover'
-    ? 'object-cover'
-    : fit === 'contain'
-      ? 'object-contain'
-      : fit === 'fill'
-        ? 'object-fill'
-        : '';
-const positionClass =
-  position === 'center'
-    ? 'object-center'
-    : position === 'top'
-      ? 'object-top'
-      : position === 'bottom'
-        ? 'object-bottom'
-        : '';
-
-const roundedForImg = rounded ? 'rounded-lg' : '';
-const roundedForPicture = rounded ? 'rounded-lg overflow-hidden' : '';
-const imgClass = [className, fitClass, positionClass, roundedForImg].filter(Boolean).join(' ');
-const pictureClass = [className, fitClass, positionClass, roundedForPicture]
-  .filter(Boolean)
-  .join(' ');
-
-const resolvedLoading = priority ? 'eager' : (loading ?? 'lazy');
-const resolvedDecoding = decoding ?? (priority ? 'sync' : 'async');
-const resolvedFetchpriority = priority
-  ? 'high'
-  : (fetchpriority ?? (resolvedLoading === 'lazy' ? 'low' : 'auto'));
-
-const baseImgProps = {
-  alt,
-  class: imgClass,
-  ...(layout ? { layout } : {}),
-  ...(fit ? { fit } : {}),
-  ...(position ? { position } : {}),
-  ...(typeof width === 'number' ? { width } : {}),
-  ...(typeof height === 'number' ? { height } : {}),
-  priority,
-  loading: resolvedLoading,
-  decoding: resolvedDecoding,
-  fetchpriority: resolvedFetchpriority,
-  ...(sizes ? { sizes } : {}),
-};
-const basePictureProps = {
-  formats: pictureFormats,
-  fallbackFormat: 'avif' as const,
-  alt,
-  class: pictureClass,
-  ...(layout ? { layout } : {}),
-  ...(fit ? { fit } : {}),
-  ...(position ? { position } : {}),
-  ...(typeof width === 'number' ? { width } : {}),
-  ...(typeof height === 'number' ? { height } : {}),
-  priority,
-  loading: resolvedLoading,
-  decoding: resolvedDecoding,
-  fetchpriority: resolvedFetchpriority,
-  ...(sizes ? { sizes } : {}),
-};
+  class: className,
+  loading = "lazy",
+} = Astro.props
+const isString = typeof src === "string"
+const stringSrc = isString ? (src as string) : undefined
+const isUnsplashImage = stringSrc?.startsWith("https://images.unsplash.com/")
+const resolvedSrc = stringSrc ? optimizeRemoteImageUrl(stringSrc, width) : src
+const imageWidth = width ?? (isString ? 1200 : undefined)
+const imageHeight = height ?? (isString ? 800 : undefined)
+const imageWidths = isString
+  ? [420, 640, 720, 960, 1200]
+  : [480, 768, 1024, 1400]
+const imageSizes = isString
+  ? "(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) 50vw, 720px"
+  : "(max-width: 768px) 100vw, 50vw"
+const fetchpriority = loading === "eager" ? "high" : undefined
+const crossOrigin = isUnsplashImage ? "anonymous" : undefined
 ---
 
 {
-  isRemote && !shouldInfer ? (
-    <img
-      src={src}
+  isString ? (
+    <Picture
+      src={resolvedSrc as string}
       alt={alt}
-      class={imgClass}
-      loading={resolvedLoading}
-      fetchpriority={resolvedFetchpriority}
-      decoding={resolvedDecoding}
-      {...(sizes ? { sizes } : {})}
+      width={imageWidth as number}
+      height={imageHeight as number}
+      loading={loading}
+      decoding="async"
+      fetchpriority={fetchpriority}
+      crossorigin={crossOrigin}
+      class={className}
+      widths={imageWidths}
+      sizes={imageSizes}
+      formats={["avif", "webp"]}
+      fallbackFormat="webp"
     />
-  ) : asPicture ? (
-    shouldInfer ? (
-      <Picture src={src as any} {...basePictureProps} inferSize={true} />
-    ) : (
-      <Picture src={src as any} {...basePictureProps} inferSize={false} />
-    )
   ) : (
-    shouldInfer ? (
-      <Image src={src as any} {...baseImgProps} inferSize={true} />
-    ) : (
-      <Image src={src as any} {...baseImgProps} inferSize={false} />
-    )
+    <Picture
+      src={resolvedSrc as ImageMetadata}
+      alt={alt}
+      loading={loading}
+      decoding="async"
+      fetchpriority={fetchpriority}
+      class={className}
+      widths={imageWidths}
+      sizes={imageSizes}
+      formats={["avif", "webp"]}
+      fallbackFormat="webp"
+    />
   )
 }

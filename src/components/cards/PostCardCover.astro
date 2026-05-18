@@ -1,88 +1,87 @@
 ---
-import OptimizedPicture from '@/features/OptimizedPicture.astro';
-import SkeletonCardCover from '@/ui/SkeletonCardCover.astro';
-import { formatDate } from '@/utils/date';
-import type { Lang } from '@/utils/i18n';
-import { categoryLabel } from '@/utils/translations';
+import type { PostEntry } from "@/utils/posts"
+import { postUrl } from "@/utils/posts"
+import { getCategory } from "@/config/taxonomy"
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
 
 interface Props {
-  href?: string;
-  imageSrc: any;
-  imageAlt: string;
-  title: string;
-  date?: string | Date;
-  category?: string;
-  lang?: Lang;
-
-  priority?: boolean;
-  aspectClass?: string;
-  class?: string;
-  loading?: boolean;
+  post: PostEntry
+  priority?: boolean
+  variant?: "lead" | "wide" | "portrait"
+  class?: string
 }
 
 const {
-  href,
-  imageSrc,
-  imageAlt,
-  title,
-  date,
-  category,
-  lang = 'zh',
+  post,
   priority = false,
-  aspectClass = 'aspect-[3/4]',
-  class: className,
-  loading = false,
-} = Astro.props as Props;
-
-const Container = href ? 'a' : 'div';
-const containerAttrs = href ? { href } : {};
+  variant = "portrait",
+  class: className = "",
+} = Astro.props
+const category = getCategory(post.data.category)
+const categoryLabel =
+  category?.labelByLocale[post.data.locale] ?? post.data.category
+const dateLabel = new Intl.DateTimeFormat(post.data.locale, {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+}).format(post.data.pubDate)
+const cardShape = {
+  lead: "h-[27rem] rounded-[1.75rem] sm:h-auto sm:aspect-[16/9] sm:min-h-[27rem]",
+  wide: "h-[20rem] rounded-3xl sm:h-auto sm:aspect-[16/10] sm:min-h-[20rem]",
+  portrait: "h-[25rem] rounded-3xl sm:h-auto sm:aspect-[3/4] sm:min-h-[24rem]",
+}[variant]
+const contentShape =
+  variant === "lead"
+    ? "left-1.5 bottom-1.5 max-w-[34rem] rounded-[1.35rem] p-5 sm:p-8"
+    : "inset-x-1.5 bottom-1.5 rounded-2xl p-4 sm:p-5"
+const titleClass =
+  variant === "lead"
+    ? "line-clamp-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl"
+    : "line-clamp-3 text-xl font-semibold leading-tight tracking-tight"
+const TitleTag = variant === "lead" ? "h1" : "h2"
 ---
 
-{
-  loading ? (
-    <SkeletonCardCover aspectClass={aspectClass} class={className} />
-  ) : (
-    <Container
-      {...containerAttrs}
-      class={`post-card group relative flex flex-col overflow-hidden rounded-2xl ${aspectClass} ${className ?? ''}`.trim()}
+<article
+  class={`post-card group relative overflow-hidden ${cardShape} ${className}`}
+  data-glass-card
+>
+  <a
+    href={postUrl(post)}
+    class="absolute inset-0 z-20"
+    aria-label={post.data.title}></a>
+  <OptimizedPicture
+    src={post.data.heroImage}
+    alt={post.data.heroImageAlt}
+    width={post.data.heroImageWidth}
+    height={post.data.heroImageHeight}
+    loading={priority ? "eager" : "lazy"}
+    class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out"
+  />
+  <div
+    class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"
+  >
+  </div>
+  <div
+    class={`post-card__content absolute z-10 text-white ${contentShape}`}
+    data-glass-target
+  >
+    <div
+      class="mb-3 flex w-full items-center justify-between gap-3 text-xs text-white/75"
     >
-      {/* Image area - uses object-cover to crop and focus on center content */}
-      <OptimizedPicture
-        src={imageSrc}
-        alt={imageAlt}
-        class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-[1.03]"
-        fit="cover"
-        position="center"
-        priority={priority}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
-      />
-
-      {/* Glass-morphism content area - dynamically colored by DynamicGlass */}
-      <div class="post-card__content pointer-events-none absolute right-1.5 bottom-1.5 left-1.5 flex flex-col justify-end rounded-xl border border-white/15 p-4 shadow-lg backdrop-blur-xl sm:p-5">
-        {/* Category tag + date - justified */}
-        <div class="mb-3 flex items-center justify-between">
-          {category ? (
-            <span class="rounded-full bg-white/25 px-3 py-1 text-[10px] font-semibold tracking-wide text-white uppercase">
-              {categoryLabel(lang, category)}
-            </span>
-          ) : (
-            <span />
-          )}
-          <span class="text-xs text-white/70">{date ? formatDate(date, lang) : ''}</span>
-        </div>
-
-        {/* Title */}
-        <h3
-          class="text-base leading-snug font-bold text-white sm:text-lg md:text-xl"
-          style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"
-        >
-          {title}
-        </h3>
-      </div>
-
-      {href && (
-        <span class="pointer-events-none absolute inset-0 rounded-2xl ring-transparent ring-inset focus-within:ring-2 focus-within:ring-white/50" />
-      )}
-    </Container>
-  )
-}
+      <span class="card-meta-pill" data-category={post.data.category}
+        >{categoryLabel}</span
+      >
+      <time class="shrink-0 text-end" datetime={post.data.pubDate.toISOString()}
+        >{dateLabel}</time
+      >
+    </div>
+    <TitleTag class={titleClass}>{post.data.title}</TitleTag>
+    {
+      variant === "lead" && (
+        <p class="mt-3 line-clamp-3 text-base leading-7 text-white/80">
+          {post.data.description}
+        </p>
+      )
+    }
+  </div>
+</article>

@@ -1,0 +1,16 @@
+---
+interface Props {
+  class?: string
+  pagefindBody?: boolean
+}
+
+const { class: className = "", pagefindBody = false } = Astro.props
+const pagefindAttrs = pagefindBody ? { "data-pagefind-body": "" } : {}
+---
+
+<div
+  class={`polyglow-prose prose prose-neutral dark:prose-invert ${className}`}
+  {...pagefindAttrs}
+>
+  <slot />
+</div>

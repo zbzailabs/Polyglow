@@ -1,9 +1,10 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "polyglow",
-  "compatibility_date": "2026-03-17",
-  "compatibility_flags": ["nodejs_compat"],
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "polyglow-next",
+  "compatibility_date": "2026-05-11",
   "assets": {
     "directory": "./dist",
-  },
+    "html_handling": "force-trailing-slash",
+    "not_found_handling": "404-page"
+  }
 }

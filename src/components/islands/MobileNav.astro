@@ -1,0 +1,174 @@
+---
+import Icon from "@/components/icons/Icon.astro"
+import type { Locale } from "@/config/locales"
+import { SITE_CONFIG } from "@/config/site"
+import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
+import { localePath } from "@/utils/routes"
+import { t } from "@/utils/translations"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const primaryCategories = getPrimaryCategories()
+---
+
+<div class="lg:hidden" data-mobile-nav>
+  <button
+    type="button"
+    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    aria-label="Menu"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    data-mobile-nav-trigger
+  >
+    <Icon name="menu" class="size-4" dataIcon="inline-start" />
+  </button>
+  <div
+    class="fixed inset-0 z-50 bg-background/40 backdrop-blur-sm"
+    hidden
+    data-mobile-nav-overlay
+  >
+  </div>
+  <aside
+    class="mobile-nav-glass fixed top-0 right-0 z-50 flex h-dvh w-full max-w-sm translate-x-full flex-col border-l border-white/10 transition-transform duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mobile-nav-title"
+    hidden
+    data-mobile-nav-panel
+  >
+    <div
+      class="flex items-center justify-between gap-4 border-b border-white/10 p-4"
+    >
+      <h2 id="mobile-nav-title" class="text-base font-semibold text-foreground">
+        {SITE_CONFIG.name}
+      </h2>
+      <button
+        type="button"
+        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        aria-label="Close menu"
+        data-mobile-nav-close
+      >
+        <Icon name="x" class="size-4" />
+      </button>
+    </div>
+    <nav
+      class="flex flex-col gap-2 overflow-y-auto px-4 py-4"
+      aria-label="Mobile navigation"
+    >
+      {
+        primaryCategories.map((category) => (
+          <details class="group rounded-lg">
+            <summary class="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+              <span>{category.labelByLocale[lang]}</span>
+              <Icon
+                name="chevron-down"
+                class="size-4 text-muted-foreground transition-transform group-open:rotate-180"
+              />
+            </summary>
+            <div class="mt-1 flex flex-col gap-1 ps-3">
+              {getTagsForCategory(category.slug).map((tag) => (
+                <a
+                  class="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                  href={localePath(lang, `/tags/${tag.slug}/`)}
+                >
+                  {tag.labelByLocale[lang]}
+                </a>
+              ))}
+            </div>
+          </details>
+        ))
+      }
+      <a
+        class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted"
+        href={localePath(lang, "/posts/")}
+      >
+        {t(lang, "pages.posts.title")}
+      </a>
+      <a
+        class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted"
+        href={localePath(lang, "/search/")}
+      >
+        {t(lang, "search.title")}
+      </a>
+    </nav>
+  </aside>
+</div>
+
+<script is:inline>
+  ;(() => {
+    if (window.__polyglowMobileNav) return
+    window.__polyglowMobileNav = true
+
+    const getParts = (root) => ({
+      trigger: root.querySelector("[data-mobile-nav-trigger]"),
+      overlay: root.querySelector("[data-mobile-nav-overlay]"),
+      panel: root.querySelector("[data-mobile-nav-panel]"),
+    })
+
+    const openNav = (root) => {
+      const { trigger, overlay, panel } = getParts(root)
+      if (
+        !(trigger instanceof HTMLElement) ||
+        !(overlay instanceof HTMLElement) ||
+        !(panel instanceof HTMLElement)
+      )
+        return
+      overlay.hidden = false
+      panel.hidden = false
+      requestAnimationFrame(() => {
+        panel.classList.remove("translate-x-full")
+      })
+      trigger.setAttribute("aria-expanded", "true")
+      panel.querySelector("a, button, summary")?.focus()
+    }
+
+    const closeNav = (root, restoreFocus = true) => {
+      const { trigger, overlay, panel } = getParts(root)
+      if (
+        !(trigger instanceof HTMLElement) ||
+        !(overlay instanceof HTMLElement) ||
+        !(panel instanceof HTMLElement)
+      )
+        return
+      panel.classList.add("translate-x-full")
+      trigger.setAttribute("aria-expanded", "false")
+      window.setTimeout(() => {
+        overlay.hidden = true
+        panel.hidden = true
+      }, 200)
+      if (restoreFocus) trigger.focus()
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+
+      const trigger = target.closest("[data-mobile-nav-trigger]")
+      if (trigger instanceof HTMLElement) {
+        const root = trigger.closest("[data-mobile-nav]")
+        if (root instanceof HTMLElement) openNav(root)
+        return
+      }
+
+      const closeTarget = target.closest(
+        "[data-mobile-nav-close], [data-mobile-nav-overlay]"
+      )
+      if (closeTarget instanceof HTMLElement) {
+        const root = closeTarget.closest("[data-mobile-nav]")
+        if (root instanceof HTMLElement) closeNav(root)
+      }
+    })
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return
+      const panel = document.querySelector(
+        "[data-mobile-nav-panel]:not([hidden])"
+      )
+      const root = panel?.closest("[data-mobile-nav]")
+      if (root instanceof HTMLElement) closeNav(root)
+    })
+  })()
+</script>

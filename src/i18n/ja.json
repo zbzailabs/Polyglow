@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "人生という大海、起業の波、投資の霧の中を進む",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "人生",
     "invest": "投資",
-    "build": "起業"
+    "build": "起業",
+    "startup": "スタートアップ"
   },
   "tags": {
     "reflect": "省察",
@@ -39,7 +40,8 @@
     "allocation": "配分",
     "innovation": "革新",
     "model": "モデル",
-    "management": "管理"
+    "management": "管理",
+    "market": "市場"
   },
   "headings": {
     "home": {
@@ -47,21 +49,54 @@
       "h1": "Polyglow",
       "h2": "人生という大海、起業の波、投資の霧の中を進む"
     },
-    "build": { "h1": "起業", "h2": "ゼロからイチへの道、機会と課題を見極める" },
-    "innovation": { "h1": "革新", "h2": "技術駆動とブレークスルー思考で、世界を変える力を探る" },
-    "model": { "h1": "モデル", "h2": "事例からトレンドへ、再現可能な成長ロジックを探求する" },
+    "build": {
+      "h1": "起業",
+      "h2": "ゼロからイチへの道、機会と課題を見極める"
+    },
+    "innovation": {
+      "h1": "革新",
+      "h2": "技術駆動とブレークスルー思考で、世界を変える力を探る"
+    },
+    "model": {
+      "h1": "モデル",
+      "h2": "事例からトレンドへ、再現可能な成長ロジックを探求する"
+    },
     "management": {
       "h1": "管理",
       "h2": "戦略と実行のバランスを取り、効率的な組織とチーム文化を築く"
     },
-    "invest": { "h1": "投資", "h2": "価値を捉えるアート、資本と産業の二重のロジック" },
-    "risk": { "h1": "危険性", "h2": "不確実性の中の確実性——効果的に識別しヘッジする方法" },
-    "strategy": { "h1": "戦略", "h2": "駆け引きの中で前進し、長期的優位と堀を築く" },
-    "allocation": { "h1": "配分", "h2": "資源の最適解——資金・時間・エネルギーのバランス" },
-    "life": { "h1": "人生", "h2": "効率と成果を超えて、バランス・健康・幸福を追求する" },
-    "reflect": { "h1": "省察", "h2": "歩みを緩め、未来の可能性を深く考える" },
-    "media": { "h1": "メディア", "h2": "読書から観察へ、越境の発想と洞察を得る" },
-    "roam": { "h1": "放浪", "h2": "旅の途上で、人と世界の真なるつながりを感じる" }
+    "invest": {
+      "h1": "投資",
+      "h2": "価値を捉えるアート、資本と産業の二重のロジック"
+    },
+    "risk": {
+      "h1": "危険性",
+      "h2": "不確実性の中の確実性——効果的に識別しヘッジする方法"
+    },
+    "strategy": {
+      "h1": "戦略",
+      "h2": "駆け引きの中で前進し、長期的優位と堀を築く"
+    },
+    "allocation": {
+      "h1": "配分",
+      "h2": "資源の最適解——資金・時間・エネルギーのバランス"
+    },
+    "life": {
+      "h1": "人生",
+      "h2": "効率と成果を超えて、バランス・健康・幸福を追求する"
+    },
+    "reflect": {
+      "h1": "省察",
+      "h2": "歩みを緩め、未来の可能性を深く考える"
+    },
+    "media": {
+      "h1": "メディア",
+      "h2": "読書から観察へ、越境の発想と洞察を得る"
+    },
+    "roam": {
+      "h1": "放浪",
+      "h2": "旅の途上で、人と世界の真なるつながりを感じる"
+    }
   },
   "navigation": {
     "build": "起業",
@@ -69,18 +104,41 @@
     "life": "人生"
   },
   "pages": {
-    "about": { "title": "概要" },
-    "author": { "title": "著者", "writingActivity": "執筆活動" },
-    "posts": { "title": "すべての記事" },
+    "about": {
+      "title": "概要"
+    },
+    "author": {
+      "title": "著者",
+      "writingActivity": "執筆活動",
+      "less": "少ない",
+      "more": "多い",
+      "contributionsInYear": "{year}年に公開した記事 {count} 件",
+      "links": "作者リンク"
+    },
+    "posts": {
+      "title": "すべての記事",
+      "archiveEyebrow": "アーカイブ",
+      "archiveTitle": "記事アーカイブ",
+      "archiveSubtitle": "公開済みの記事を新しい順に並べています。",
+      "totalPosts": "全 {count} 件の記事",
+      "pageTitle": "すべての記事 {page}",
+      "pageDescription": "記事一覧 {page} ページ"
+    },
     "categories": {
-      "title": "カテゴリ",
-      "h2": "カテゴリを閲覧",
-      "description": "トピックを探索し、カテゴリで記事を見つける。"
+      "title": "カテゴリー",
+      "h2": "カテゴリーを見る",
+      "description": "カテゴリー別にテーマと記事を探します。",
+      "eyebrow": "カテゴリー",
+      "relatedTags": "関連タグ",
+      "noPosts": "このカテゴリーの記事はまだありません。"
     },
     "tags": {
       "title": "タグ",
-      "h2": "タグを閲覧",
-      "description": "トピックを探索し、タグで記事を見つける。"
+      "h2": "タグを見る",
+      "description": "タグ別にテーマと記事を探します。",
+      "eyebrow": "タグ",
+      "browseCategories": "カテゴリーを見る",
+      "noPosts": "このタグの記事はまだありません。"
     }
   },
   "common": {
@@ -96,7 +154,10 @@
       "totalPostsWithLang": "{lang} 全 {count} 件の投稿",
       "pageInfo": "{current} / {total} ページ",
       "noPosts": "投稿がありません",
-      "noPostsInCategory": "このカテゴリにはまだ投稿がありません。後ほど再度ご確認ください。"
+      "noPostsInCategory": "このカテゴリにはまだ投稿がありません。後ほど再度ご確認ください。",
+      "pageTitle": "{page} ページ",
+      "pageLabel": "{page} ページ",
+      "postsCount": "{count} 件の記事"
     }
   },
   "footer": {

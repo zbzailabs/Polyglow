@@ -1,79 +1,55 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Pagination from '@/features/Pagination.astro';
-import PostCardCover from '@/cards/PostCardCover.astro';
-import CardWithPriority from '@/features/CardWithPriority.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsByCategory, postUrl } from '@/utils/posts';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import EmptyState from "@/components/ui/EmptyState.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
+import { TAXONOMY, getCategory } from "@/config/taxonomy"
+import { getPostsByCategory } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  const CATEGORY_KEYS = ['build', 'invest', 'life'] as const;
-  return SUPPORTED_LANGS.flatMap((lang) =>
-    CATEGORY_KEYS.map((slug) => ({ params: { lang, slug } })),
-  );
+  return LOCALES.flatMap((lang) =>
+    TAXONOMY.categories.map((category) => ({
+      params: { lang, slug: category.slug },
+      props: { lang, slug: category.slug },
+    }))
+  )
 }
 
-const PAGE_SIZE = 12;
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const slug = String(Astro.params.slug || '');
-
-const all = getPostsByCategory(lang, slug);
-
-const items = all.slice(0, PAGE_SIZE);
-const total = all.length;
-const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
-const page = {
-  data: items,
-  start: 0,
-  end: items.length - 1,
-  total,
-  currentPage: 1,
-  size: PAGE_SIZE,
-  lastPage,
-  url: {
-    current: Astro.url.pathname,
-    prev: undefined,
-    next: lastPage > 1 ? `/${lang}/category/${slug}/2/` : undefined,
-    first: undefined,
-    last: lastPage > 1 ? `/${lang}/category/${slug}/${lastPage}/` : undefined,
-  },
-};
-
-const h1 = t(lang, `headings.${slug}.h1`) || t(lang, `navigation.${slug}`) || slug;
-const h2 = t(lang, `headings.${slug}.h2`);
-const title = h1;
-const description = h2;
+const { lang, slug } = Astro.props as { lang: Locale; slug: string }
+const category = getCategory(slug)
+const posts = await getPostsByCategory(lang, slug)
+const pagePosts = posts.slice(0, TAXONOMY_POSTS_PER_PAGE)
+const nextPage =
+  posts.length > TAXONOMY_POSTS_PER_PAGE
+    ? `/${lang}/category/${slug}/2/`
+    : undefined
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  <fragment slot="header">
-    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{h1}</h1>
-    <h2 class="mt-2 text-xl text-gray-600 dark:text-gray-300">{h2}</h2>
-  </fragment>
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<Layout
+  lang={lang}
+  path={`/category/${slug}/`}
+  title={category?.labelByLocale[lang] ?? slug}
+  description={category?.descriptionByLocale[lang]}
+>
+  <PageSection>
+    <PageHeader
+      title={category?.labelByLocale[lang] ?? slug}
+      subtitle={category?.descriptionByLocale[lang]}
+    />
     {
-      items.map((p, idx) => (
-        <CardWithPriority
-          component={PostCardCover}
-          index={idx}
-          props={{
-            href: postUrl(p, lang),
-            imageSrc: p.data.heroImage,
-            imageAlt: p.data.heroImageAlt,
-            title: p.data.title,
-            date: p.data.pubDate,
-            category: p.data.category,
-            lang,
-            class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-          }}
-        />
-      ))
+      posts.length > 0 ? (
+        <>
+          <PostCardGrid posts={pagePosts} />
+          {nextPage && <Pagination next={nextPage} currentPage={1} />}
+        </>
+      ) : (
+        <EmptyState message={t(lang, "pages.categories.noPosts")} />
+      )
     }
-  </div>
-
-  <Pagination page={page} class="mt-10" />
-</LandingLayout>
+  </PageSection>
+</Layout>

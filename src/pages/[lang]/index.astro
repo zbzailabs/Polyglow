@@ -1,207 +1,92 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import PostCardCover from '@/cards/PostCardCover.astro';
-import PostCardDescription from '@/cards/PostCardDescription.astro';
-import PostCardHorizontal from '@/cards/PostCardHorizontal.astro';
-import Pagination from '@/features/Pagination.astro';
-import CardWithPriority from '@/features/CardWithPriority.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsForLang, postUrl, type PostEntry } from '@/utils/posts';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PostCardCover from "@/components/cards/PostCardCover.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import PostArchiveList from "@/components/lists/PostArchiveList.astro"
+import PostTextCardGrid from "@/components/lists/PostTextCardGrid.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { SITE_CONFIG } from "@/config/site"
+import { LOCALES, type Locale } from "@/config/locales"
+import { POSTS_PER_PAGE } from "@/config/pagination"
+import { getPostsForLocale } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const PAGE_SIZE = 12;
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-
-const all = getPostsForLang(lang);
-const items = all.slice(0, PAGE_SIZE);
-
-const total = all.length;
-const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
-const page = {
-  data: items,
-  start: 0,
-  end: items.length - 1,
-  total,
-  currentPage: 1,
-  size: PAGE_SIZE,
-  lastPage,
-  url: {
-    current: Astro.url.pathname,
-    prev: undefined,
-    next: lastPage > 1 ? `/${lang}/2/` : undefined,
-    first: undefined,
-    last: lastPage > 1 ? `/${lang}/${lastPage}/` : undefined,
-  },
-};
-
-const h1 = t(lang, 'headings.home.h1');
-const h2 = t(lang, 'headings.home.h2');
-const title = t(lang, 'headings.home.title') || h1;
+const { lang } = Astro.props as { lang: Locale }
+const posts = await getPostsForLocale(lang)
+const [lead, ...rest] = posts
+const widePosts = rest.slice(0, 2)
+const gridPosts = rest.slice(2, POSTS_PER_PAGE - 1)
+const nextPage = posts.length > POSTS_PER_PAGE ? `/${lang}/2/` : undefined
+const homepageLayout = SITE_CONFIG.homepage.layout
+const archivePosts = posts.slice(0, POSTS_PER_PAGE)
 ---
 
-<LandingLayout lang={lang} title={title} canonical={Astro.url.href}>
-  <fragment slot="header">
-    <div class="sr-only">
-      <h1>{h1}</h1>
-      <h2>{h2}</h2>
-      <p>{t(lang, 'site.description')}</p>
-    </div>
-  </fragment>
-
-  <div class="space-y-5 sm:hidden">
-    {
-      items.map((p, idx) => (
-        <CardWithPriority
-          component={PostCardCover}
-          index={idx}
-            props={{
-            href: postUrl(p as PostEntry, lang),
-            imageSrc: p.data.heroImage,
-            imageAlt: p.data.heroImageAlt,
-            title: p.data.title,
-            date: p.data.pubDate,
-            category: p.data.category,
-            lang,
-            class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-          }}
+<Layout
+  lang={lang}
+  path="/"
+  title="Polyglow"
+  description={lead?.data.description}
+  image={lead?.data.heroImage}
+>
+  {
+    homepageLayout === "archive" ? (
+      <section
+        class="mx-auto max-w-6xl px-4 py-10 sm:px-6"
+        data-pagefind-ignore
+        data-home-surface
+      >
+        <PageHeader
+          title={t(lang, "pages.posts.title")}
+          subtitle={t(lang, "pages.posts.totalPosts", {
+            count: posts.length,
+          })}
         />
-      ))
-    }
-  </div>
-
-  <div class="hidden grid-cols-2 gap-5 sm:grid lg:hidden">
-    {
-      items[0] && (
-        <div class="col-span-2">
-          <CardWithPriority
-            component={PostCardHorizontal}
-            index={0}
-            props={{
-              href: postUrl(items[0] as PostEntry, lang),
-              imageSrc: items[0].data.heroImage,
-              imageAlt: items[0].data.heroImageAlt,
-              title: items[0].data.title,
-              description: items[0].data.description,
-              date: items[0].data.pubDate,
-              category: items[0].data.category,
-              lang,
-              class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-            }}
-          />
-        </div>
-      )
-    }
-    {
-      items
-        .slice(1, 3)
-        .map((p) => (
-          <PostCardDescription
-            href={postUrl(p as PostEntry, lang)}
-            imageSrc={p.data.heroImage}
-            imageAlt={p.data.heroImageAlt}
-            title={p.data.title}
-            description={p.data.description}
-            date={p.data.pubDate}
-            category={p.data.category}
-            lang={lang}
-            class="shadow-sm ring-1 ring-black/5 dark:ring-white/10"
-          />
-        ))
-    }
-    {
-      items.slice(3, 12).map((p, i, arr) =>
-        i === arr.length - 1 && arr.length % 2 === 1 ? (
-          <div class="col-span-2">
+        <PostArchiveList posts={archivePosts} lang={lang} />
+        <Pagination next={nextPage} currentPage={1} />
+      </section>
+    ) : homepageLayout === "text" ? (
+      <section
+        class="mx-auto max-w-6xl px-4 py-10 sm:px-6"
+        data-pagefind-ignore
+        data-home-surface
+      >
+        <PageHeader
+          title={t(lang, "pages.posts.title")}
+          subtitle={t(lang, "pages.posts.totalPosts", {
+            count: posts.length,
+          })}
+        />
+        <PostTextCardGrid posts={archivePosts} />
+        <Pagination next={nextPage} currentPage={1} />
+      </section>
+    ) : (
+      <section
+        class="mx-auto max-w-6xl px-4 py-10 sm:px-6"
+        data-pagefind-ignore
+        data-home-surface
+      >
+        <h1 class="sr-only">Polyglow</h1>
+        {lead && <PostCardCover post={lead} priority variant="lead" />}
+        <div class="mt-6 grid grid-cols-12 gap-6">
+          {widePosts.map((post) => (
             <PostCardCover
-              href={postUrl(p as PostEntry, lang)}
-              imageSrc={p.data.heroImage}
-              imageAlt={p.data.heroImageAlt}
-              title={p.data.title}
-              date={p.data.pubDate}
-              category={p.data.category}
-              lang={lang}
-              class="shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+              post={post}
+              priority
+              variant="wide"
+              class="col-span-12 md:col-span-6"
             />
-          </div>
-        ) : (
-          <PostCardCover
-            href={postUrl(p as PostEntry, lang)}
-            imageSrc={p.data.heroImage}
-            imageAlt={p.data.heroImageAlt}
-            title={p.data.title}
-            date={p.data.pubDate}
-            category={p.data.category}
-            lang={lang}
-            class="shadow-sm ring-1 ring-black/5 dark:ring-white/10"
-          />
-        ),
-      )
-    }
-  </div>
-
-  <div class="hidden grid-cols-12 gap-6 lg:grid">
-    {
-      items[0] && (
-        <div class="col-span-12">
-          <CardWithPriority
-            component={PostCardHorizontal}
-            index={0}
-            props={{
-              href: postUrl(items[0] as PostEntry, lang),
-              imageSrc: items[0].data.heroImage,
-              imageAlt: items[0].data.heroImageAlt,
-              title: items[0].data.title,
-              description: items[0].data.description,
-              date: items[0].data.pubDate,
-              category: items[0].data.category,
-              lang,
-              class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-            }}
-          />
+          ))}
         </div>
-      )
-    }
-    {
-      items.slice(1, 3).map((p) => (
-        <div class="col-span-12 md:col-span-6">
-          <PostCardDescription
-            href={postUrl(p as PostEntry, lang)}
-            imageSrc={p.data.heroImage}
-            imageAlt={p.data.heroImageAlt}
-            title={p.data.title}
-            description={p.data.description}
-            date={p.data.pubDate}
-            category={p.data.category}
-            lang={lang}
-            class="shadow-sm ring-1 ring-black/5 dark:ring-white/10"
-          />
-        </div>
-      ))
-    }
-    {
-      items.slice(3, 12).map((p) => (
-        <div class="col-span-12 md:col-span-4">
-          <PostCardCover
-            href={postUrl(p as PostEntry, lang)}
-            imageSrc={p.data.heroImage}
-            imageAlt={p.data.heroImageAlt}
-            title={p.data.title}
-            date={p.data.pubDate}
-            category={p.data.category}
-            lang={lang}
-            class="shadow-sm ring-1 ring-black/5 dark:ring-white/10"
-          />
-        </div>
-      ))
-    }
-  </div>
-
-  <Pagination page={page} class="mt-10" />
-</LandingLayout>
+        {gridPosts.length > 0 && (
+          <PostCardGrid posts={gridPosts} class="mt-6" />
+        )}
+        <Pagination next={nextPage} currentPage={1} />
+      </section>
+    )
+  }
+</Layout>

@@ -1,155 +1,44 @@
-import { getCollection, type CollectionEntry } from 'astro:content';
-import type { Lang } from '@/utils/i18n';
-import { SUPPORTED_LANGS } from '@/utils/i18n';
-import { categorySlug, tagSlug } from '@/utils/translations';
+import { getCollection, type CollectionEntry } from "astro:content"
 
-export type PostEntry = CollectionEntry<'post'>;
-export const CATEGORY_KEYS = ['build', 'invest', 'life'] as const;
-export type CategoryKey = (typeof CATEGORY_KEYS)[number];
-export const TAG_KEYS = [
-  'reflect',
-  'media',
-  'roam',
-  'risk',
-  'strategy',
-  'allocation',
-  'innovation',
-  'model',
-  'management',
-] as const;
-export type TagKey = (typeof TAG_KEYS)[number];
+import { LOCALES, type Locale } from "@/config/locales"
 
-const publishedPostsPromise = getCollection('post', (entry) => !entry.data.draft);
+export type PostEntry = CollectionEntry<"post">
 
-export function sortPostsByDate(posts: readonly PostEntry[]): Array<PostEntry> {
-  return [...posts].sort(
-    (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
-  );
+const publishedPostsPromise = getCollection("post", (entry) => !entry.data.draft)
+
+export function sortPostsByDate(posts: readonly PostEntry[]): PostEntry[] {
+  return [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 }
 
-export function postSlug(entry: PostEntry, lang: Lang): string {
-  const idWithoutExt = entry.id.replace(/\.(md|mdx|markdown)$/i, '');
-  return idWithoutExt.replace(new RegExp(`^${lang}/`), '');
+export function postSlug(entry: PostEntry): string {
+  const withoutExt = entry.id.replace(/\.(md|mdx|markdown)$/i, "")
+  return entry.data.slug ?? withoutExt.replace(new RegExp(`^${entry.data.locale}/`), "")
 }
 
-export function postUrl(entry: PostEntry, lang: Lang): string {
-  return `/${lang}/posts/${postSlug(entry, lang)}/`;
+export function postPath(entry: PostEntry): string {
+  return `/posts/${postSlug(entry)}/`
 }
 
-function createLangBuckets<K extends string>(
-  keys: readonly K[],
-): Record<Lang, Record<K, Array<PostEntry>>> {
-  return SUPPORTED_LANGS.reduce<Record<Lang, Record<K, Array<PostEntry>>>>(
-    (acc, lang) => {
-      acc[lang] = keys.reduce<Record<K, Array<PostEntry>>>(
-        (bucketAcc, key) => {
-          bucketAcc[key] = [];
-          return bucketAcc;
-        },
-        {} as Record<K, Array<PostEntry>>,
-      );
-      return acc;
-    },
-    {} as Record<Lang, Record<K, Array<PostEntry>>>,
-  );
+export function postUrl(entry: PostEntry): string {
+  return `/${entry.data.locale}${postPath(entry)}`
 }
 
-function createLangLists(): Record<Lang, Array<PostEntry>> {
-  return SUPPORTED_LANGS.reduce<Record<Lang, Array<PostEntry>>>(
-    (acc, lang) => {
-      acc[lang] = [];
-      return acc;
-    },
-    {} as Record<Lang, Array<PostEntry>>,
-  );
+export async function getPublishedPosts(): Promise<PostEntry[]> {
+  return sortPostsByDate(await publishedPostsPromise)
 }
 
-function sortPostsByDateInPlace(posts: Array<PostEntry>): void {
-  posts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+export async function getPostsForLocale(locale: Locale): Promise<PostEntry[]> {
+  return (await getPublishedPosts()).filter((post) => post.data.locale === locale)
 }
 
-function buildPostIndexes(posts: readonly PostEntry[]) {
-  const postsByLang = createLangLists();
-  const postsByCategory = createLangBuckets(CATEGORY_KEYS);
-  const postsByTag = createLangBuckets(TAG_KEYS);
-
-  for (const post of posts) {
-    const lang = post.data.locales as Lang;
-    if (!(SUPPORTED_LANGS as readonly string[]).includes(lang)) continue;
-    postsByLang[lang].push(post);
-
-    const categoryKey = categorySlug(lang, post.data.category);
-    if (categoryKey && categoryKey in postsByCategory[lang]) {
-      postsByCategory[lang][categoryKey as CategoryKey].push(post);
-    }
-
-    const seenTags = new Set<string>();
-    for (const tag of post.data.tags || []) {
-      const tagKey = tagSlug(lang, tag);
-      if (!tagKey || seenTags.has(tagKey) || !(tagKey in postsByTag[lang])) continue;
-      seenTags.add(tagKey);
-      postsByTag[lang][tagKey as TagKey].push(post);
-    }
-  }
-
-  for (const lang of SUPPORTED_LANGS) {
-    sortPostsByDateInPlace(postsByLang[lang]);
-    for (const key of CATEGORY_KEYS) {
-      sortPostsByDateInPlace(postsByCategory[lang][key]);
-    }
-    for (const key of TAG_KEYS) {
-      sortPostsByDateInPlace(postsByTag[lang][key]);
-    }
-  }
-
-  return { postsByLang, postsByCategory, postsByTag };
+export async function getPostsByCategory(locale: Locale, slug: string): Promise<PostEntry[]> {
+  return (await getPostsForLocale(locale)).filter((post) => post.data.category === slug)
 }
 
-const postIndexes = await publishedPostsPromise.then((posts) => buildPostIndexes(posts));
-
-export function getPublishedPosts(): Promise<Array<PostEntry>> {
-  return publishedPostsPromise;
+export async function getPostsByTag(locale: Locale, slug: string): Promise<PostEntry[]> {
+  return (await getPostsForLocale(locale)).filter((post) => post.data.tags.includes(slug))
 }
 
-export function getPublishedPostsByLang(): Record<Lang, Array<PostEntry>> {
-  return postIndexes.postsByLang;
-}
-
-export function getPostsForLang(lang: Lang): Array<PostEntry> {
-  return postIndexes.postsByLang[lang] ?? [];
-}
-
-export function getPostsByCategory(lang: Lang, slug: string): Array<PostEntry> {
-  const key = categorySlug(lang, slug);
-  return key && key in postIndexes.postsByCategory[lang]
-    ? postIndexes.postsByCategory[lang][key as CategoryKey]
-    : [];
-}
-
-export function getPostsByTag(lang: Lang, slug: string): Array<PostEntry> {
-  const key = tagSlug(lang, slug);
-  return key && key in postIndexes.postsByTag[lang] ? postIndexes.postsByTag[lang][key as TagKey] : [];
-}
-
-export function countPostsByCategory(lang: Lang, slug: string): number {
-  return getPostsByCategory(lang, slug).length;
-}
-
-export function countPostsByTag(lang: Lang, slug: string): number {
-  return getPostsByTag(lang, slug).length;
-}
-
-export function getLatestPosts(lang: Lang, limit = 3): Array<PostEntry> {
-  return getPostsForLang(lang).slice(0, limit);
-}
-
-export function getRelatedPosts(
-  lang: Lang,
-  category: string,
-  excludeId?: string,
-  limit = 3,
-): Array<PostEntry> {
-  return getPostsByCategory(lang, category)
-    .filter((post) => !excludeId || post.id !== excludeId)
-    .slice(0, limit);
+export function localeStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { lang: locale }, props: { lang: locale } }))
 }

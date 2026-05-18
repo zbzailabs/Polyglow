@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Avancer dans l’océan de la vie, les vagues de l’entrepreneuriat et les brumes de l’investissement",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Vie",
     "invest": "Investir",
-    "build": "Construire"
+    "build": "Construire",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "réfléchir",
@@ -39,7 +40,8 @@
     "allocation": "allocation",
     "innovation": "innovation",
     "model": "modèle",
-    "management": "gestion"
+    "management": "gestion",
+    "market": "Marché"
   },
   "headings": {
     "home": {
@@ -47,7 +49,10 @@
       "h1": "Polyglow",
       "h2": "Avancer dans l'océan de la vie, les vagues de l'entrepreneuriat et le brouillard de l'investissement"
     },
-    "build": { "h1": "Construire", "h2": "De zéro à un, détecter les opportunités et les défis" },
+    "build": {
+      "h1": "Construire",
+      "h2": "De zéro à un, détecter les opportunités et les défis"
+    },
     "innovation": {
       "h1": "Innovation",
       "h2": "Portée par la technologie et la pensée disruptive, chercher la force de changer le monde"
@@ -99,18 +104,41 @@
     "life": "Vie"
   },
   "pages": {
-    "about": { "title": "À propos" },
-    "author": { "title": "Auteur", "writingActivity": "Activité d'écriture" },
-    "posts": { "title": "Tous les articles" },
+    "about": {
+      "title": "À propos"
+    },
+    "author": {
+      "title": "Auteur",
+      "writingActivity": "Activité d'écriture",
+      "less": "Moins",
+      "more": "Plus",
+      "contributionsInYear": "{count} articles publiés en {year}",
+      "links": "Liens de l’auteur"
+    },
+    "posts": {
+      "title": "Tous les articles",
+      "archiveEyebrow": "Archive",
+      "archiveTitle": "Archive des articles",
+      "archiveSubtitle": "Toutes les notes publiées par ordre chronologique inverse.",
+      "totalPosts": "{count} articles au total",
+      "pageTitle": "Tous les articles {page}",
+      "pageDescription": "Page {page} des articles"
+    },
     "categories": {
       "title": "Catégories",
       "h2": "Parcourir les catégories",
-      "description": "Explorez les thèmes et trouvez des articles par catégorie."
+      "description": "Explorer les sujets et trouver des articles par catégorie.",
+      "eyebrow": "Catégorie",
+      "relatedTags": "Tags associés",
+      "noPosts": "Aucun article dans cette catégorie pour le moment."
     },
     "tags": {
-      "title": "Étiquettes",
-      "h2": "Parcourir les étiquettes",
-      "description": "Explorez les thèmes et trouvez des articles par étiquette."
+      "title": "Tags",
+      "h2": "Parcourir les tags",
+      "description": "Explorer les sujets et trouver des articles par tags.",
+      "eyebrow": "Tag",
+      "browseCategories": "Parcourir les catégories",
+      "noPosts": "Aucun article avec ce tag pour le moment."
     }
   },
   "common": {
@@ -126,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} articles au total",
       "pageInfo": "Page {current} sur {total}",
       "noPosts": "Aucun article",
-      "noPostsInCategory": "Aucun article dans cette catégorie pour le moment. Revenez plus tard."
+      "noPostsInCategory": "Aucun article dans cette catégorie pour le moment. Revenez plus tard.",
+      "pageTitle": "Page {page}",
+      "pageLabel": "Page {page}",
+      "postsCount": "{count} articles"
     }
   },
   "footer": {

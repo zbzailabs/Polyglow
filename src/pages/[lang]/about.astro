@@ -1,46 +1,56 @@
 ---
-import { render } from 'astro:content';
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Prose from '@/features/Prose.astro';
-import LatestList from '@/widgets/LatestList.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getAboutPageForLang, getPublishedPages } from '@/utils/pages';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import ProseContent from "@/components/layout/ProseContent.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import { render } from "astro:content"
+import { SITE_CONFIG } from "@/config/site"
+import { LOCALES, type Locale } from "@/config/locales"
+import { getPage } from "@/utils/content"
+import { getPostsForLocale } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  const langs = Array.from(new Set(getPublishedPages().map((page) => page.data.locales)));
-  return langs.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const lang = (Astro.params.lang as Lang) || DEFAULT_LANG;
-
-const entry = getAboutPageForLang(lang);
-
-let Content: any = undefined;
-if (entry) {
-  const rendered = await render(entry);
-  Content = rendered.Content;
-}
-
-const title = t(lang, 'pages.about.title') || entry?.data.title || 'About';
-const description = entry?.data.description || '';
+const { lang } = Astro.props as { lang: Locale }
+const page = await getPage(lang, "about")
+const Content = page ? (await render(page)).Content : undefined
+const posts = (await getPostsForLocale(lang)).slice(0, 3)
+const title = t(lang, "pages.about.title")
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  {
-    Content ? (
-      <Prose>
-        <Content />
-      </Prose>
-    ) : (
-      <Prose>
-        <p>{description}</p>
-      </Prose>
-    )
-  }
-
-  <LatestList lang={lang} />
-</LandingLayout>
+<Layout
+  lang={lang}
+  path="/about/"
+  title={title}
+  description={page?.data.description}
+>
+  <PageSection class="py-8" pagefindIgnore={false} data-about-page>
+    <PageHeader
+      title={title}
+      subtitle={page?.data.description}
+      class="search-header"
+    />
+    <div
+      class="mx-auto max-w-3xl text-center text-base leading-8 text-foreground/80"
+      data-about-intro
+    >
+      <ProseContent class="max-w-none">
+        {Content ? <Content /> : <p>{SITE_CONFIG.description}</p>}
+      </ProseContent>
+    </div>
+    {
+      posts.length > 0 && (
+        <PostCardGrid
+          posts={posts}
+          columns="three"
+          class="mt-10"
+          data-about-posts
+        />
+      )
+    }
+  </PageSection>
+</Layout>

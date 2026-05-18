@@ -1,64 +1,25 @@
 ---
-import type { Lang } from '@/utils/i18n';
-import { categoryLabel, tagLabel } from '@/utils/translations';
-import { formatDate } from '@/utils/date';
+import type { PostEntry } from "@/utils/posts"
+import { postUrl } from "@/utils/posts"
 
 interface Props {
-  href?: string;
-  title: string;
-  date?: string | Date;
-  category?: string;
-  tags?: string[];
-  lang?: Lang;
-  class?: string;
+  post: PostEntry
 }
 
-const {
-  href,
-  title,
-  date,
-  category,
-  tags = [],
-  lang = 'zh',
-  class: className,
-} = Astro.props as Props;
-
-const Container = href ? 'a' : 'div';
-const containerAttrs = href ? { href } : {};
+const { post } = Astro.props
 ---
 
-<Container
-  {...containerAttrs}
-  class={`group block w-full overflow-hidden rounded-md pl-2 pr-2 sm:pl-4 lg:pl-6 py-2 hover:bg-gray-50 dark:hover:bg-gray-900/40 ${className ?? ''} transition-all duration-200 ease-out hover:-translate-y-0.5`.trim()}
+<article
+  class="rounded-lg border bg-card p-5 transition-colors hover:bg-muted/50"
+  data-text-card
 >
-  <div class="flex items-center gap-6 text-sm">
-    <time
-      class="w-28 shrink-0 whitespace-nowrap text-gray-500 [font-variant-numeric:tabular-nums] sm:w-32 dark:text-gray-400"
-      datetime={date ? new Date(date).toISOString() : undefined}
-    >
-      {date ? formatDate(date, lang) : ''}
-    </time>
-
-    <div
-      class="min-w-0 flex-1 truncate font-medium text-gray-950 decoration-1 underline-offset-2 group-hover:underline dark:text-gray-100"
-    >
-      {title}
-    </div>
-
-    {
-      tags.length > 0 && (
-        <span class="ml-4 min-w-0 truncate text-gray-500 sm:ml-6 lg:ml-12 dark:text-gray-400">
-          {tags.map((tg) => tagLabel(lang, tg)).join(', ')}
-        </span>
-      )
-    }
-
-    {
-      category && (
-        <span class="w-28 shrink-0 truncate text-right text-gray-600 sm:w-36 dark:text-gray-300">
-          {categoryLabel(lang, category)}
-        </span>
-      )
-    }
-  </div>
-</Container>
+  <a href={postUrl(post)} class="flex flex-col gap-2">
+    <span class="text-xs text-muted-foreground">
+      {post.data.pubDate.toLocaleDateString(post.data.locale)}
+    </span>
+    <h2 class="text-lg font-semibold tracking-tight">{post.data.title}</h2>
+    <p class="line-clamp-2 text-sm text-muted-foreground">
+      {post.data.description}
+    </p>
+  </a>
+</article>

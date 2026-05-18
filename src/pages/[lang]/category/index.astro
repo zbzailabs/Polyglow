@@ -1,58 +1,57 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { countPostsByCategory } from '@/utils/posts';
-import { t } from '@/utils/translations';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import TaxonomyLinkGrid from "@/components/navigation/TaxonomyLinkGrid.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { TAXONOMY } from "@/config/taxonomy"
+import { getPostsForLocale } from "@/utils/posts"
+import { localePath } from "@/utils/routes"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-
-const CATEGORY_KEYS = ['build', 'invest', 'life'] as const;
-
-function countFor(key: (typeof CATEGORY_KEYS)[number]) {
-  return countPostsByCategory(lang, key);
+const { lang } = Astro.props as { lang: Locale }
+const posts = await getPostsForLocale(lang)
+const countByCategory = new Map<string, number>()
+for (const post of posts) {
+  countByCategory.set(
+    post.data.category,
+    (countByCategory.get(post.data.category) ?? 0) + 1
+  )
 }
-
-const items = CATEGORY_KEYS.map((key) => ({
-  key,
-  label: String(t(lang as any, `categories.${key}`)),
-  href: `/${lang}/category/${key}/`,
-  count: countFor(key),
-}));
-
-const pageTitle = t(lang, 'pages.categories.title');
-const description = t(lang, 'pages.categories.description');
+const categoryLinks = TAXONOMY.categories
+  .filter((category) => (countByCategory.get(category.slug) ?? 0) > 0)
+  .map((category) => ({
+    href: localePath(lang, `/category/${category.slug}/`),
+    label: category.labelByLocale[lang],
+    count: countByCategory.get(category.slug) ?? 0,
+    description: category.descriptionByLocale[lang],
+  }))
+const categoryDescriptions = TAXONOMY.categories.map((category) => ({
+  description: category.descriptionByLocale[lang],
+}))
+const title = t(lang, "pages.categories.title")
 ---
 
-<LandingLayout
+<Layout
   lang={lang}
-  title={pageTitle}
-  description={description}
-  canonical={Astro.url.href}
-  centered={false}
+  path="/category/"
+  title={title}
+  description={t(lang, "pages.categories.description")}
 >
-  <section>
-    <h2 class="mb-4 text-lg font-semibold">{t(lang, 'pages.categories.h2')}</h2>
-    <div class="grid grid-cols-3 gap-4">
-      {
-        items.map((it) => (
-          <a
-            href={it.href}
-            class="inline-flex w-full items-center gap-2 rounded-full border border-gray-200/70 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-50 dark:border-gray-800/70 dark:text-gray-200 dark:hover:bg-gray-800"
-          >
-            <span class="min-w-0 flex-1 truncate">{it.label}</span>
-            <span class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-              {it.count}
-            </span>
-          </a>
-        ))
-      }
-    </div>
-  </section>
-</LandingLayout>
+  <PageSection class="py-8">
+    <PageHeader
+      title={title}
+      description={t(lang, "pages.categories.description")}
+      align="start"
+    />
+    <TaxonomyLinkGrid
+      title={t(lang, "pages.categories.h2")}
+      items={categoryLinks}
+      descriptionItems={categoryDescriptions}
+    />
+  </PageSection>
+</Layout>

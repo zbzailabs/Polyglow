@@ -1,0 +1,150 @@
+---
+import "@/styles/global.css"
+import { SEO } from "astro-seo"
+import { ClientRouter } from "astro:transitions"
+import { optimizeRemoteImageUrl } from "@/config/assets"
+import { FEATURES } from "@/config/features"
+import { LOCALES, getLocaleMeta, type Locale } from "@/config/locales"
+import { SITE_CONFIG } from "@/config/site"
+import { buildAlternates, canonicalUrl } from "@/utils/routes"
+import { webPageJsonLd, webSiteJsonLd } from "@/utils/structured-data"
+import Header from "@/components/ui/Header.astro"
+import Footer from "@/components/ui/Footer.astro"
+import DynamicGlass from "@/components/features/DynamicGlass.astro"
+import Analytics from "@/components/features/Analytics.astro"
+
+interface Props {
+  lang: Locale
+  path?: string
+  title?: string
+  description?: string
+  image?: string
+  ogType?: "website" | "article"
+  noindex?: boolean
+  jsonLd?: unknown
+}
+
+const {
+  lang,
+  path = "/",
+  title = SITE_CONFIG.name,
+  description = SITE_CONFIG.description,
+  image = SITE_CONFIG.defaultOgImage,
+  ogType = "website",
+  noindex = false,
+  jsonLd,
+} = Astro.props
+const localeMeta = getLocaleMeta(lang)
+const alternates = buildAlternates(path)
+const pageTitle =
+  title === SITE_CONFIG.name ? title : `${title} | ${SITE_CONFIG.name}`
+const canonical = canonicalUrl(lang, path)
+const isUnsplashImage = image.startsWith("https://images.unsplash.com/")
+const absoluteImage = image.startsWith("http")
+  ? image
+  : `${SITE_CONFIG.url}${image}`
+const preloadImage = isUnsplashImage
+  ? optimizeRemoteImageUrl(image, 720)
+  : undefined
+const baseJsonLd = [
+  webSiteJsonLd(lang),
+  webPageJsonLd({ lang, path, title: pageTitle, description, image }),
+]
+const jsonLdItems = jsonLd
+  ? baseJsonLd.concat(Array.isArray(jsonLd) ? jsonLd : [jsonLd])
+  : baseJsonLd
+const languageAlternates = Object.entries(alternates).map(
+  ([hrefLang, href]) => ({
+    hrefLang,
+    href,
+  })
+)
+const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
+  (locale) => getLocaleMeta(locale).ogLocale
+)
+---
+
+<html lang={lang} dir={localeMeta.dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {
+      isUnsplashImage && (
+        <>
+          <link
+            rel="preconnect"
+            href="https://images.unsplash.com"
+            crossorigin
+          />
+          <link rel="dns-prefetch" href="https://images.unsplash.com" />
+          <link
+            rel="preload"
+            as="image"
+            href={preloadImage}
+            fetchpriority="high"
+            crossorigin="anonymous"
+          />
+        </>
+      )
+    }
+    <SEO
+      title={pageTitle}
+      description={description}
+      canonical={canonical}
+      noindex={noindex}
+      languageAlternates={languageAlternates}
+      openGraph={{
+        basic: {
+          title: pageTitle,
+          type: ogType,
+          image: absoluteImage,
+          url: canonical,
+        },
+        optional: {
+          description,
+          locale: localeMeta.ogLocale,
+          localeAlternate: alternateOgLocales,
+          siteName: SITE_CONFIG.name,
+        },
+        image: {
+          alt: pageTitle,
+        },
+      }}
+      twitter={{
+        card: "summary_large_image",
+        title: pageTitle,
+        description,
+        image: absoluteImage,
+        imageAlt: pageTitle,
+      }}
+    />
+    {FEATURES.viewTransitions && <ClientRouter fallback="swap" />}
+    <script is:inline>
+      ;(() => {
+        const theme = localStorage.getItem("theme") || "system"
+        const resolved =
+          theme === "system"
+            ? matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : theme
+        document.documentElement.classList.toggle("dark", resolved === "dark")
+      })()
+    </script>
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(jsonLdItems)}
+    />
+    <Analytics />
+  </head>
+  <body>
+    <Header lang={lang} path={path} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <DynamicGlass />
+  </body>
+</html>

@@ -1,100 +1,105 @@
 ---
-import type { Lang } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import FooterNav from '@/ui/FooterNav.astro';
-import { Icon } from 'astro-icon/components';
-import { getRelativeLocaleUrl } from 'astro:i18n';
-import Github from '@/assets/github.svg';
+import { Image } from "astro:assets"
+import type { Locale } from "@/config/locales"
+import Icon from "@/components/icons/Icon.astro"
+import { SITE_CONFIG } from "@/config/site"
+import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
+import { localePath } from "@/utils/routes"
+import { t } from "@/utils/translations"
+import logo from "@/assets/logo.svg"
 
 interface Props {
-  lang?: Lang;
-  githubUrl?: string;
-  rssUrl?: string;
+  lang: Locale
 }
 
-const resolvedLang = ((Astro.currentLocale as Lang | undefined) ??
-  (Astro.props.lang as Lang | undefined) ??
-  'zh') as Lang;
-
-const siteName = t(resolvedLang, 'site.name');
-
-const twitterHandleRaw = t(resolvedLang, 'site.twitter.site') || '';
-const twitterHandle = String(twitterHandleRaw).replace(/^@/, '');
-const xUrl = twitterHandle ? `https://x.com/${twitterHandle}` : 'https://x.com';
-const githubUrl: string =
-  (Astro.props.githubUrl as string | undefined) ?? 'https://github.com/idimilabs';
-
-const rssUrl: string =
-  ((Astro.props.rssUrl as string | undefined) ?? getRelativeLocaleUrl(resolvedLang, '/rss.xml')).replace(
-    /(\.xml)\/$/,
-    '$1',
-  );
+const { lang } = Astro.props
+const year = new Date().getFullYear()
+const primaryCategories = getPrimaryCategories()
 ---
 
-<footer class="header-glass mb-6 w-full">
-  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-      <div class="flex flex-col md:col-span-1">
-        <div>
-          <a
-            href={getRelativeLocaleUrl(resolvedLang, '/')}
-            class="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-gray-950 transition-opacity hover:opacity-80 dark:text-gray-100"
-          >
-            <span class="text-xl text-gray-950 dark:text-gray-300">
-              {siteName}
-            </span>
-          </a>
-          <div class="mt-4 flex items-center gap-4 text-sm">
-            <a
-              href={xUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 rounded-md p-2 text-gray-600 transition-all hover:bg-black/5 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              <span aria-hidden="true"><Icon name="lucide:x" class="h-5 w-5" /></span>
-              <span class="sr-only">X</span>
-            </a>
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 rounded-md p-2 text-gray-600 transition-all hover:bg-black/5 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              <span aria-hidden="true"><Github class="h-5 w-5" /></span>
-              <span class="sr-only">GitHub</span>
-            </a>
-            <a
-              href={rssUrl}
-              class="inline-flex items-center gap-1 rounded-md p-2 text-gray-600 transition-all hover:bg-black/5 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              <span aria-hidden="true"><Icon name="lucide:rss" class="h-5 w-5" /></span>
-              <span class="sr-only">RSS</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Desktop/Tablet: Copyright below social icons - pushed to bottom */}
-        <div
-          class="mt-auto hidden flex-row items-baseline gap-2 text-[10px] text-gray-500 md:flex dark:text-gray-400"
+<footer class="w-full" data-pagefind-ignore>
+  <div
+    class="mx-auto grid max-w-6xl gap-10 px-4 py-12 text-sm text-muted-foreground sm:px-6 md:grid-cols-[1.8fr_1fr_1fr_1fr_1fr]"
+  >
+    <div class="flex flex-col gap-6">
+      <a
+        href={localePath(lang, "/")}
+        class="flex w-fit items-center gap-2.5 text-lg font-semibold text-foreground"
+      >
+        <Image
+          src={logo}
+          alt=""
+          width={24}
+          height={24}
+          class="size-6"
+          loading="lazy"
+        />
+        <span>{SITE_CONFIG.name}</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={SITE_CONFIG.repository}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub"
         >
-          <span>
-            &copy; {new Date().getFullYear()}
-            {siteName}
-          </span>
-        </div>
+          <Icon name="github" class="size-4" dataIcon="inline-start" />
+        </a>
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={SITE_CONFIG.social.x}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="X"
+        >
+          <Icon name="x" class="size-4" dataIcon="inline-start" />
+        </a>
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={`/${lang}/rss.xml`}
+          aria-label="RSS"
+        >
+          <Icon name="rss" class="size-4" dataIcon="inline-start" />
+        </a>
       </div>
-
-      <FooterNav lang={resolvedLang} />
+      <p class="text-xs">© {year} {SITE_CONFIG.name}</p>
     </div>
-
-    {/* Mobile only: Copyright at bottom center */}
-    <div
-      class="mt-10 flex flex-row items-center justify-center gap-2 text-[10px] text-gray-500 md:hidden dark:text-gray-400"
-    >
-      <span>
-        &copy; {new Date().getFullYear()}
-        {siteName}
-      </span>
-    </div>
+    {
+      primaryCategories.map((category) => (
+        <nav
+          class="grid content-start gap-3"
+          aria-label={category.labelByLocale[lang]}
+        >
+          <a
+            class="w-fit font-semibold text-foreground transition-colors hover:text-foreground/75"
+            href={localePath(lang, `/category/${category.slug}/`)}
+          >
+            {category.labelByLocale[lang]}
+          </a>
+          {getTagsForCategory(category.slug).map((tag) => (
+            <a
+              class="w-fit hover:text-foreground"
+              href={localePath(lang, `/tags/${tag.slug}/`)}
+            >
+              {tag.labelByLocale[lang]}
+            </a>
+          ))}
+        </nav>
+      ))
+    }
+    <nav class="grid content-start gap-3" aria-label={t(lang, "footer.more")}>
+      <p class="font-semibold text-foreground">{t(lang, "footer.more")}</p>
+      <a
+        class="w-fit hover:text-foreground"
+        href={localePath(lang, "/category/")}>{t(lang, "footer.categories")}</a
+      >
+      <a class="w-fit hover:text-foreground" href={localePath(lang, "/tags/")}
+        >{t(lang, "footer.tags")}</a
+      >
+      <a class="w-fit hover:text-foreground" href={localePath(lang, "/author/")}
+        >{t(lang, "footer.author")}</a
+      >
+    </nav>
   </div>
 </footer>

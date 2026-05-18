@@ -1,0 +1,125 @@
+---
+import { LOCALE_META, LOCALES, type Locale } from "@/config/locales"
+import { localePath } from "@/utils/routes"
+import { t } from "@/utils/translations"
+
+interface Props {
+  lang: Locale
+  path?: string
+}
+
+const { lang, path = "/" } = Astro.props
+const flags: Record<Locale, string> = {
+  zh: "🇨🇳",
+  en: "🇺🇸",
+  fr: "🇫🇷",
+  es: "🇪🇸",
+  ru: "🇷🇺",
+  ja: "🇯🇵",
+  ko: "🇰🇷",
+  pt: "🇵🇹",
+  de: "🇩🇪",
+  id: "🇮🇩",
+  ar: "🇸🇦",
+}
+---
+
+<div class="relative" data-polyglow-menu>
+  <button
+    type="button"
+    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    aria-label={t(lang, "language.switch")}
+    aria-haspopup="menu"
+    aria-expanded="false"
+    data-polyglow-menu-trigger
+  >
+    <span class="text-sm leading-none" aria-hidden="true">{flags[lang]}</span>
+  </button>
+  <div
+    class="nav-dropdown absolute top-full right-0 z-50 mt-2 grid w-44 gap-1 rounded-xl border border-white/10 p-2 shadow-xl"
+    role="menu"
+    hidden
+    data-polyglow-menu-content
+  >
+    {
+      LOCALES.map((locale) => (
+        <a
+          class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+          href={localePath(locale, path)}
+          role="menuitem"
+          aria-current={locale === lang ? "true" : undefined}
+        >
+          <span aria-hidden="true">{flags[locale]}</span>
+          <span>{LOCALE_META[locale].nativeName}</span>
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<script is:inline>
+  ;(() => {
+    if (window.__polyglowMenu) return
+    window.__polyglowMenu = true
+
+    const closeMenu = (menu) => {
+      const trigger = menu.querySelector("[data-polyglow-menu-trigger]")
+      const content = menu.querySelector("[data-polyglow-menu-content]")
+      if (
+        !(trigger instanceof HTMLElement) ||
+        !(content instanceof HTMLElement)
+      )
+        return
+      trigger.setAttribute("aria-expanded", "false")
+      content.hidden = true
+    }
+
+    const closeAll = (except) => {
+      document.querySelectorAll("[data-polyglow-menu]").forEach((menu) => {
+        if (menu !== except) closeMenu(menu)
+      })
+    }
+
+    const openMenu = (menu) => {
+      const trigger = menu.querySelector("[data-polyglow-menu-trigger]")
+      const content = menu.querySelector("[data-polyglow-menu-content]")
+      if (
+        !(trigger instanceof HTMLElement) ||
+        !(content instanceof HTMLElement)
+      )
+        return
+      closeAll(menu)
+      trigger.setAttribute("aria-expanded", "true")
+      content.hidden = false
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+
+      const trigger = target.closest("[data-polyglow-menu-trigger]")
+      if (trigger instanceof HTMLElement) {
+        const menu = trigger.closest("[data-polyglow-menu]")
+        const content = menu?.querySelector("[data-polyglow-menu-content]")
+        if (!(menu instanceof HTMLElement) || !(content instanceof HTMLElement))
+          return
+        if (content.hidden) openMenu(menu)
+        else closeMenu(menu)
+        return
+      }
+
+      if (!target.closest("[data-polyglow-menu]")) closeAll()
+    })
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return
+      const openMenuContent = document.querySelector(
+        "[data-polyglow-menu-content]:not([hidden])"
+      )
+      const menu = openMenuContent?.closest("[data-polyglow-menu]")
+      if (!(menu instanceof HTMLElement)) return
+      closeMenu(menu)
+      menu.querySelector("button")?.focus()
+    })
+  })()
+</script>

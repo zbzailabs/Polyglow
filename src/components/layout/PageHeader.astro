@@ -1,0 +1,60 @@
+---
+interface Props {
+  title: string
+  subtitle?: string
+  description?: string
+  eyebrow?: string
+  stat?: string
+  align?: "center" | "start"
+  class?: string
+}
+
+const {
+  title,
+  subtitle,
+  description,
+  eyebrow,
+  stat,
+  align = "center",
+  class: className = "",
+} = Astro.props
+const alignment = align === "center" ? "mx-auto text-center" : ""
+---
+
+<section class={`mb-8 max-w-3xl ${alignment} ${className}`} data-page-header>
+  {
+    eyebrow && (
+      <p
+        class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+        data-page-eyebrow
+      >
+        {eyebrow}
+      </p>
+    )
+  }
+  <h1 class="text-3xl font-semibold text-foreground sm:text-4xl">{title}</h1>
+  {
+    subtitle && (
+      <h2 class="mx-auto mt-3 max-w-3xl text-lg leading-7 font-medium text-foreground/75 sm:text-xl">
+        {subtitle}
+      </h2>
+    )
+  }
+  {
+    description && (
+      <p class="mx-auto mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+        {description}
+      </p>
+    )
+  }
+  {
+    stat && (
+      <p
+        class="mt-5 inline-flex min-h-8 items-center rounded-full border border-border bg-background/70 px-4 text-xs font-medium text-foreground shadow-sm backdrop-blur-md dark:bg-white/5"
+        data-page-stat
+      >
+        {stat}
+      </p>
+    )
+  }
+</section>

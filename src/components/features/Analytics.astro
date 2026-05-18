@@ -1,0 +1,26 @@
+---
+import { FEATURES } from "@/config/features"
+
+const googleAnalyticsId = import.meta.env.PUBLIC_GOOGLE_ANALYTICS_ID
+const analyticsEnabled = FEATURES.partytownAnalytics && googleAnalyticsId
+const googleTagUrl = analyticsEnabled
+  ? `https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`
+  : undefined
+const googleTagConfig = analyticsEnabled
+  ? [
+      "window.dataLayer = window.dataLayer || [];",
+      "function gtag(){dataLayer.push(arguments);}",
+      "gtag('js', new Date());",
+      `gtag('config', ${JSON.stringify(googleAnalyticsId)});`,
+    ].join("\n")
+  : undefined
+---
+
+{
+  analyticsEnabled && (
+    <>
+      <script type="text/partytown" async src={googleTagUrl} is:inline />
+      <script type="text/partytown" is:inline set:html={googleTagConfig} />
+    </>
+  )
+}

@@ -1,67 +1,48 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import PostCardCover from '@/cards/PostCardCover.astro';
+import Layout from "@/layouts/main.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { POSTS_PER_PAGE } from "@/config/pagination"
+import { getPostsForLocale } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
-import Pagination from '@/features/Pagination.astro';
-import CardWithPriority from '@/features/CardWithPriority.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsForLang, postUrl, type PostEntry } from '@/utils/posts';
-
-import type { GetStaticPaths } from 'astro';
-
-export const prerender = true;
-
-export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-  const byLang = SUPPORTED_LANGS.flatMap((lang) => {
-    return paginate(getPostsForLang(lang), { pageSize: 12, params: { lang } });
-  });
-  return byLang;
-};
-
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const pageParam = Astro.params.page as string | undefined;
-if (pageParam === '1') {
-  return Astro.redirect(`/${lang}/`, 301);
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const paths = []
+  for (const lang of LOCALES) {
+    paths.push(
+      ...paginate(await getPostsForLocale(lang), {
+        params: { lang },
+        props: { lang },
+        pageSize: POSTS_PER_PAGE,
+      })
+    )
+  }
+  return paths
 }
-const { page } = Astro.props as { page: any };
-const items = (page?.data as PostEntry[]) || [];
 
-const h1 = t(lang, 'headings.home.h1');
-const h2 = t(lang, 'headings.home.h2');
-const title = t(lang, 'headings.home.title') || h1;
+const { lang, page } = Astro.props as {
+  lang: Locale
+  page: {
+    data: Awaited<ReturnType<typeof getPostsForLocale>>
+    currentPage: number
+    url: { prev?: string; next?: string }
+  }
+}
+const title = t(lang, "common.pagination.pageTitle", {
+  page: page.currentPage,
+})
 ---
 
-<LandingLayout lang={lang} title={title} canonical={Astro.url.href}>
-  <fragment slot="header">
-    <div class="sr-only">
-      <h1>{h1}</h1>
-      <h2>{h2}</h2>
-      <p>{t(lang, 'site.description')}</p>
-    </div>
-  </fragment>
-
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {
-      items.map((p, idx) => (
-        <CardWithPriority
-          component={PostCardCover}
-          index={idx}
-          props={{
-            href: postUrl(p as PostEntry, lang),
-            imageSrc: p.data.heroImage,
-            imageAlt: p.data.heroImageAlt,
-            title: p.data.title,
-            date: p.data.pubDate,
-            category: p.data.category,
-            lang,
-            class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-          }}
-        />
-      ))
-    }
-  </div>
-
-  <Pagination page={page} class="mt-10" />
-</LandingLayout>
+<Layout lang={lang} path={`/${page.currentPage}/`} title={title}>
+  <PageSection class="py-10 sm:px-6">
+    <h1 class="mb-8 text-3xl font-semibold">{title}</h1>
+    <PostCardGrid posts={page.data} />
+    <Pagination
+      prev={page.currentPage === 2 ? `/${lang}/` : page.url.prev}
+      next={page.url.next}
+      currentPage={page.currentPage}
+    />
+  </PageSection>
+</Layout>

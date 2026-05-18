@@ -1,13 +1,13 @@
 ---
-name: "Astro"
-bio: "在生活的海洋，创业的波涛和投资的迷雾中前行"
+slug: default
+name: "Polyglow 编辑部"
+bio: "记录产品建设、投资思考、技术系统和内容站维护经验。"
 socials:
-  - { label: "X", url: "https://x.com/idimilabs" }
-  - { label: "GitHub", url: "https://github.com/idimilabs" }
-  - { label: "Website", url: "https://inote.xyz" }
-  - { label: "RSS", url: "https://inote.xyz/rss.xml" }
-locales: zh
+  - { label: "GitHub", url: "https://github.com/realriplab/Polyglow-next" }
+  - { label: "Website", url: "/zh/" }
+  - { label: "RSS", url: "/zh/rss.xml" }
+locale: zh
 draft: false
 ---
 
-这里是作者简介的中文版本，可以在此补充更多介绍性内容。
+Polyglow 编辑部关注产品建设、投资思考、技术系统和多语言静态内容站的长期维护。这里的内容以可检索、可复用、可持续更新为基本要求。

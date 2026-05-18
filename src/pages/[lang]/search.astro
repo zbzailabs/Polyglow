@@ -1,33 +1,23 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import PagefindSearch from 'astro-pagefind/components/Search';
-import { t } from '@/utils/translations';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PagefindSearch from "@/components/search/PagefindSearch.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const title = t(lang, 'search.title');
-const description = t(lang, 'search.subtitle');
+const { lang } = Astro.props as { lang: Locale }
+const title = t(lang, "search.title")
+const subtitle = t(lang, "search.subtitle")
 ---
 
-<LandingLayout
-  lang={lang}
-  title={title}
-  description={description}
-  canonical={Astro.url.href}
-  centered
->
-  <div class="mx-auto w-full max-w-2xl">
-    <PagefindSearch
-      id="search-page"
-      className="pagefind-ui w-full"
-      uiOptions={{ showImages: false }}
-    />
-  </div>
-</LandingLayout>
+<Layout lang={lang} path="/search/" title={title} description={subtitle}>
+  <PageSection>
+    <PageHeader title={title} subtitle={subtitle} class="search-header" />
+    <PagefindSearch lang={lang} class="mx-auto max-w-2xl" />
+  </PageSection>
+</Layout>

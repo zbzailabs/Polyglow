@@ -1,0 +1,134 @@
+---
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import Icon from "@/components/icons/Icon.astro"
+import { LOCALES, getLocaleMeta, type Locale } from "@/config/locales"
+import { SITE_CONFIG } from "@/config/site"
+import { localePath } from "@/utils/routes"
+import { t } from "@/utils/translations"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const title = t(lang, "notFound.title")
+const message = t(lang, "notFound.message")
+const searchPrompt = t(lang, "search.subtitle")
+const localizedNotFound = Object.fromEntries(
+  LOCALES.map((locale) => {
+    const localeTitle = t(locale, "notFound.title")
+
+    return [
+      locale,
+      {
+        lang: locale,
+        dir: getLocaleMeta(locale).dir,
+        title: localeTitle,
+        pageTitle: `${localeTitle} | ${SITE_CONFIG.name}`,
+        message: t(locale, "notFound.message"),
+        searchPrompt: t(locale, "search.subtitle"),
+        searchTitle: t(locale, "search.title"),
+        backToHome: t(locale, "notFound.backToHome"),
+        browsePosts: t(locale, "notFound.browsePosts"),
+        homeHref: localePath(locale, "/"),
+        postsHref: localePath(locale, "/posts/"),
+        searchHref: localePath(locale, "/search/"),
+      },
+    ]
+  })
+)
+const localizedNotFoundJson = JSON.stringify(localizedNotFound).replaceAll(
+  "<",
+  "\\u003c"
+)
+---
+
+<PageSection class="py-8 text-center" data-not-found-page>
+  <PageHeader title={title} subtitle={message} class="search-header" />
+  <div class="mx-auto w-full max-w-2xl text-left">
+    <p class="mb-5 text-sm text-muted-foreground">
+      {searchPrompt}
+    </p>
+    <form
+      class="not-found-search"
+      role="search"
+      aria-label={title}
+      action={localePath(lang, "/search/")}
+      data-not-found-search
+    >
+      <input
+        class="not-found-search__input"
+        type="search"
+        name="q"
+        aria-label={searchPrompt}
+        placeholder={searchPrompt}
+      />
+      <button
+        class="not-found-search__button"
+        type="submit"
+        data-not-found-search-button
+      >
+        <Icon name="search" class="size-4" dataIcon="inline-start" />
+        <span data-not-found-search-label>{t(lang, "search.title")}</span>
+      </button>
+    </form>
+  </div>
+  <nav
+    class="mt-6 flex flex-wrap items-center justify-center gap-2"
+    aria-label="Not found links"
+    data-not-found-nav
+  >
+    <a class="not-found-link" href={localePath(lang, "/")} data-not-found-home>
+      <Icon name="arrow-left" class="size-4" dataIcon="inline-start" />
+      <span>{t(lang, "notFound.backToHome")}</span>
+    </a>
+    <a
+      class="not-found-link"
+      href={localePath(lang, "/posts/")}
+      data-not-found-posts
+    >
+      <Icon name="newspaper" class="size-4" dataIcon="inline-start" />
+      <span>{t(lang, "notFound.browsePosts")}</span>
+    </a>
+  </nav>
+</PageSection>
+
+<script
+  is:inline
+  set:html={`;(() => {
+  const localized = ${localizedNotFoundJson}
+  const firstSegment = window.location.pathname.split("/").filter(Boolean)[0]
+  const labels = localized[firstSegment]
+  if (!labels) return
+
+  document.documentElement.lang = labels.lang
+  document.documentElement.dir = labels.dir
+  document.title = labels.pageTitle
+  document
+    .querySelector('meta[name="description"]')
+    ?.setAttribute("content", labels.message)
+
+  const root = document.querySelector("[data-not-found-page]")
+  if (!root) return
+
+  root.querySelector("[data-page-header] h1").textContent = labels.title
+  root.querySelector("[data-page-header] h2").textContent = labels.message
+
+  const prompt = root.querySelector(".not-found-search__input")
+  prompt?.setAttribute("aria-label", labels.searchPrompt)
+  prompt?.setAttribute("placeholder", labels.searchPrompt)
+  root.querySelector(".not-found-search")?.setAttribute("aria-label", labels.title)
+  root.querySelector(".not-found-search")?.setAttribute("action", labels.searchHref)
+  root.querySelector(".not-found-search__input")?.closest("div")?.querySelector("p")?.replaceChildren(labels.searchPrompt)
+  root.querySelector("[data-not-found-search-label]").textContent = labels.searchTitle
+
+  const homeLink = root.querySelector("[data-not-found-home]")
+  homeLink?.setAttribute("href", labels.homeHref)
+  homeLink?.querySelector("span")?.replaceChildren(labels.backToHome)
+
+  const postsLink = root.querySelector("[data-not-found-posts]")
+  postsLink?.setAttribute("href", labels.postsHref)
+  postsLink?.querySelector("span")?.replaceChildren(labels.browsePosts)
+})()`}
+/>

@@ -1,0 +1,29 @@
+---
+interface PillLink {
+  href: string
+  label: string
+}
+
+interface Props {
+  items: PillLink[]
+  label: string
+  class?: string
+}
+
+const { items, label, class: className = "" } = Astro.props
+---
+
+{
+  items.length > 0 && (
+    <nav
+      class={`mx-auto mb-8 flex max-w-3xl flex-wrap items-center justify-center gap-3 ${className}`}
+      aria-label={label}
+    >
+      {items.map((item) => (
+        <a class="taxonomy-pill" href={item.href}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  )
+}

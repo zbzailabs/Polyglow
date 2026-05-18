@@ -1,276 +1,239 @@
 ---
-import fallbackAvatar from '@/assets/author.avif';
-import OptimizedPicture from '@/features/OptimizedPicture.astro';
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import GitHubActivityCalendar from '@/widgets/GitHubActivityCalendar.astro';
-import LatestList from '@/widgets/LatestList.astro';
-import { Icon } from 'astro-icon/components';
-import { getAuthorForLang } from '@/utils/authors';
-
-export const prerender = true;
+import { Image } from "astro:assets"
+import Layout from "@/layouts/main.astro"
+import Icon from "@/components/icons/Icon.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { getAuthor } from "@/utils/content"
+import { getPostsForLocale, postUrl } from "@/utils/posts"
+import { t } from "@/utils/translations"
+import authorImage from "@/assets/author.avif"
 
 export async function getStaticPaths() {
-  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-
-const entry = getAuthorForLang(lang) || getAuthorForLang(DEFAULT_LANG as Lang);
-
-const authorName = entry?.data.name || 'Author';
-const pageTitle = t(lang, 'pages.author.title') || (lang === 'zh' ? '作者' : 'Author');
-const description = entry?.data.bio || '';
-const socials: Array<{ label: string; url: string }> = (entry?.data.socials || []) as any;
-const avatar = entry?.data.avatar || (fallbackAvatar as any);
-
-function iconFor(label: string, url: string): string {
-  const k = String(label || '').toLowerCase();
-  if (k === 'x' || k === 'twitter') return 'lucide:x';
-  if (k === 'github') return 'lucide:github';
-  if (k === 'rss' || url.endsWith('.xml')) return 'lucide:rss';
-  if (k === 'website' || /^https?:\/\/.*/.test(url)) return 'lucide:globe';
-  return 'lucide:globe';
-}
-function githubUsernameFromSocials(
-  list: Array<{ label: string; url: string }>,
-): string | undefined {
-  for (const s of list) {
-    const label = String(s.label || '').toLowerCase();
-    const url = String(s.url || '');
-    if (label === 'github' || /https?:\/\/([^\/]*\.)?github\.com\//i.test(url)) {
-      try {
-        const u = new URL(url.startsWith('http') ? url : `https://github.com/${url}`);
-        const seg = (u.pathname || '/').split('/').filter(Boolean)[0];
-        if (seg) return seg;
-      } catch {}
-      const m = url.match(/^@?([A-Za-z0-9-]{1,39})$/);
-      if (m) return m[1];
+const { lang } = Astro.props as { lang: Locale }
+const author = await getAuthor(lang)
+const title = t(lang, "pages.author.title")
+const writingActivityLabel = t(lang, "pages.author.writingActivity")
+const publishedText = t(lang, "post.publishedAt")
+const authorSlug = author?.data.slug ?? "default"
+const authorPosts = (await getPostsForLocale(lang)).filter((post) =>
+  post.data.authors.includes(authorSlug)
+)
+const publicationYears = [
+  ...new Set(authorPosts.map((post) => post.data.pubDate.getFullYear())),
+].sort((a, b) => b - a)
+const activeYear = publicationYears[0] ?? new Date().getFullYear()
+const monthFormatter = new Intl.DateTimeFormat(lang, { month: "short" })
+const dateFormatter = new Intl.DateTimeFormat(lang, {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+})
+const activityMonths = Array.from({ length: 12 }, (_, month) =>
+  monthFormatter.format(new Date(2026, month, 1))
+)
+const dateKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`
+const publishedByDate = authorPosts.reduce((map, post) => {
+  const key = dateKey(post.data.pubDate)
+  map.set(key, (map.get(key) ?? 0) + 1)
+  return map
+}, new Map<string, number>())
+const yearPostCount = authorPosts.filter(
+  (post) => post.data.pubDate.getFullYear() === activeYear
+).length
+const calendarStart = new Date(activeYear, 0, 1)
+calendarStart.setDate(calendarStart.getDate() - calendarStart.getDay())
+const calendarEnd = new Date(activeYear, 11, 31)
+calendarEnd.setDate(calendarEnd.getDate() + (6 - calendarEnd.getDay()))
+const weekCount =
+  Math.floor(
+    (calendarEnd.getTime() - calendarStart.getTime()) /
+      (7 * 24 * 60 * 60 * 1000)
+  ) + 1
+const activityWeeks = Array.from({ length: weekCount }, (_, week) =>
+  Array.from({ length: 7 }, (_, day) => {
+    const date = new Date(calendarStart)
+    date.setDate(calendarStart.getDate() + week * 7 + day)
+    const count =
+      date.getFullYear() === activeYear
+        ? (publishedByDate.get(dateKey(date)) ?? 0)
+        : 0
+    return {
+      key: dateKey(date),
+      count,
+      label: `${publishedText}: ${dateFormatter.format(date)}`,
     }
-  }
-  return undefined;
+  })
+)
+const activityLevelClass = (count: number) => {
+  if (count >= 4) return "bg-[#216e39] dark:bg-[#39d353]"
+  if (count === 3) return "bg-[#30a14e] dark:bg-[#26a641]"
+  if (count === 2) return "bg-[#40c463] dark:bg-[#006d32]"
+  if (count === 1) return "bg-[#9be9a8] dark:bg-[#0e4429]"
+  return "bg-[#ebedf0] ring-1 ring-[#d0d7de] dark:bg-[#161b22] dark:ring-[#30363d]"
 }
-const githubUsername = githubUsernameFromSocials(socials);
-const currentYear = new Date().getFullYear();
-const years = [currentYear, currentYear - 1, currentYear - 2];
+const recentPublishedPosts = authorPosts.slice(0, 6)
 ---
 
-<LandingLayout
+<Layout
   lang={lang}
-  title={pageTitle}
-  description={description}
-  canonical={Astro.url.href}
-  image={avatar}
-  imageAlt={authorName}
+  path="/author/"
+  title={title}
+  description={author?.data.bio}
 >
-  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <section
-      class="rounded-3xl bg-white/80 p-8 shadow-lg shadow-black/5 backdrop-blur-xl transition-all duration-300 hover:shadow-xl hover:shadow-black/10 sm:p-12 lg:p-16 dark:bg-gray-900/80 dark:shadow-white/5 dark:hover:shadow-white/10"
+  <PageSection class="py-8" pagefindIgnore={false}>
+    <PageHeader title={title} subtitle={author?.data.bio} />
+    <article
+      class="author-card mx-auto mt-16 grid max-w-5xl gap-8 rounded-[2rem] bg-background/90 p-8 ring-1 ring-border sm:p-12 md:grid-cols-[11rem_minmax(0,1fr)] md:items-center lg:p-16 dark:bg-white/[0.03]"
+      data-author-card
     >
-      <div class="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:gap-12">
-        <div class="shrink-0">
-          <OptimizedPicture
-            src={avatar}
-            alt={authorName}
-            width={160}
-            height={160}
-            class="h-32 w-32 rounded-full object-cover ring-2 ring-gray-200 sm:h-40 sm:w-40 dark:ring-gray-700"
-            layout="fixed"
-            fit="cover"
-            rounded={false}
-          />
-        </div>
-
-        <div class="w-full text-center sm:text-left">
-          <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            {authorName}
-          </h1>
-          <p class="mt-6 text-lg leading-relaxed text-gray-600 sm:text-xl dark:text-gray-400">
-            {description}
-          </p>
-
+      <Image
+        src={authorImage}
+        alt={author?.data.name ?? title}
+        width={160}
+        height={160}
+        class="mx-auto size-36 rounded-full object-cover ring-4 ring-muted md:size-40"
+      />
+      <div class="text-center md:text-left">
+        <h2 class="text-5xl font-semibold text-foreground sm:text-6xl">
+          {author?.data.name ?? title}
+        </h2>
+        <p class="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl">
+          {author?.data.bio}
+        </p>
+        <nav
+          class="mt-8 flex flex-wrap justify-center gap-3 md:justify-start"
+          aria-label={t(lang, "pages.author.links")}
+        >
           {
-            socials.length > 0 && (
-              <div class="mt-8 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-                {socials.map((s) => (
-                  <a
-                    href={s.url}
-                    target={s.url.startsWith('http') ? '_blank' : undefined}
-                    rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    class="group inline-flex items-center justify-center rounded-full bg-gray-100 p-3 text-gray-700 transition-all duration-200 hover:scale-110 hover:bg-gray-900 hover:text-white hover:shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white dark:hover:text-gray-950"
-                    aria-label={s.label}
-                  >
-                    <Icon
-                      name={iconFor(s.label, s.url)}
-                      class="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
-                    />
-                  </a>
-                ))}
-              </div>
-            )
+            author?.data.socials.map((social) => (
+              <a
+                class="inline-flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:-translate-y-0.5 hover:bg-accent hover:text-foreground"
+                href={social.url}
+                aria-label={social.label}
+                target={social.url.startsWith("http") ? "_blank" : undefined}
+                rel={social.url.startsWith("http") ? "noreferrer" : undefined}
+              >
+                {social.label === "GitHub" ? (
+                  <Icon name="github" class="size-5" dataIcon="inline-start" />
+                ) : social.label === "Website" ? (
+                  <Icon name="globe" class="size-5" dataIcon="inline-start" />
+                ) : social.label === "RSS" ? (
+                  <Icon name="rss" class="size-5" dataIcon="inline-start" />
+                ) : (
+                  <span class="text-xl leading-none" aria-hidden="true">
+                    ×
+                  </span>
+                )}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </article>
+    <section
+      class="mx-auto mt-24 max-w-5xl rounded-[2rem] bg-muted/30 p-6 ring-1 ring-border sm:p-10 dark:bg-white/[0.03]"
+      data-writing-activity
+    >
+      <div
+        class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <h2 class="text-2xl font-semibold text-foreground">
+          {writingActivityLabel}
+        </h2>
+        <div class="flex flex-wrap gap-3 sm:grid">
+          {
+            (publicationYears.length > 0
+              ? publicationYears.slice(0, 3)
+              : [activeYear]
+            ).map((year, index) => (
+              <span
+                class={`inline-flex h-10 items-center justify-center rounded-full px-6 text-sm font-semibold ${
+                  index === 0
+                    ? "bg-foreground text-background"
+                    : "border border-border text-muted-foreground"
+                }`}
+              >
+                {year}
+              </span>
+            ))
           }
         </div>
       </div>
-    </section>
-
-    {
-      githubUsername && (
-        <section class="mt-24">
-          <div class="relative overflow-hidden rounded-[2.5rem] bg-gray-50 p-8 ring-1 ring-gray-200/50 transition-all duration-500 hover:ring-gray-300/50 sm:p-10 dark:bg-gray-900/40 dark:ring-gray-800 dark:hover:ring-gray-700">
-            <div class="flex flex-col gap-6">
-              <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">
-                  {t(lang, 'pages.author.writingActivity')}
-                </h2>
-              </div>
-
-              <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6">
-                <div class="min-w-0 flex-1">
-                  <div class="relative">
-                    {years.map((year) => (
-                      <div data-calendar-year={year} class={year === currentYear ? '' : 'hidden'}>
-                        <GitHubActivityCalendar
-                          username="idimilabs"
-                          repo="idimilabs/Polyglow"
-                          year={year}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="shrink-0">
-                  <div
-                    class="flex flex-row flex-wrap items-center justify-start gap-2 text-gray-700 lg:flex-col lg:items-end lg:gap-2.5 dark:text-gray-200"
-                    id="year-selector"
-                  >
-                    {years.map((year) => (
-                      <button
-                        type="button"
-                        data-year={year}
-                        class={`group inline-flex min-w-[70px] items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 ${
-                          year === currentYear
-                            ? '-translate-y-px bg-gray-900 text-white shadow-lg ring-1 shadow-gray-900/10 ring-gray-900/40 dark:bg-white dark:text-gray-950 dark:shadow-white/10 dark:ring-white/30'
-                            : 'text-gray-600 ring-1 ring-gray-200 hover:-translate-y-px hover:bg-gray-900/5 dark:text-gray-400 dark:ring-gray-800 dark:hover:bg-gray-800 dark:hover:text-white'
-                        }`}
-                      >
-                        {year}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+      <div class="mt-7 overflow-x-auto pb-2">
+        <div class="min-w-[52rem]">
+          <div class="mb-3 grid grid-cols-12 gap-4 text-sm text-foreground/80">
+            {activityMonths.map((month) => <span>{month}</span>)}
           </div>
-        </section>
-      )
-    }
-
-    <LatestList lang={lang} class="mt-12" />
-  </div>
-</LandingLayout>
-
-<script
-  type="application/ld+json"
-  is:inline
-  set:html={JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: authorName,
-    url: Astro.url.href,
-    image: (() => {
-      const av = avatar as any;
-      const src = typeof av === 'string' ? av : (av?.src ?? '');
-      if (!src) return '';
-      return src.startsWith('http://') || src.startsWith('https://')
-        ? src
-        : new URL(src, Astro.site!).href;
-    })(),
-    sameAs: socials.map((s) => s.url),
-    description,
-  })}
-/>
-
-<script>
-  import { registerPageInit } from '@/utils/page-init';
-
-  function initYearSelector() {
-    const yearButtons = document.querySelectorAll('#year-selector button[data-year]');
-    const calendars = document.querySelectorAll('[data-calendar-year]');
-
-    if (yearButtons.length === 0 || calendars.length === 0) {
-      return;
-    }
-
-    const activeClasses = [
-      'bg-gray-900',
-      'text-white',
-      'shadow-lg',
-      'shadow-gray-900/10',
-      'ring-1',
-      'ring-gray-900/40',
-      '-translate-y-px',
-      'dark:bg-white',
-      'dark:text-gray-950',
-      'dark:shadow-white/10',
-      'dark:ring-white/30',
-    ];
-    const inactiveClasses = [
-      'ring-1',
-      'ring-gray-200',
-      'text-gray-600',
-      'hover:-translate-y-px',
-      'hover:bg-gray-900/5',
-      'dark:text-gray-400',
-      'dark:ring-gray-800',
-      'dark:hover:bg-gray-800',
-      'dark:hover:text-white',
-    ];
-
-    function handleYearClick(event: Event) {
-      const button = event.currentTarget as HTMLButtonElement;
-      if (!button) return;
-      const selectedYear = button.getAttribute('data-year');
-
-      yearButtons.forEach((btn) => {
-        if (btn === button) {
-          btn.classList.remove(...inactiveClasses);
-          btn.classList.add(...activeClasses);
-        } else {
-          btn.classList.remove(...activeClasses);
-          btn.classList.add(...inactiveClasses);
+          <div class="flex gap-1" aria-hidden="true">
+            {
+              activityWeeks.map((week) => (
+                <div class="grid shrink-0 gap-1">
+                  {week.map((day) => (
+                    <span
+                      class={`size-3 rounded-[0.2rem] ${activityLevelClass(day.count)}`}
+                      data-day={day.key}
+                      title={`${day.label}: ${day.count}`}
+                    />
+                  ))}
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div
+          class="mt-3 flex min-w-[52rem] flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground"
+        >
+          <div class="flex items-center gap-2">
+            <span>{t(lang, "pages.author.less")}</span>
+            <span class="size-3 rounded-[0.2rem] bg-muted ring-1 ring-border"
+            ></span>
+            <span class="size-3 rounded-[0.2rem] bg-[#9be9a8] dark:bg-[#0e4429]"
+            ></span>
+            <span class="size-3 rounded-[0.2rem] bg-[#40c463] dark:bg-[#006d32]"
+            ></span>
+            <span class="size-3 rounded-[0.2rem] bg-[#30a14e] dark:bg-[#26a641]"
+            ></span>
+            <span class="size-3 rounded-[0.2rem] bg-[#216e39] dark:bg-[#39d353]"
+            ></span>
+            <span>{t(lang, "pages.author.more")}</span>
+          </div>
+          <p>
+            {
+              t(lang, "pages.author.contributionsInYear", {
+                count: yearPostCount,
+                year: activeYear,
+              })
+            }
+          </p>
+        </div>
+        {
+          recentPublishedPosts.length > 0 && (
+            <div class="mt-8 grid gap-3" data-author-published-list>
+              {recentPublishedPosts.map((post) => (
+                <a
+                  href={postUrl(post)}
+                  class="grid gap-1 rounded-lg border border-border bg-background/70 px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:bg-accent/70 dark:bg-white/[0.03]"
+                >
+                  <span class="text-xs font-medium text-muted-foreground">
+                    {publishedText}: {dateFormatter.format(post.data.pubDate)}
+                  </span>
+                  <span class="font-semibold text-foreground">
+                    {post.data.title}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )
         }
-      });
-
-      calendars.forEach((calendar) => {
-        const calendarYear = calendar.getAttribute('data-calendar-year');
-        if (calendarYear === selectedYear) {
-          calendar.classList.remove('hidden');
-        } else {
-          calendar.classList.add('hidden');
-        }
-      });
-    }
-
-    // Remove old event listeners
-    yearButtons.forEach((button) => {
-      button.removeEventListener('click', handleYearClick);
-    });
-
-    // Add new event listeners
-    yearButtons.forEach((button) => {
-      button.addEventListener('click', handleYearClick);
-    });
-
-    // Return cleanup function
-    return () => {
-      yearButtons.forEach((button) => {
-        button.removeEventListener('click', handleYearClick);
-      });
-    };
-  }
-
-  registerPageInit('yearSelector', initYearSelector);
-</script>
+      </div>
+    </section>
+  </PageSection>
+</Layout>

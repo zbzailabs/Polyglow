@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Avanzando en el océano de la vida, las olas del emprenAstroento y la niebla de la inversión",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Vida",
     "invest": "Invertir",
-    "build": "Construir"
+    "build": "Construir",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "Reflexión",
@@ -39,7 +40,8 @@
     "allocation": "Asignación",
     "innovation": "Innovación",
     "model": "Modelo",
-    "management": "Gestión"
+    "management": "Gestión",
+    "market": "Mercado"
   },
   "headings": {
     "home": {
@@ -102,18 +104,41 @@
     "life": "Vida"
   },
   "pages": {
-    "about": { "title": "Acerca de" },
-    "author": { "title": "Autor", "writingActivity": "Actividad de escritura" },
-    "posts": { "title": "Todos los artículos" },
+    "about": {
+      "title": "Acerca de"
+    },
+    "author": {
+      "title": "Autor",
+      "writingActivity": "Actividad de escritura",
+      "less": "Menos",
+      "more": "Más",
+      "contributionsInYear": "{count} artículos publicados en {year}",
+      "links": "Enlaces del autor"
+    },
+    "posts": {
+      "title": "Todos los artículos",
+      "archiveEyebrow": "Archivo",
+      "archiveTitle": "Archivo de artículos",
+      "archiveSubtitle": "Todas las notas publicadas en orden cronológico inverso.",
+      "totalPosts": "{count} artículos en total",
+      "pageTitle": "Todos los artículos {page}",
+      "pageDescription": "Página {page} de artículos"
+    },
     "categories": {
       "title": "Categorías",
       "h2": "Explorar categorías",
-      "description": "Explora temas y encuentra artículos por categoría."
+      "description": "Explora temas y encuentra artículos por categoría.",
+      "eyebrow": "Categoría",
+      "relatedTags": "Etiquetas relacionadas",
+      "noPosts": "Todavía no hay artículos en esta categoría."
     },
     "tags": {
       "title": "Etiquetas",
       "h2": "Explorar etiquetas",
-      "description": "Explora temas y encuentra artículos por etiquetas."
+      "description": "Explora temas y encuentra artículos por etiquetas.",
+      "eyebrow": "Etiqueta",
+      "browseCategories": "Explorar categorías",
+      "noPosts": "Todavía no hay artículos con esta etiqueta."
     }
   },
   "common": {
@@ -129,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} artículos en total",
       "pageInfo": "Página {current} de {total}",
       "noPosts": "No hay artículos",
-      "noPostsInCategory": "No hay artículos en esta categoría todavía. Por favor, vuelve más tarde."
+      "noPostsInCategory": "No hay artículos en esta categoría todavía. Por favor, vuelve más tarde.",
+      "pageTitle": "Página {page}",
+      "pageLabel": "Página {page}",
+      "postsCount": "{count} artículos"
     }
   },
   "footer": {

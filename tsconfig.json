@@ -1,46 +1,11 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
   "compilerOptions": {
-    "strict": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "allowJs": true,
-
-    "moduleResolution": "bundler",
-    "module": "ESNext",
-    "target": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["astro/client", "vite/client", "node"],
-
-    "resolvePackageJsonExports": true,
-    "verbatimModuleSyntax": true,
-
-    "skipLibCheck": true,
-
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/assets/*": ["src/assets/*"],
-      "@/content/*": ["src/content/*"],
-      "@/i18n/*": ["src/i18n/*"],
-      "@/layouts/*": ["src/layouts/*"],
-      "@/pages/*": ["src/pages/*"],
-      "@/analytics/*": ["src/components/analytics/*"],
-      "@/cards/*": ["src/components/cards/*"],
-      "@/ui/*": ["src/components/ui/*"],
-      "@/features/*": ["src/components/features/*"],
-      "@/widgets/*": ["src/components/widgets/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/styles/*": ["src/styles/*"]
+      "@/*": ["./src/*"]
     }
-  },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules"]
+  }
 }

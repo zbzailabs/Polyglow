@@ -1,181 +1,101 @@
----
-/**
- * DynamicGlass - High-performance client script that extracts the dominant color
- * from card images and applies it as a tinted frosted glass background effect
- *
- * Features:
- * - IntersectionObserver lazy loading, only processes visible cards
- * - WeakMap color caching to avoid redundant calculations
- * - Saturation-weighted algorithm for extracting more vibrant dominant colors
- * - Brightness-adaptive opacity, darker images use higher opacity
- * - Supports multiple selectors and custom attributes
- * - Debounced initialization, optimized for Astro page transitions
- *
- * Include once per page (e.g., in layout or page level)
- */
----
-
 <script is:inline>
-  (function initDynamicGlass() {
+  ;(() => {
     const CONFIG = {
       sampleSize: 10,
-      colorMultiplier: 0.7, // Color intensity multiplier (increase for richer colors)
-      baseOpacity: 0.35, // Base opacity (decrease for more transparent glass)
-      brightnessThreshold: {
-        min: 30,
-        max: 220,
-      },
-      blurAmount: '20px', // Blur amount (increase to enhance frosted glass effect)
-      debounceMs: 100, // Debounce delay
-    };
-
-    // Color cache - using WeakMap to avoid memory leaks
-    const colorCache = new WeakMap();
+      colorMultiplier: 0.7,
+      baseOpacity: 0.35,
+      blurAmount: "20px",
+    }
+    const colorCache = new WeakMap()
 
     function extractDominantColor(img) {
-      // Check cache
-      if (colorCache.has(img)) {
-        return colorCache.get(img);
-      }
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!ctx) return null;
-
-      canvas.width = CONFIG.sampleSize;
-      canvas.height = CONFIG.sampleSize;
-
+      if (colorCache.has(img)) return colorCache.get(img)
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })
+      if (!ctx) return null
+      canvas.width = CONFIG.sampleSize
+      canvas.height = CONFIG.sampleSize
       try {
-        ctx.drawImage(img, 0, 0, CONFIG.sampleSize, CONFIG.sampleSize);
-        const imageData = ctx.getImageData(0, 0, CONFIG.sampleSize, CONFIG.sampleSize);
-        const data = imageData.data;
-
-        let r = 0,
-          g = 0,
-          b = 0,
-          count = 0;
-        let totalBrightness = 0;
-
+        ctx.drawImage(img, 0, 0, CONFIG.sampleSize, CONFIG.sampleSize)
+        const data = ctx.getImageData(
+          0,
+          0,
+          CONFIG.sampleSize,
+          CONFIG.sampleSize
+        ).data
+        let r = 0
+        let g = 0
+        let b = 0
+        let count = 0
         for (let i = 0; i < data.length; i += 4) {
-          const pr = data[i];
-          const pg = data[i + 1];
-          const pb = data[i + 2];
-          const brightness = (pr + pg + pb) / 3;
-
-          if (
-            brightness > CONFIG.brightnessThreshold.min &&
-            brightness < CONFIG.brightnessThreshold.max
-          ) {
-            // Saturation weight: more saturated colors get higher weight
-            const max = Math.max(pr, pg, pb);
-            const min = Math.min(pr, pg, pb);
-            const saturation = max === 0 ? 0 : (max - min) / max;
-            const weight = 1 + saturation;
-
-            r += pr * weight;
-            g += pg * weight;
-            b += pb * weight;
-            count += weight;
-            totalBrightness += brightness;
-          }
+          const pr = data[i]
+          const pg = data[i + 1]
+          const pb = data[i + 2]
+          const brightness = (pr + pg + pb) / 3
+          if (brightness <= 30 || brightness >= 220) continue
+          const saturation =
+            Math.max(pr, pg, pb) === 0
+              ? 0
+              : (Math.max(pr, pg, pb) - Math.min(pr, pg, pb)) /
+                Math.max(pr, pg, pb)
+          const weight = 1 + saturation
+          r += pr * weight
+          g += pg * weight
+          b += pb * weight
+          count += weight
         }
-
-        if (count === 0) return null;
-
-        // Calculate average brightness for adaptive opacity
-        const avgBrightness = totalBrightness / (count / 2);
-        const adaptiveOpacity =
-          avgBrightness < 100
-            ? CONFIG.baseOpacity + 0.1 // Dark images use higher opacity
-            : CONFIG.baseOpacity;
-
-        r = Math.round((r / count) * CONFIG.colorMultiplier);
-        g = Math.round((g / count) * CONFIG.colorMultiplier);
-        b = Math.round((b / count) * CONFIG.colorMultiplier);
-
-        const color = `rgba(${r}, ${g}, ${b}, ${adaptiveOpacity})`;
-
-        // Cache result
-        colorCache.set(img, color);
-
-        return color;
-      } catch (e) {
-        console.warn('DynamicGlass: Failed to extract color', e);
-        return null;
+        if (!count) return null
+        const color = `rgba(${Math.round((r / count) * CONFIG.colorMultiplier)}, ${Math.round((g / count) * CONFIG.colorMultiplier)}, ${Math.round((b / count) * CONFIG.colorMultiplier)}, ${CONFIG.baseOpacity})`
+        colorCache.set(img, color)
+        return color
+      } catch {
+        return null
       }
     }
 
-    function applyGlassEffect(card) {
-      const img = card.querySelector('img');
-      // Support multiple content area selectors
-      const content = card.querySelector(
-        '.post-card__content, .post-card-desc__content, .post-card-horizontal__content, [data-glass-target]',
-      );
-
-      if (!img || !content) return;
-
-      const apply = () => {
-        const color = extractDominantColor(img);
-        if (color) {
-          content.style.backgroundColor = color;
-          content.style.backdropFilter = `blur(${CONFIG.blurAmount})`;
-          content.style.webkitBackdropFilter = `blur(${CONFIG.blurAmount})`;
-        }
-      };
-
-      if (img.complete && img.naturalWidth > 0) {
-        requestAnimationFrame(apply);
-      } else {
-        img.addEventListener('load', apply, { once: true });
+    function apply(card) {
+      const img = card.querySelector("img")
+      const content = card.querySelector("[data-glass-target]")
+      if (!img || !content) return
+      const run = () => {
+        const color = extractDominantColor(img)
+        if (!color) return
+        content.style.backgroundColor = color
+        content.style.backdropFilter = `blur(${CONFIG.blurAmount})`
+        content.style.webkitBackdropFilter = `blur(${CONFIG.blurAmount})`
       }
-    }
-
-    // Use IntersectionObserver to optimize performance
-    let observer = null;
-
-    function setupObserver() {
-      if (observer) observer.disconnect();
-
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              applyGlassEffect(entry.target);
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          rootMargin: '100px', // Start processing 100px ahead
-          threshold: 0,
-        },
-      );
-
-      return observer;
+      if (img.complete && img.naturalWidth > 0) requestAnimationFrame(run)
+      else img.addEventListener("load", run, { once: true })
     }
 
     function init() {
-      const obs = setupObserver();
-      const cards = document.querySelectorAll(
-        '.post-card, .post-card-desc, .post-card-horizontal, [data-glass-card]',
-      );
-      cards.forEach((card) => obs.observe(card));
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue
+            apply(entry.target)
+            observer.unobserve(entry.target)
+          }
+        },
+        { rootMargin: "100px" }
+      )
+      document
+        .querySelectorAll("[data-glass-card]")
+        .forEach((card) => observer.observe(card))
     }
 
-    // Debounced initialization
-    let initTimeout = null;
-    function debouncedInit() {
-      if (initTimeout) clearTimeout(initTimeout);
-      initTimeout = setTimeout(init, CONFIG.debounceMs);
+    function scheduleInit() {
+      const run = () => requestAnimationFrame(init)
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(run, { timeout: 1500 })
+      } else {
+        window.setTimeout(run, 600)
+      }
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-
-    // Astro page transition support
-    document.addEventListener('astro:page-load', debouncedInit);
-  })();
+    if (document.readyState === "loading")
+      document.addEventListener("DOMContentLoaded", scheduleInit)
+    else scheduleInit()
+    document.addEventListener("astro:page-load", scheduleInit)
+  })()
 </script>

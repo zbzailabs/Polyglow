@@ -1,69 +1,30 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Pagination from '@/features/Pagination.astro';
-import PostCardText from '@/cards/PostCardText.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsForLang, postUrl } from '@/utils/posts';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostArchiveList from "@/components/lists/PostArchiveList.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { POSTS_PER_PAGE } from "@/config/pagination"
+import { getPostsForLocale } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+  return LOCALES.map((lang) => ({ params: { lang }, props: { lang } }))
 }
 
-const PAGE_SIZE = 20;
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-
-const all = getPostsForLang(lang);
-const items = all.slice(0, PAGE_SIZE);
-
-const total = all.length;
-const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
-const page = {
-  data: items,
-  start: 0,
-  end: items.length - 1,
-  total,
-  currentPage: 1,
-  size: PAGE_SIZE,
-  lastPage,
-  url: {
-    current: Astro.url.pathname,
-    prev: undefined,
-    next: lastPage > 1 ? `/${lang}/posts/2/` : undefined,
-    first: undefined,
-    last: lastPage > 1 ? `/${lang}/posts/${lastPage}/` : undefined,
-  },
-};
-
-const title = t(lang, 'pages.posts.title') || t(lang, 'homepage.latestArticles');
-const langName = t(lang, 'language.name');
-const description = t(lang, 'common.pagination.totalPostsWithLang', {
-  count: total,
-  langName,
-  lang: langName,
-});
+const { lang } = Astro.props as { lang: Locale }
+const posts = await getPostsForLocale(lang)
+const pagePosts = posts.slice(0, POSTS_PER_PAGE)
+const nextPage = posts.length > POSTS_PER_PAGE ? `/${lang}/posts/2/` : undefined
+const title = t(lang, "pages.posts.title")
+const subtitle = t(lang, "pages.posts.totalPosts", { count: posts.length })
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  <div class="mt-2">
-    <div class="divide-y divide-gray-200/60 dark:divide-gray-800/60">
-      {
-        items.map((p) => (
-          <PostCardText
-            href={postUrl(p, lang)}
-            title={p.data.title}
-            date={p.data.pubDate}
-            category={p.data.category}
-            tags={p.data.tags}
-            lang={lang}
-          />
-        ))
-      }
-    </div>
-  </div>
-
-  <Pagination page={page} class="mt-8" />
-</LandingLayout>
+<Layout lang={lang} path="/posts/" title={title} description={subtitle}>
+  <PageSection>
+    <PageHeader title={title} subtitle={subtitle} />
+    <PostArchiveList posts={pagePosts} lang={lang} />
+    {nextPage && <Pagination next={nextPage} currentPage={1} />}
+  </PageSection>
+</Layout>

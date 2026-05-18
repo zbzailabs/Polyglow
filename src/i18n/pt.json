@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Avançando pelo oceano da vida, pelas ondas do empreendedorismo e pela névoa dos investimentos",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Vida",
     "invest": "Investir",
-    "build": "Construir"
+    "build": "Construir",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "Refletir",
@@ -39,7 +40,8 @@
     "allocation": "Alocação",
     "innovation": "Inovação",
     "model": "Modelo",
-    "management": "Gestão"
+    "management": "Gestão",
+    "market": "Mercado"
   },
   "headings": {
     "home": {
@@ -47,7 +49,10 @@
       "h1": "Polyglow",
       "h2": "Avançando pelo oceano da vida, pelas ondas do empreendedorismo e pela névoa dos investimentos"
     },
-    "build": { "h1": "Construir", "h2": "Do zero ao um: identificar oportunidades e desafios" },
+    "build": {
+      "h1": "Construir",
+      "h2": "Do zero ao um: identificar oportunidades e desafios"
+    },
     "innovation": {
       "h1": "Inovação",
       "h2": "Impulsionada pela tecnologia e pelo pensamento de ruptura, buscando a força para mudar o mundo"
@@ -99,18 +104,41 @@
     "life": "Vida"
   },
   "pages": {
-    "about": { "title": "Sobre" },
-    "author": { "title": "Autor", "writingActivity": "Atividade de escrita" },
-    "posts": { "title": "Todos os artigos" },
+    "about": {
+      "title": "Sobre"
+    },
+    "author": {
+      "title": "Autor",
+      "writingActivity": "Atividade de escrita",
+      "less": "Menos",
+      "more": "Mais",
+      "contributionsInYear": "{count} artigos publicados em {year}",
+      "links": "Links do autor"
+    },
+    "posts": {
+      "title": "Todos os artigos",
+      "archiveEyebrow": "Arquivo",
+      "archiveTitle": "Arquivo de artigos",
+      "archiveSubtitle": "Todas as notas publicadas em ordem cronológica inversa.",
+      "totalPosts": "{count} artigos no total",
+      "pageTitle": "Todos os artigos {page}",
+      "pageDescription": "Página {page} de artigos"
+    },
     "categories": {
       "title": "Categorias",
       "h2": "Explorar categorias",
-      "description": "Explore tópicos e encontre artigos por categoria."
+      "description": "Explore temas e encontre artigos por categoria.",
+      "eyebrow": "Categoria",
+      "relatedTags": "Tags relacionadas",
+      "noPosts": "Ainda não há artigos nesta categoria."
     },
     "tags": {
       "title": "Tags",
       "h2": "Explorar tags",
-      "description": "Explore tópicos e encontre artigos por tags."
+      "description": "Explore temas e encontre artigos por tags.",
+      "eyebrow": "Tag",
+      "browseCategories": "Explorar categorias",
+      "noPosts": "Ainda não há artigos com esta tag."
     }
   },
   "common": {
@@ -126,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} artigos no total",
       "pageInfo": "Página {current} de {total}",
       "noPosts": "Nenhum artigo",
-      "noPostsInCategory": "Ainda não há artigos nesta categoria. Por favor, volte mais tarde."
+      "noPostsInCategory": "Ainda não há artigos nesta categoria. Por favor, volte mais tarde.",
+      "pageTitle": "Página {page}",
+      "pageLabel": "Página {page}",
+      "postsCount": "{count} artigos"
     }
   },
   "footer": {

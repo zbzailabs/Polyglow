@@ -1,0 +1,45 @@
+---
+import { getCategory, getTag } from "@/config/taxonomy"
+import type { Locale } from "@/config/locales"
+import type { PostEntry } from "@/utils/posts"
+import { postUrl } from "@/utils/posts"
+
+interface Props {
+  posts: PostEntry[]
+  lang: Locale
+}
+
+const { posts, lang } = Astro.props
+const dateFormatter = new Intl.DateTimeFormat(lang, {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+})
+---
+
+<div class="archive-list">
+  {
+    posts.map((post) => {
+      const category = getCategory(post.data.category)
+      const categoryLabel = category?.labelByLocale[lang] ?? post.data.category
+      const tagLabels = post.data.tags
+        .map((slug) => getTag(slug)?.labelByLocale[lang] ?? slug)
+        .slice(0, 3)
+        .join(" / ")
+
+      return (
+        <a class="archive-row group" href={postUrl(post)}>
+          <time
+            class="archive-row__date"
+            datetime={post.data.pubDate.toISOString()}
+          >
+            {dateFormatter.format(post.data.pubDate)}
+          </time>
+          <span class="archive-row__title">{post.data.title}</span>
+          <span class="archive-row__tags">{tagLabels}</span>
+          <span class="archive-row__category">{categoryLabel}</span>
+        </a>
+      )
+    })
+  }
+</div>

@@ -1,0 +1,34 @@
+---
+import PostCardCover from "@/components/cards/PostCardCover.astro"
+import type { PostEntry } from "@/utils/posts"
+
+interface Props {
+  posts: PostEntry[]
+  columns?: "responsive" | "three"
+  class?: string
+  [key: string]: unknown
+}
+
+const {
+  posts,
+  columns = "responsive",
+  class: className = "",
+  ...attrs
+} = Astro.props
+const gridClass =
+  columns === "three"
+    ? "grid grid-cols-12 gap-5 lg:gap-6"
+    : "grid grid-cols-12 gap-4 sm:gap-5 lg:gap-6"
+const cardClass =
+  columns === "three"
+    ? "col-span-12 md:col-span-6 lg:col-span-4"
+    : "col-span-12 sm:col-span-6 lg:col-span-4"
+---
+
+<div class={`${gridClass} ${className}`} {...attrs}>
+  {
+    posts.map((post) => (
+      <PostCardCover post={post} variant="portrait" class={cardClass} />
+    ))
+  }
+</div>

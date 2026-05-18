@@ -1,13 +1,13 @@
 ---
-name: "Astro"
-bio: "Sailing through life, entrepreneurship waves, and investing fog."
+slug: default
+name: "Polyglow Editorial"
+bio: "Notes on building, investing, technology, and durable content systems."
 socials:
-  - { label: "X", url: "https://x.com/idimilabs" }
-  - { label: "GitHub", url: "https://github.com/idimilabs" }
-  - { label: "Website", url: "https://inote.xyz" }
-  - { label: "RSS", url: "https://inote.xyz/en/rss.xml" }
-locales: en
+  - { label: "GitHub", url: "https://github.com/realriplab/Polyglow-next" }
+  - { label: "Website", url: "/en/" }
+  - { label: "RSS", url: "/en/rss.xml" }
+locale: en
 draft: false
 ---
 
-This is the English version of the author bio. Add more details as needed.
+Polyglow Editorial publishes notes on product building, investment thinking, technical systems, and the craft of maintaining a multilingual static content site.

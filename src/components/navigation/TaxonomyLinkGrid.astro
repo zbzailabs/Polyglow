@@ -1,0 +1,53 @@
+---
+interface TaxonomyLink {
+  href: string
+  label: string
+  count: number
+  description?: string
+}
+
+interface TaxonomyDescription {
+  label?: string
+  description: string
+}
+
+interface Props {
+  title: string
+  items: TaxonomyLink[]
+  descriptionItems?: TaxonomyDescription[]
+  class?: string
+}
+
+const {
+  title,
+  items,
+  descriptionItems = items,
+  class: className = "",
+} = Astro.props
+const hiddenDescriptions = descriptionItems.filter((item) => item.description)
+---
+
+<section class={`mt-8 ${className}`}>
+  <h2 class="mb-5 text-lg font-semibold text-foreground">{title}</h2>
+  <div class="taxonomy-link-grid">
+    {
+      items.map((item) => (
+        <a class="taxonomy-link" href={item.href}>
+          <span>{item.label}</span>
+          <span class="taxonomy-link__count">{item.count}</span>
+        </a>
+      ))
+    }
+  </div>
+  {
+    hiddenDescriptions.length > 0 && (
+      <div class="sr-only">
+        {hiddenDescriptions.map((item) => (
+          <p>
+            {item.label} {item.description}
+          </p>
+        ))}
+      </div>
+    )
+  }
+</section>

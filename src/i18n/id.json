@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Menyusuri lautan kehidupan, gelombang kewirausahaan, dan kabut investasi",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Kehidupan",
     "invest": "Investasi",
-    "build": "Membangun"
+    "build": "Membangun",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "Merenung",
@@ -39,7 +40,8 @@
     "allocation": "Alokasi",
     "innovation": "Inovasi",
     "model": "Model",
-    "management": "Manajemen"
+    "management": "Manajemen",
+    "market": "Pasar"
   },
   "headings": {
     "home": {
@@ -47,7 +49,10 @@
       "h1": "Polyglow",
       "h2": "Menyusuri lautan kehidupan, gelombang kewirausahaan, dan kabut investasi"
     },
-    "build": { "h1": "Membangun", "h2": "Jalan dari nol ke satu, menangkap peluang dan tantangan" },
+    "build": {
+      "h1": "Membangun",
+      "h2": "Jalan dari nol ke satu, menangkap peluang dan tantangan"
+    },
     "innovation": {
       "h1": "Inovasi",
       "h2": "Didorong teknologi dan pemikiran terobosan, mencari kekuatan untuk mengubah dunia"
@@ -60,7 +65,10 @@
       "h1": "Manajemen",
       "h2": "Menyeimbangkan strategi dan eksekusi untuk membangun organisasi yang efisien dan budaya tim"
     },
-    "invest": { "h1": "Investasi", "h2": "Seni menangkap nilai, logika ganda modal dan industri" },
+    "invest": {
+      "h1": "Investasi",
+      "h2": "Seni menangkap nilai, logika ganda modal dan industri"
+    },
     "risk": {
       "h1": "Risiko",
       "h2": "Kepastian dalam ketidakpastian: cara mengidentifikasi dan lindung nilai secara efektif"
@@ -96,18 +104,41 @@
     "life": "Kehidupan"
   },
   "pages": {
-    "about": { "title": "Tentang" },
-    "author": { "title": "Penulis", "writingActivity": "Aktivitas menulis" },
-    "posts": { "title": "Semua Artikel" },
+    "about": {
+      "title": "Tentang"
+    },
+    "author": {
+      "title": "Penulis",
+      "writingActivity": "Aktivitas menulis",
+      "less": "Lebih sedikit",
+      "more": "Lebih banyak",
+      "contributionsInYear": "{count} artikel diterbitkan pada {year}",
+      "links": "Tautan penulis"
+    },
+    "posts": {
+      "title": "Semua tulisan",
+      "archiveEyebrow": "Arsip",
+      "archiveTitle": "Arsip tulisan",
+      "archiveSubtitle": "Semua catatan terbit dalam urutan terbaru.",
+      "totalPosts": "Total {count} tulisan",
+      "pageTitle": "Semua tulisan {page}",
+      "pageDescription": "Halaman tulisan {page}"
+    },
     "categories": {
       "title": "Kategori",
       "h2": "Jelajahi kategori",
-      "description": "Jelajahi topik dan temukan artikel berdasarkan kategori."
+      "description": "Jelajahi topik dan temukan tulisan berdasarkan kategori.",
+      "eyebrow": "Kategori",
+      "relatedTags": "Tag terkait",
+      "noPosts": "Belum ada tulisan dalam kategori ini."
     },
     "tags": {
       "title": "Tag",
       "h2": "Jelajahi tag",
-      "description": "Jelajahi topik dan temukan artikel berdasarkan tag."
+      "description": "Jelajahi topik dan temukan tulisan berdasarkan tag.",
+      "eyebrow": "Tag",
+      "browseCategories": "Jelajahi kategori",
+      "noPosts": "Belum ada tulisan dengan tag ini."
     }
   },
   "common": {
@@ -123,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} artikel total",
       "pageInfo": "Halaman {current} dari {total}",
       "noPosts": "Tidak ada artikel",
-      "noPostsInCategory": "Belum ada artikel dalam kategori ini. Silakan periksa kembali nanti."
+      "noPostsInCategory": "Belum ada artikel dalam kategori ini. Silakan periksa kembali nanti.",
+      "pageTitle": "Halaman {page}",
+      "pageLabel": "Halaman {page}",
+      "postsCount": "{count} tulisan"
     }
   },
   "footer": {

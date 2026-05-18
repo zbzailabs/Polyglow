@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "在生活的海洋，创业的波涛和投资的迷雾中前行",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "生活",
     "invest": "投资",
-    "build": "创业"
+    "build": "创业",
+    "startup": "创业"
   },
   "tags": {
     "reflect": "沉思",
@@ -39,7 +40,8 @@
     "allocation": "配置",
     "innovation": "创新",
     "model": "模式",
-    "management": "管理"
+    "management": "管理",
+    "market": "市场"
   },
   "headings": {
     "home": {
@@ -47,18 +49,54 @@
       "h1": "Polyglow",
       "h2": "在生活的海洋，创业的波涛和投资的迷雾中前行"
     },
-    "build": { "h1": "创业", "h2": "从零到一的道路，洞察机遇与挑战" },
-    "innovation": { "h1": "创新", "h2": "技术驱动与思维突破，寻找改变世界的力量" },
-    "model": { "h1": "模式", "h2": "从案例到趋势，探索可复制的增长逻辑" },
-    "management": { "h1": "管理", "h2": "平衡战略与执行，构建高效组织与团队文化" },
-    "invest": { "h1": "投资", "h2": "捕捉价值的艺术，资本与产业的双重逻辑" },
-    "risk": { "h1": "风险", "h2": "不确定性中的确定性，如何有效识别与对冲" },
-    "strategy": { "h1": "策略", "h2": "在博弈中前行，把握长期优势与竞争壁垒" },
-    "allocation": { "h1": "配置", "h2": "资源最优解，资金、时间与精力的平衡术" },
-    "life": { "h1": "生活", "h2": "超越效率与产出，追求平衡、健康与幸福" },
-    "reflect": { "h1": "沉思", "h2": "放慢脚步，深度思考未来的可能性" },
-    "media": { "h1": "观阅", "h2": "从阅读到观察，获取跨界的启发与洞见" },
-    "roam": { "h1": "行走", "h2": "在路上，感受人与世界的真实连接" }
+    "build": {
+      "h1": "创业",
+      "h2": "从零到一的道路，洞察机遇与挑战"
+    },
+    "innovation": {
+      "h1": "创新",
+      "h2": "技术驱动与思维突破，寻找改变世界的力量"
+    },
+    "model": {
+      "h1": "模式",
+      "h2": "从案例到趋势，探索可复制的增长逻辑"
+    },
+    "management": {
+      "h1": "管理",
+      "h2": "平衡战略与执行，构建高效组织与团队文化"
+    },
+    "invest": {
+      "h1": "投资",
+      "h2": "捕捉价值的艺术，资本与产业的双重逻辑"
+    },
+    "risk": {
+      "h1": "风险",
+      "h2": "不确定性中的确定性，如何有效识别与对冲"
+    },
+    "strategy": {
+      "h1": "策略",
+      "h2": "在博弈中前行，把握长期优势与竞争壁垒"
+    },
+    "allocation": {
+      "h1": "配置",
+      "h2": "资源最优解，资金、时间与精力的平衡术"
+    },
+    "life": {
+      "h1": "生活",
+      "h2": "超越效率与产出，追求平衡、健康与幸福"
+    },
+    "reflect": {
+      "h1": "沉思",
+      "h2": "放慢脚步，深度思考未来的可能性"
+    },
+    "media": {
+      "h1": "观阅",
+      "h2": "从阅读到观察，获取跨界的启发与洞见"
+    },
+    "roam": {
+      "h1": "行走",
+      "h2": "在路上，感受人与世界的真实连接"
+    }
   },
   "navigation": {
     "build": "创业",
@@ -66,18 +104,41 @@
     "life": "生活"
   },
   "pages": {
-    "about": { "title": "关于" },
-    "author": { "title": "作者", "writingActivity": "更新记录" },
-    "posts": { "title": "所有文章" },
+    "about": {
+      "title": "关于"
+    },
+    "author": {
+      "title": "作者",
+      "writingActivity": "写作活跃度",
+      "less": "较少",
+      "more": "较多",
+      "contributionsInYear": "{year} 年发布 {count} 篇文章",
+      "links": "作者链接"
+    },
+    "posts": {
+      "title": "所有文章",
+      "archiveEyebrow": "归档",
+      "archiveTitle": "文章归档",
+      "archiveSubtitle": "按发布时间倒序排列的全部文章。",
+      "totalPosts": "共 {count} 篇文章",
+      "pageTitle": "所有文章第 {page} 页",
+      "pageDescription": "文章列表第 {page} 页"
+    },
     "categories": {
       "title": "分类",
       "h2": "浏览分类",
-      "description": "按主题浏览，基于分类发现更多文章。"
+      "description": "按主题浏览，基于分类发现更多文章。",
+      "eyebrow": "分类",
+      "relatedTags": "相关标签",
+      "noPosts": "该分类下暂时没有文章。"
     },
     "tags": {
       "title": "标签",
       "h2": "浏览标签",
-      "description": "按主题浏览，基于标签发现更多文章。"
+      "description": "按主题浏览，基于标签发现更多文章。",
+      "eyebrow": "标签",
+      "browseCategories": "浏览分类",
+      "noPosts": "该标签下暂时没有文章。"
     }
   },
   "common": {
@@ -93,7 +154,10 @@
       "totalPostsWithLang": "{lang}共 {count} 篇文章",
       "pageInfo": "第 {current} 页，共 {total} 页",
       "noPosts": "暂无文章",
-      "noPostsInCategory": "该分类下暂时没有文章，请稍后再来查看。"
+      "noPostsInCategory": "该分类下暂时没有文章，请稍后再来查看。",
+      "pageTitle": "第 {page} 页",
+      "pageLabel": "第 {page} 页",
+      "postsCount": "{count} 篇文章"
     }
   },
   "footer": {

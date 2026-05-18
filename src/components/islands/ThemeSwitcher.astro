@@ -1,0 +1,124 @@
+---
+import type { Locale } from "@/config/locales"
+import Icon from "@/components/icons/Icon.astro"
+import { t } from "@/utils/translations"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+---
+
+<div class="relative" data-polyglow-menu>
+  <button
+    type="button"
+    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    aria-label={t(lang, "theme.toggle")}
+    aria-haspopup="menu"
+    aria-expanded="false"
+    data-polyglow-menu-trigger
+  >
+    <Icon name="sun" class="size-4" dataIcon="inline-start" />
+  </button>
+  <div
+    class="nav-dropdown absolute top-full right-0 z-50 mt-2 grid w-44 gap-1 rounded-xl border border-white/10 p-2 shadow-xl"
+    role="menu"
+    hidden
+    data-polyglow-menu-content
+  >
+    <button
+      type="button"
+      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
+      role="menuitem"
+      data-theme-value="light"
+    >
+      <Icon name="sun" class="size-4" dataIcon="inline-start" />
+      <span>{t(lang, "theme.light")}</span>
+    </button>
+    <button
+      type="button"
+      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
+      role="menuitem"
+      data-theme-value="dark"
+    >
+      <Icon name="moon" class="size-4" dataIcon="inline-start" />
+      <span>{t(lang, "theme.dark")}</span>
+    </button>
+    <button
+      type="button"
+      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
+      role="menuitem"
+      data-theme-value="system"
+    >
+      <Icon name="monitor" class="size-4" dataIcon="inline-start" />
+      <span>{t(lang, "theme.system")}</span>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  ;(() => {
+    if (window.__polyglowThemeSwitcher) return
+    window.__polyglowThemeSwitcher = true
+
+    const getThemePreference = () => localStorage.getItem("theme") || "system"
+
+    const updateThemeOptions = (theme) => {
+      document.querySelectorAll("[data-theme-value]").forEach((option) => {
+        if (!(option instanceof HTMLElement)) return
+        const selected = option.dataset.themeValue === theme
+        if (selected) {
+          option.setAttribute("aria-current", "true")
+          return
+        }
+        option.removeAttribute("aria-current")
+      })
+    }
+
+    const applyTheme = (theme = getThemePreference()) => {
+      if (theme === "system") {
+        localStorage.removeItem("theme")
+      } else {
+        localStorage.setItem("theme", theme)
+      }
+      const resolved =
+        theme === "system"
+          ? matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
+          : theme
+      document.documentElement.classList.toggle("dark", resolved === "dark")
+      updateThemeOptions(theme)
+    }
+
+    applyTheme()
+
+    document.addEventListener("click", (event) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+      const option = target.closest("[data-theme-value]")
+      if (!(option instanceof HTMLElement)) return
+      applyTheme(option.dataset.themeValue || "system")
+      const menu = option.closest("[data-polyglow-menu]")
+      const trigger = menu?.querySelector("[data-polyglow-menu-trigger]")
+      const content = menu?.querySelector("[data-polyglow-menu-content]")
+      if (trigger instanceof HTMLElement) {
+        trigger.setAttribute("aria-expanded", "false")
+        trigger.focus()
+      }
+      if (content instanceof HTMLElement) content.hidden = true
+    })
+
+    document.addEventListener("astro:page-load", () => {
+      updateThemeOptions(getThemePreference())
+    })
+
+    matchMedia("(prefers-color-scheme: dark)").addEventListener(
+      "change",
+      () => {
+        if (getThemePreference() === "system") applyTheme("system")
+      }
+    )
+  })()
+</script>

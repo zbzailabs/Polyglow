@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Navigating life, entrepreneurship, and the fog of investing",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Life",
     "invest": "Invest",
-    "build": "Build"
+    "build": "Build",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "Reflect",
@@ -39,7 +40,8 @@
     "allocation": "Allocation",
     "innovation": "Innovation",
     "model": "Model",
-    "management": "Management"
+    "management": "Management",
+    "market": "Market"
   },
   "headings": {
     "home": {
@@ -55,7 +57,10 @@
       "h1": "Innovation",
       "h2": "Technology-driven and breakthrough thinking, seeking the power to change the world"
     },
-    "model": { "h1": "Model", "h2": "From cases to trends, exploring repeatable growth logic" },
+    "model": {
+      "h1": "Model",
+      "h2": "From cases to trends, exploring repeatable growth logic"
+    },
     "management": {
       "h1": "Management",
       "h2": "Balancing strategy and execution to build an efficient organization and team culture"
@@ -80,12 +85,18 @@
       "h1": "Life",
       "h2": "Beyond efficiency and output: pursuing balance, health, and happiness"
     },
-    "reflect": { "h1": "Reflect", "h2": "Slow down and think deeply about future possibilities" },
+    "reflect": {
+      "h1": "Reflect",
+      "h2": "Slow down and think deeply about future possibilities"
+    },
     "media": {
       "h1": "Media",
       "h2": "From reading to observing, gaining cross-boundary inspiration and insight"
     },
-    "roam": { "h1": "Roam", "h2": "On the road, feeling a genuine connection with the world" }
+    "roam": {
+      "h1": "Roam",
+      "h2": "On the road, feeling a genuine connection with the world"
+    }
   },
   "navigation": {
     "build": "Build",
@@ -93,18 +104,41 @@
     "life": "Life"
   },
   "pages": {
-    "about": { "title": "About" },
-    "author": { "title": "Author", "writingActivity": "Writing Activity" },
-    "posts": { "title": "All Posts" },
+    "about": {
+      "title": "About"
+    },
+    "author": {
+      "title": "Author",
+      "writingActivity": "Writing Activity",
+      "less": "Less",
+      "more": "More",
+      "contributionsInYear": "{count} posts published in {year}",
+      "links": "Author links"
+    },
+    "posts": {
+      "title": "All Posts",
+      "archiveEyebrow": "Archive",
+      "archiveTitle": "Article Archive",
+      "archiveSubtitle": "All published notes in reverse chronological order.",
+      "totalPosts": "{count} posts in total",
+      "pageTitle": "All Posts {page}",
+      "pageDescription": "Posts page {page}"
+    },
     "categories": {
       "title": "Categories",
       "h2": "Browse Categories",
-      "description": "Explore topics and find articles by category."
+      "description": "Explore topics and find articles by category.",
+      "eyebrow": "Category",
+      "relatedTags": "Related tags",
+      "noPosts": "No posts in this category yet."
     },
     "tags": {
       "title": "Tags",
       "h2": "Browse Tags",
-      "description": "Explore topics and find articles by tags."
+      "description": "Explore topics and find articles by tags.",
+      "eyebrow": "Tag",
+      "browseCategories": "Browse categories",
+      "noPosts": "No posts with this tag yet."
     }
   },
   "common": {
@@ -120,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} posts in total",
       "pageInfo": "Page {current} of {total}",
       "noPosts": "No posts",
-      "noPostsInCategory": "No posts in this category yet. Please check back later."
+      "noPostsInCategory": "No posts in this category yet. Please check back later.",
+      "pageTitle": "Page {page}",
+      "pageLabel": "Page {page}",
+      "postsCount": "{count} posts"
     }
   },
   "footer": {

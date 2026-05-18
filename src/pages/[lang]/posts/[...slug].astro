@@ -1,76 +1,196 @@
 ---
-import { type CollectionEntry, render } from 'astro:content';
-import { getRelativeLocaleUrl } from 'astro:i18n';
-import RelatedList from '@/widgets/RelatedList.astro';
-import PostLayout from '@/layouts/PostLayout.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { getPublishedPosts } from '@/utils/posts';
-
-export const prerender = true;
+import { getCollection, render } from "astro:content"
+import { Image } from "astro:assets"
+import Layout from "@/layouts/main.astro"
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
+import ProseContent from "@/components/layout/ProseContent.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import { articleJsonLd } from "@/utils/structured-data"
+import { getPostsForLocale, postPath, postSlug } from "@/utils/posts"
+import { selectRelatedPosts } from "@/utils/post-navigation"
+import { getAuthor } from "@/utils/content"
+import { getCategory, getTag } from "@/config/taxonomy"
+import { SITE_CONFIG } from "@/config/site"
+import { t } from "@/utils/translations"
+import authorImage from "@/assets/author.avif"
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-
-  const paths = posts.flatMap((entry) => {
-    const lang = entry.data.locales as Lang;
-    if (!(SUPPORTED_LANGS as readonly string[]).includes(lang)) return [] as any[];
-
-    const idWithoutExt = entry.id.replace(/\.(md|mdx|markdown)$/i, '');
-    const slugWithoutLang = idWithoutExt.replace(new RegExp(`^${lang}/`), '');
-    return [
-      {
-        params: { lang, slug: slugWithoutLang },
-        props: { entry },
-      },
-    ];
-  });
-
-  return paths;
+  const posts = await getCollection("post", (entry) => !entry.data.draft)
+  return posts.map((post) => ({
+    params: { lang: post.data.locale, slug: postSlug(post) },
+    props: { post },
+  }))
 }
 
-interface Props {
-  entry: CollectionEntry<'post'>;
-}
-
-const { entry } = Astro.props as Props;
-const lang = (Astro.params.lang as Lang) || (entry?.data.locales as Lang) || DEFAULT_LANG;
-
-if (!entry) {
-  return Astro.redirect(`/${lang}/404/`);
-}
-
-const { Content, remarkPluginFrontmatter } = await render(entry);
-
-const title = entry.data.title;
-const description = entry.data.description;
-const publishedTime = entry.data.pubDate;
-
-const modifiedTime = (remarkPluginFrontmatter as any)?.lastModified || entry.data.updatedDate;
-const author = entry.data.author;
-const section = entry.data.category;
-const tags = entry.data.tags as string[] | undefined;
-const authorUrl = getRelativeLocaleUrl(lang, '/author/');
-const heroImage = entry.data.heroImage;
-const heroImageAlt = entry.data.heroImageAlt;
-const postLayoutProps = {
-  lang,
-  title,
-  ...(description ? { description } : {}),
-  ...(heroImage ? { image: heroImage } : {}),
-  ...(heroImageAlt ? { imageAlt: heroImageAlt } : {}),
-  ...(publishedTime ? { publishedTime } : {}),
-  ...(modifiedTime ? { modifiedTime } : {}),
-  canonical: Astro.url.href,
-  noindex: false,
-  ...(author ? { author } : {}),
-  ...(authorUrl ? { authorUrl } : {}),
-  ...(section ? { section } : {}),
-  ...(tags ? { tags } : {}),
-};
+const { post } = Astro.props
+const { Content } = await render(post)
+const author = await getAuthor(post.data.locale, post.data.authors[0])
+const path = postPath(post)
+const posts = await getPostsForLocale(post.data.locale)
+const relatedPosts = selectRelatedPosts(posts, post, 3)
+const category = getCategory(post.data.category)
+const categoryLabel =
+  category?.labelByLocale[post.data.locale] ?? post.data.category
+const tags = post.data.tags
+  .map((tag) => getTag(tag))
+  .filter((tag): tag is NonNullable<ReturnType<typeof getTag>> => Boolean(tag))
+const dateFormatter = new Intl.DateTimeFormat(post.data.locale, {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+})
+const publishedLabel = dateFormatter.format(post.data.pubDate)
+const modifiedLabel = dateFormatter.format(
+  post.data.updatedDate ?? post.data.pubDate
+)
+const publishedText = t(post.data.locale, "post.publishedAt")
+const modifiedText = t(post.data.locale, "post.modifiedAt")
+const jsonLd = articleJsonLd({
+  lang: post.data.locale,
+  path,
+  title: post.data.seoTitle ?? post.data.title,
+  description: post.data.seoDescription ?? post.data.description,
+  image: post.data.heroImage,
+  pubDate: post.data.pubDate,
+  updatedDate: post.data.updatedDate,
+  authors: [
+    {
+      name: author?.data.name ?? SITE_CONFIG.name,
+      url: `${SITE_CONFIG.url}/${post.data.locale}/author/`,
+    },
+  ],
+})
 ---
 
-<PostLayout {...postLayoutProps}>
-  <Content />
-  <RelatedList slot="after" lang={lang} category={entry.data.category} excludeId={entry.id} />
-</PostLayout>
+<Layout
+  lang={post.data.locale}
+  path={path}
+  title={post.data.seoTitle ?? post.data.title}
+  description={post.data.seoDescription ?? post.data.description}
+  image={post.data.heroImage}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <article aria-labelledby="article-title">
+    <div
+      class="relative mx-auto mt-10 w-[calc(100%-2rem)] max-w-3xl sm:w-[calc(100%-2.5rem)] md:w-[calc(100%-3rem)]"
+      data-glass-card
+    >
+      <div
+        class="post-card-desc group relative flex aspect-[3/4] flex-col overflow-hidden rounded-2xl md:aspect-[16/9] md:rounded-3xl"
+        data-article-hero
+      >
+        <OptimizedPicture
+          src={post.data.heroImage}
+          alt={post.data.heroImageAlt}
+          width={post.data.heroImageWidth}
+          height={post.data.heroImageHeight}
+          loading="eager"
+          class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"
+        >
+        </div>
+        <div
+          class="article-hero__content post-card__content absolute right-1.5 bottom-1.5 left-1.5 flex flex-col justify-end rounded-xl border border-white/15 p-5 text-white shadow-lg backdrop-blur-xl sm:p-6 md:px-10 md:py-7 lg:px-12 lg:py-8"
+          data-glass-target
+        >
+          <div class="mx-auto flex w-full max-w-3xl flex-col gap-4">
+            <h1
+              id="article-title"
+              class="text-center text-2xl leading-snug font-extrabold md:text-3xl"
+              data-pagefind-meta="title"
+            >
+              {post.data.title}
+            </h1>
+            <div
+              class="flex flex-wrap items-center justify-center gap-3 text-white/90"
+            >
+              <a
+                href={`/${post.data.locale}/category/${post.data.category}/`}
+                class="rounded-full bg-white/25 px-3 py-1 text-[10px] font-semibold tracking-wide text-white uppercase transition-colors hover:bg-white/40 sm:text-xs"
+              >
+                {categoryLabel}
+              </a>
+              <time
+                datetime={post.data.pubDate.toISOString()}
+                class="text-xs font-medium opacity-80 sm:text-sm"
+                >{publishedLabel}</time
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main id="main" class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-5 md:px-6">
+      <div class="mx-auto max-w-3xl">
+        <ProseContent class="article-prose max-w-none" pagefindBody>
+          <p class="sr-only">
+            {post.data.title}
+            {post.data.description}
+            Topics: {categoryLabel}, {
+              tags.map((tag) => tag.labelByLocale[post.data.locale]).join(", ")
+            }.
+          </p>
+          <Content />
+        </ProseContent>
+
+        <footer class="article-footer mt-10" data-pagefind-ignore>
+          <p class="text-xs leading-6 text-muted-foreground" data-article-meta>
+            <time datetime={post.data.pubDate.toISOString()}
+              >{publishedText}: {publishedLabel}</time
+            >
+            <span aria-hidden="true"> · </span>
+            <time
+              datetime={(
+                post.data.updatedDate ?? post.data.pubDate
+              ).toISOString()}>{modifiedText}: {modifiedLabel}</time
+            >
+          </p>
+          <div
+            class="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+            data-article-attribution
+          >
+            <a
+              href={`/${post.data.locale}/author/`}
+              class="flex w-fit items-center gap-3 text-sm font-medium text-muted-foreground transition-opacity hover:opacity-75"
+            >
+              <Image
+                src={authorImage}
+                alt=""
+                width={32}
+                height={32}
+                class="size-8 rounded-full object-cover ring-1 ring-border"
+              />
+              <span>{author?.data.name ?? SITE_CONFIG.name}</span>
+            </a>
+            <a
+              href={`/${post.data.locale}/category/${post.data.category}/`}
+              class="inline-flex min-h-7 w-fit items-center justify-center rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent"
+            >
+              {categoryLabel}
+            </a>
+          </div>
+        </footer>
+      </div>
+
+      {
+        relatedPosts.length > 0 && (
+          <section
+            class="mx-auto mt-16 max-w-6xl"
+            aria-labelledby="related-posts"
+            data-pagefind-ignore
+            data-related-posts
+          >
+            <h2 id="related-posts" class="sr-only">
+              {t(post.data.locale, "post.relatedPosts")}
+            </h2>
+            <PostCardGrid posts={relatedPosts} columns="three" />
+          </section>
+        )
+      }
+    </main>
+  </article>
+</Layout>

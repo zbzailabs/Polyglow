@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "삶의 바다, 창업의 파도, 투자의 안개 속을 나아갑니다",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "인생",
     "invest": "투자",
-    "build": "창업"
+    "build": "창업",
+    "startup": "스타트업"
   },
   "tags": {
     "reflect": "성찰",
@@ -39,7 +40,8 @@
     "allocation": "할당",
     "innovation": "혁신",
     "model": "모델",
-    "management": "관리"
+    "management": "관리",
+    "market": "시장"
   },
   "headings": {
     "home": {
@@ -47,18 +49,54 @@
       "h1": "Polyglow",
       "h2": "삶의 바다, 창업의 파도, 투자의 안개 속을 나아갑니다"
     },
-    "build": { "h1": "창업", "h2": "제로에서 일로 가는 길, 기회와 도전을 포착" },
-    "innovation": { "h1": "혁신", "h2": "기술 주도와 사고의 돌파로 세상을 바꾸는 힘을 모색" },
-    "model": { "h1": "모델", "h2": "사례에서 트렌드까지, 반복 가능한 성장 논리를 탐구" },
-    "management": { "h1": "관리", "h2": "전략과 실행의 균형, 효율적인 조직과 팀 문화를 구축" },
-    "invest": { "h1": "투자", "h2": "가치를 포착하는 예술, 자본과 산업의 이중 논리" },
-    "risk": { "h1": "위험", "h2": "불확실성 속의 확실성: 효과적으로 식별하고 헤지하는 방법" },
-    "strategy": { "h1": "전략", "h2": "게임 속에서 전진하며 장기적 우위와 해자를 구축" },
-    "allocation": { "h1": "할당", "h2": "자원의 최적 해법: 자본·시간·에너지의 균형" },
-    "life": { "h1": "인생", "h2": "효율과 성과를 넘어 균형·건강·행복을 추구" },
-    "reflect": { "h1": "성찰", "h2": "속도를 늦추고 미래의 가능성을 깊이 사유" },
-    "media": { "h1": "미디어", "h2": "독서에서 관찰까지, 경계를 넘는 영감과 통찰을 얻기" },
-    "roam": { "h1": "방랑", "h2": "길 위에서 사람과 세계의 진정한 연결을 느끼기" }
+    "build": {
+      "h1": "창업",
+      "h2": "제로에서 일로 가는 길, 기회와 도전을 포착"
+    },
+    "innovation": {
+      "h1": "혁신",
+      "h2": "기술 주도와 사고의 돌파로 세상을 바꾸는 힘을 모색"
+    },
+    "model": {
+      "h1": "모델",
+      "h2": "사례에서 트렌드까지, 반복 가능한 성장 논리를 탐구"
+    },
+    "management": {
+      "h1": "관리",
+      "h2": "전략과 실행의 균형, 효율적인 조직과 팀 문화를 구축"
+    },
+    "invest": {
+      "h1": "투자",
+      "h2": "가치를 포착하는 예술, 자본과 산업의 이중 논리"
+    },
+    "risk": {
+      "h1": "위험",
+      "h2": "불확실성 속의 확실성: 효과적으로 식별하고 헤지하는 방법"
+    },
+    "strategy": {
+      "h1": "전략",
+      "h2": "게임 속에서 전진하며 장기적 우위와 해자를 구축"
+    },
+    "allocation": {
+      "h1": "할당",
+      "h2": "자원의 최적 해법: 자본·시간·에너지의 균형"
+    },
+    "life": {
+      "h1": "인생",
+      "h2": "효율과 성과를 넘어 균형·건강·행복을 추구"
+    },
+    "reflect": {
+      "h1": "성찰",
+      "h2": "속도를 늦추고 미래의 가능성을 깊이 사유"
+    },
+    "media": {
+      "h1": "미디어",
+      "h2": "독서에서 관찰까지, 경계를 넘는 영감과 통찰을 얻기"
+    },
+    "roam": {
+      "h1": "방랑",
+      "h2": "길 위에서 사람과 세계의 진정한 연결을 느끼기"
+    }
   },
   "navigation": {
     "build": "창업",
@@ -66,18 +104,41 @@
     "life": "인생"
   },
   "pages": {
-    "about": { "title": "소개" },
-    "author": { "title": "저자", "writingActivity": "글쓰기 활동" },
-    "posts": { "title": "모든 글" },
+    "about": {
+      "title": "소개"
+    },
+    "author": {
+      "title": "저자",
+      "writingActivity": "글쓰기 활동",
+      "less": "적음",
+      "more": "많음",
+      "contributionsInYear": "{year}년에 게시한 글 {count}개",
+      "links": "작성자 링크"
+    },
+    "posts": {
+      "title": "전체 글",
+      "archiveEyebrow": "아카이브",
+      "archiveTitle": "글 아카이브",
+      "archiveSubtitle": "게시된 글을 최신순으로 정리했습니다.",
+      "totalPosts": "총 {count}개 글",
+      "pageTitle": "전체 글 {page}",
+      "pageDescription": "글 목록 {page}페이지"
+    },
     "categories": {
       "title": "카테고리",
       "h2": "카테고리 둘러보기",
-      "description": "주제를 탐색하고 카테고리로 글을 찾아보세요."
+      "description": "카테고리별로 주제와 글을 찾아봅니다.",
+      "eyebrow": "카테고리",
+      "relatedTags": "관련 태그",
+      "noPosts": "이 카테고리에는 아직 글이 없습니다."
     },
     "tags": {
       "title": "태그",
       "h2": "태그 둘러보기",
-      "description": "주제를 탐색하고 태그로 글을 찾아보세요."
+      "description": "태그별로 주제와 글을 찾아봅니다.",
+      "eyebrow": "태그",
+      "browseCategories": "카테고리 둘러보기",
+      "noPosts": "이 태그에는 아직 글이 없습니다."
     }
   },
   "common": {
@@ -93,7 +154,10 @@
       "totalPostsWithLang": "{lang} 총 {count} 개의 게시물",
       "pageInfo": "{current} / {total} 페이지",
       "noPosts": "게시물이 없습니다",
-      "noPostsInCategory": "이 카테고리에는 아직 게시물이 없습니다. 나중에 다시 확인해주세요."
+      "noPostsInCategory": "이 카테고리에는 아직 게시물이 없습니다. 나중에 다시 확인해주세요.",
+      "pageTitle": "{page}페이지",
+      "pageLabel": "{page}페이지",
+      "postsCount": "{count}개 글"
     }
   },
   "footer": {

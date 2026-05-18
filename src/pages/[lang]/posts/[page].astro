@@ -1,57 +1,63 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Pagination from '@/features/Pagination.astro';
-import PostCardText from '@/cards/PostCardText.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsForLang, postUrl, type PostEntry } from '@/utils/posts';
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostArchiveList from "@/components/lists/PostArchiveList.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { POSTS_PER_PAGE } from "@/config/pagination"
+import { getPostsForLocale } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
-import type { GetStaticPaths } from 'astro';
-
-export const prerender = true;
-
-export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-  const byLang = SUPPORTED_LANGS.flatMap((lang) => {
-    return paginate(getPostsForLang(lang), { pageSize: 20, params: { lang } });
-  });
-  return byLang;
-};
-
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const pageParam = Astro.params.page as string | undefined;
-if (pageParam === '1') {
-  return Astro.redirect(`/${lang}/posts/`, 301);
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const paths = []
+  for (const lang of LOCALES)
+    paths.push(
+      ...paginate(await getPostsForLocale(lang), {
+        params: { lang },
+        props: { lang },
+        pageSize: POSTS_PER_PAGE,
+      })
+    )
+  return paths
 }
-const { page } = Astro.props as { page: any };
-const items = (page?.data as PostEntry[]) || [];
 
-const title = t(lang, 'pages.posts.title') || t(lang, 'homepage.latestArticles');
-const langName = t(lang, 'language.name');
-const description = t(lang, 'common.pagination.totalPostsWithLang', {
-  count: page?.total ?? items.length,
-  langName,
-  lang: langName,
-});
+const { lang, page } = Astro.props as {
+  lang: Locale
+  page: {
+    data: Awaited<ReturnType<typeof getPostsForLocale>>
+    currentPage: number
+    url: { prev?: string; next?: string }
+  }
+}
+const title = t(lang, "pages.posts.pageTitle", { page: page.currentPage })
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  <div class="mt-2">
-    <div class="divide-y divide-gray-200/60 dark:divide-gray-800/60">
-      {
-        items.map((p) => (
-          <PostCardText
-            href={postUrl(p as PostEntry, lang)}
-            title={p.data.title}
-            date={p.data.pubDate}
-            category={p.data.category}
-            tags={p.data.tags}
-            lang={lang}
-          />
-        ))
-      }
-    </div>
-  </div>
-
-  <Pagination page={page} class="mt-8" />
-</LandingLayout>
+<Layout
+  lang={lang}
+  path={`/posts/${page.currentPage}/`}
+  title={title}
+  description={t(lang, "pages.posts.pageDescription", {
+    page: page.currentPage,
+  })}
+>
+  <PageSection>
+    <PageHeader
+      eyebrow={t(lang, "pages.posts.archiveEyebrow")}
+      title={t(lang, "pages.posts.archiveTitle")}
+      subtitle={t(lang, "pages.posts.archiveSubtitle")}
+      description={t(lang, "common.pagination.pageLabel", {
+        page: page.currentPage,
+      })}
+      stat={t(lang, "common.pagination.postsCount", {
+        count: page.data.length,
+      })}
+    />
+    <PostArchiveList posts={page.data} lang={lang} />
+    <Pagination
+      prev={page.currentPage === 2 ? `/${lang}/posts/` : page.url.prev}
+      next={page.url.next}
+      currentPage={page.currentPage}
+    />
+  </PageSection>
+</Layout>

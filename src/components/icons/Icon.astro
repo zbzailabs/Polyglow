@@ -1,0 +1,33 @@
+---
+import { Icon as AstroIcon } from "astro-icon/components"
+
+type IconName =
+  | "arrow-left"
+  | "chevron-down"
+  | "github"
+  | "globe"
+  | "menu"
+  | "monitor"
+  | "moon"
+  | "newspaper"
+  | "rss"
+  | "search"
+  | "sun"
+  | "x"
+
+interface Props {
+  name: IconName
+  class?: string
+  dataIcon?: "inline-start" | "inline-end"
+}
+
+const { name, class: className = "size-4", dataIcon } = Astro.props
+const lucideName = `lucide:${name}`
+---
+
+<AstroIcon
+  name={lucideName}
+  class={className}
+  data-ui-icon={dataIcon}
+  aria-hidden="true"
+/>

@@ -1,87 +1,54 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import Pagination from '@/features/Pagination.astro';
-import PostCardCover from '@/cards/PostCardCover.astro';
-import CardWithPriority from '@/features/CardWithPriority.astro';
-import type { Lang } from '@/utils/i18n';
-import { DEFAULT_LANG, SUPPORTED_LANGS } from '@/utils/i18n';
-import { t } from '@/utils/translations';
-import { getPostsByTag, postUrl } from '@/utils/posts';
-
-export const prerender = true;
+import Layout from "@/layouts/main.astro"
+import PageHeader from "@/components/layout/PageHeader.astro"
+import PageSection from "@/components/layout/PageSection.astro"
+import PostCardGrid from "@/components/lists/PostCardGrid.astro"
+import EmptyState from "@/components/ui/EmptyState.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
+import { LOCALES, type Locale } from "@/config/locales"
+import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
+import { TAXONOMY, getTag } from "@/config/taxonomy"
+import { getPostsByTag } from "@/utils/posts"
+import { t } from "@/utils/translations"
 
 export async function getStaticPaths() {
-  const TAG_KEYS = [
-    'reflect',
-    'media',
-    'roam',
-    'risk',
-    'strategy',
-    'allocation',
-    'innovation',
-    'model',
-    'management',
-  ] as const;
-  return SUPPORTED_LANGS.flatMap((lang) => TAG_KEYS.map((slug) => ({ params: { lang, slug } })));
+  return LOCALES.flatMap((lang) =>
+    TAXONOMY.tags.map((tag) => ({
+      params: { lang, slug: tag.slug },
+      props: { lang, slug: tag.slug },
+    }))
+  )
 }
 
-const PAGE_SIZE = 12;
-const lang = ((Astro.params.lang as Lang) || DEFAULT_LANG) as Lang;
-const slug = String(Astro.params.slug || '');
-
-const all = getPostsByTag(lang, slug);
-
-const items = all.slice(0, PAGE_SIZE);
-const total = all.length;
-const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
-const page = {
-  data: items,
-  start: 0,
-  end: items.length - 1,
-  total,
-  currentPage: 1,
-  size: PAGE_SIZE,
-  lastPage,
-  url: {
-    current: Astro.url.pathname,
-    prev: undefined,
-    next: lastPage > 1 ? `/${lang}/tags/${slug}/2/` : undefined,
-    first: undefined,
-    last: lastPage > 1 ? `/${lang}/tags/${slug}/${lastPage}/` : undefined,
-  },
-};
-
-const h1 = t(lang, `headings.${slug}.h1`) || t(lang, `tags.${slug}`) || slug;
-const h2 = t(lang, `headings.${slug}.h2`);
-const title = h1;
-const description = h2;
+const { lang, slug } = Astro.props as { lang: Locale; slug: string }
+const tag = getTag(slug)
+const posts = await getPostsByTag(lang, slug)
+const pagePosts = posts.slice(0, TAXONOMY_POSTS_PER_PAGE)
+const nextPage =
+  posts.length > TAXONOMY_POSTS_PER_PAGE
+    ? `/${lang}/tags/${slug}/2/`
+    : undefined
 ---
 
-<LandingLayout lang={lang} title={title} description={description} canonical={Astro.url.href}>
-  <fragment slot="header">
-    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{h1}</h1>
-    <h2 class="mt-2 text-xl text-gray-600 dark:text-gray-300">{h2}</h2>
-  </fragment>
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<Layout
+  lang={lang}
+  path={`/tags/${slug}/`}
+  title={tag?.labelByLocale[lang] ?? slug}
+>
+  <PageSection>
+    <PageHeader
+      title={tag?.labelByLocale[lang] ?? slug}
+      subtitle={tag?.descriptionByLocale[lang]}
+    />
     {
-      items.map((p, idx) => (
-        <CardWithPriority
-          component={PostCardCover}
-          index={idx}
-          props={{
-            href: postUrl(p, lang),
-            imageSrc: p.data.heroImage,
-            imageAlt: p.data.heroImageAlt,
-            title: p.data.title,
-            date: p.data.pubDate,
-            category: p.data.category,
-            lang,
-            class: 'shadow-sm ring-1 ring-black/5 dark:ring-white/10',
-          }}
-        />
-      ))
+      posts.length > 0 ? (
+        <>
+          <PostCardGrid posts={pagePosts} />
+          {nextPage && <Pagination next={nextPage} currentPage={1} />}
+        </>
+      ) : (
+        <EmptyState message={t(lang, "pages.tags.noPosts")} />
+      )
     }
-  </div>
-
-  <Pagination page={page} class="mt-10" />
-</LandingLayout>
+  </PageSection>
+</Layout>

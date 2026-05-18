@@ -4,8 +4,8 @@
     "titleTemplate": "%s · Polyglow",
     "description": "Vorwärts durch den Ozean des Lebens, die Wellen des Unternehmertums und den Nebel der Investitionen",
     "twitter": {
-      "site": "@idimilabs",
-      "creator": "@Astro"
+      "site": "@polyglow",
+      "creator": "@polyglow"
     }
   },
   "language": {
@@ -28,7 +28,8 @@
   "categories": {
     "life": "Leben",
     "invest": "Investieren",
-    "build": "Aufbauen"
+    "build": "Aufbauen",
+    "startup": "Startup"
   },
   "tags": {
     "reflect": "Nachdenken",
@@ -39,7 +40,8 @@
     "allocation": "Allokation",
     "innovation": "Innovation",
     "model": "Modell",
-    "management": "Management"
+    "management": "Management",
+    "market": "Markt"
   },
   "headings": {
     "home": {
@@ -102,18 +104,41 @@
     "life": "Leben"
   },
   "pages": {
-    "about": { "title": "Über" },
-    "author": { "title": "Autor", "writingActivity": "Schreibaktivität" },
-    "posts": { "title": "Alle Artikel" },
+    "about": {
+      "title": "Über"
+    },
+    "author": {
+      "title": "Autor",
+      "writingActivity": "Schreibaktivität",
+      "less": "Weniger",
+      "more": "Mehr",
+      "contributionsInYear": "{count} Artikel in {year} veröffentlicht",
+      "links": "Autorenlinks"
+    },
+    "posts": {
+      "title": "Alle Beiträge",
+      "archiveEyebrow": "Archiv",
+      "archiveTitle": "Beitragsarchiv",
+      "archiveSubtitle": "Alle veröffentlichten Notizen in umgekehrter chronologischer Reihenfolge.",
+      "totalPosts": "{count} Beiträge insgesamt",
+      "pageTitle": "Alle Beiträge {page}",
+      "pageDescription": "Beitragsseite {page}"
+    },
     "categories": {
       "title": "Kategorien",
-      "h2": "Alle Kategorien",
-      "description": "Themen erkunden und Beiträge nach Kategorien finden."
+      "h2": "Kategorien durchsuchen",
+      "description": "Themen erkunden und Beiträge nach Kategorie finden.",
+      "eyebrow": "Kategorie",
+      "relatedTags": "Verwandte Tags",
+      "noPosts": "In dieser Kategorie gibt es noch keine Beiträge."
     },
     "tags": {
       "title": "Tags",
-      "h2": "Alle Tags",
-      "description": "Themen erkunden und Beiträge nach Tags finden."
+      "h2": "Tags durchsuchen",
+      "description": "Themen erkunden und Beiträge nach Tags finden.",
+      "eyebrow": "Tag",
+      "browseCategories": "Kategorien durchsuchen",
+      "noPosts": "Mit diesem Tag gibt es noch keine Beiträge."
     }
   },
   "common": {
@@ -129,7 +154,10 @@
       "totalPostsWithLang": "{lang} {count} Beiträge insgesamt",
       "pageInfo": "Seite {current} von {total}",
       "noPosts": "Keine Beiträge",
-      "noPostsInCategory": "Es gibt noch keine Beiträge in dieser Kategorie. Bitte schauen Sie später noch einmal vorbei."
+      "noPostsInCategory": "Es gibt noch keine Beiträge in dieser Kategorie. Bitte schauen Sie später noch einmal vorbei.",
+      "pageTitle": "Seite {page}",
+      "pageLabel": "Seite {page}",
+      "postsCount": "{count} Beiträge"
     }
   },
   "footer": {

@@ -1,8 +1,20 @@
-import { DEFAULT_LANG } from '@/utils/i18n';
-import { generateRssForLang } from '@/utils/rss';
+import rss from "@astrojs/rss"
 
-export const prerender = true;
+import { SITE_CONFIG } from "@/config/site"
+import { getPostsForLocale, postUrl } from "@/utils/posts"
 
-export async function GET(context: { site: URL }) {
-  return generateRssForLang(DEFAULT_LANG, context.site);
+export async function GET() {
+  const posts = await getPostsForLocale("en")
+
+  return rss({
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    site: SITE_CONFIG.url,
+    items: posts.map((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.pubDate,
+      link: postUrl(post),
+    })),
+  })
 }
