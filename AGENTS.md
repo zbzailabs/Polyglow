@@ -41,7 +41,7 @@ Use Node.js 24 or newer and pnpm 11. Do not add npm, yarn, or bun lockfiles.
 - `src/pages/`: Astro routes, localized pages, RSS, robots, llms endpoints.
 - `src/layouts/main.astro`: shared HTML shell, SEO, header/footer layout.
 - `src/components/`: UI components grouped by cards, layout, navigation,
-  search, islands, analytics, and icons.
+  search, islands, widgets, and icons.
 - `src/content/`: authors, pages, and posts.
 - `src/content.config.ts`: content collection schemas.
 - `src/config/`: site, locale, taxonomy, pagination, and asset configuration.
