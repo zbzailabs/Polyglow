@@ -104,13 +104,65 @@ zh en fr es ru ja ko pt de id ar
 pnpm build
 ```
 
-Polyglow 已配置 Wrangler，推荐部署到 Cloudflare：
+Polyglow 可以发布到任意静态托管平台，包括 Cloudflare Pages、Vercel、
+Netlify、GitHub Pages 或普通 Web 服务器。页面访问量默认关闭，因此非
+Cloudflare 平台不需要数据库，也不需要服务端函数。
+
+项目也保留了可选的 Cloudflare Workers 部署方式：
 
 ```bash
 pnpm deploy
 ```
 
-也可以在 `pnpm build` 后将 `dist` 发布到其他静态托管平台。
+### 可选页面访问量
+
+页面访问量统计是可选的 Cloudflare D1 功能。只有在构建时和 Worker 运行时都设置
+`PUBLIC_PAGE_VIEWS_ENABLED=true`，才会启用。
+
+关闭时：
+
+- 页面不渲染访问量 UI。
+- 浏览器不会请求 `/api/page-view`。
+- Vercel、Netlify、GitHub Pages 和普通 CDN 静态托管无需额外配置。
+
+在 Cloudflare Workers 上启用访问量：
+
+1. 创建 D1 数据库。
+
+   ```bash
+   pnpm exec wrangler d1 create polyglow_analytics
+   ```
+
+2. 在 `wrangler.jsonc` 增加运行时变量和 D1 绑定。
+
+   ```jsonc
+   "vars": {
+     "PUBLIC_PAGE_VIEWS_ENABLED": "true"
+   },
+   "d1_databases": [
+     {
+       "binding": "ANALYTICS_DB",
+       "database_name": "polyglow_analytics",
+       "database_id": "<database_id>",
+       "migrations_dir": "./migrations"
+     }
+   ]
+   ```
+
+3. 执行迁移。
+
+   ```bash
+   pnpm exec wrangler d1 migrations apply polyglow_analytics --remote
+   ```
+
+4. 启用访问量并部署。
+
+   ```bash
+   PUBLIC_PAGE_VIEWS_ENABLED=true pnpm deploy
+   ```
+
+该功能只保存页面路径、访问次数和更新时间；不采集 IP、User-Agent、referrer、
+cookie 或个人标识。
 
 ## 反馈
 

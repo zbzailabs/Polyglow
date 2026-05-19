@@ -1,3 +1,5 @@
+import { isPageViewsEnabled } from "./utils/page-view-counter"
+
 export interface AnalyticsStatement {
   bind(...values: unknown[]): {
     first<T = unknown>(): Promise<T | null>
@@ -13,8 +15,9 @@ export interface AnalyticsAssets {
 }
 
 export interface AnalyticsEnv {
-  ANALYTICS_DB: AnalyticsDatabase
+  ANALYTICS_DB?: AnalyticsDatabase
   ASSETS: AnalyticsAssets
+  PUBLIC_PAGE_VIEWS_ENABLED?: string
 }
 
 const PAGE_VIEW_SQL = `
@@ -76,6 +79,14 @@ export async function handlePageViewRequest(
   request: Request,
   env: AnalyticsEnv
 ): Promise<Response> {
+  if (!isPageViewsEnabled(env.PUBLIC_PAGE_VIEWS_ENABLED)) {
+    return json({ error: "Not found" }, { status: 404 })
+  }
+
+  if (!env.ANALYTICS_DB) {
+    return json({ error: "Analytics database is not configured" }, { status: 503 })
+  }
+
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 })
   }

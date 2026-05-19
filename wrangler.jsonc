@@ -10,14 +10,6 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   },
-  "d1_databases": [
-    {
-      "binding": "ANALYTICS_DB",
-      "database_name": "polyglow_analytics",
-      "database_id": "1c8db205-67c7-48fa-97cc-85e234307abc",
-      "migrations_dir": "./migrations"
-    }
-  ],
   "observability": {
     "enabled": false
   }

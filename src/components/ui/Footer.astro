@@ -4,6 +4,7 @@ import type { Locale } from "@/config/locales"
 import Icon from "@/components/icons/Icon.astro"
 import { SITE_CONFIG } from "@/config/site"
 import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
+import { isPageViewsEnabled } from "@/utils/page-view-counter"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
 import PageViewCounter from "@/components/analytics/PageViewCounter.astro"
@@ -17,6 +18,9 @@ interface Props {
 const { lang, path = "/" } = Astro.props
 const year = new Date().getFullYear()
 const primaryCategories = getPrimaryCategories()
+const pageViewsEnabled = isPageViewsEnabled(
+  import.meta.env.PUBLIC_PAGE_VIEWS_ENABLED
+)
 ---
 
 <footer class="w-full" data-pagefind-ignore>
@@ -67,7 +71,7 @@ const primaryCategories = getPrimaryCategories()
       </div>
       <div class="flex items-center justify-between gap-4">
         <p class="text-xs">© {year} {SITE_CONFIG.name}</p>
-        <PageViewCounter lang={lang} path={path} />
+        {pageViewsEnabled && <PageViewCounter lang={lang} path={path} />}
       </div>
     </div>
     {

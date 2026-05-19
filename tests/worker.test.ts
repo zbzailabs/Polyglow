@@ -26,6 +26,7 @@ function makeEnv(): AnalyticsEnv {
   return {
     ANALYTICS_DB: new FakeD1Database() as unknown as AnalyticsEnv["ANALYTICS_DB"],
     ASSETS: { fetch: async () => new Response("asset") },
+    PUBLIC_PAGE_VIEWS_ENABLED: "true",
   }
 }
 
@@ -52,6 +53,32 @@ describe("normalizePageViewPath", () => {
 })
 
 describe("handlePageViewRequest", () => {
+  test("returns not found when page views are not enabled", async () => {
+    const env = {
+      ...makeEnv(),
+      PUBLIC_PAGE_VIEWS_ENABLED: undefined,
+    }
+
+    const response = await handlePageViewRequest(makePageViewRequest("/zh/"), env)
+
+    expect(response.status).toBe(404)
+    await expect(response.json()).resolves.toEqual({ error: "Not found" })
+  })
+
+  test("returns service unavailable when enabled without a database binding", async () => {
+    const env = {
+      ...makeEnv(),
+      ANALYTICS_DB: undefined,
+    }
+
+    const response = await handlePageViewRequest(makePageViewRequest("/zh/"), env)
+
+    expect(response.status).toBe(503)
+    await expect(response.json()).resolves.toEqual({
+      error: "Analytics database is not configured",
+    })
+  })
+
   test("increments and returns page views for a valid page path", async () => {
     const env = makeEnv()
 
