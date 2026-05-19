@@ -1,0 +1,12 @@
+node_modules
+dist
+.astro
+.git
+.env
+.env.*
+data.db
+uploads
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

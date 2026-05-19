@@ -23,6 +23,12 @@ services, Cloudflare, or production credentials.
 - Optional Cloudflare Workers Static Assets deployment.
 - Vitest for unit tests.
 
+## Documentation
+
+Look up EmDash documentation through the `emdash-docs` MCP server when verifying
+an API, hook, config option, or implementation pattern. Prefer the docs MCP over
+assumptions from training data because it reflects current published behavior.
+
 ## Required Commands
 
 - Install dependencies: `pnpm install`
