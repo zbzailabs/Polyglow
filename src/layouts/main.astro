@@ -141,7 +141,7 @@ const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
     <main class="flex-1">
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer lang={lang} path={path} />
     <DynamicGlass />
   </body>
 </html>

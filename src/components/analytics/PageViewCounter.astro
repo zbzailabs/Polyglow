@@ -1,0 +1,75 @@
+---
+import type { Locale } from "@/config/locales"
+import Icon from "@/components/icons/Icon.astro"
+import { localePath } from "@/utils/routes"
+
+interface Props {
+  lang: Locale
+  path?: string
+}
+
+const { lang, path = "/" } = Astro.props
+const pagePath = localePath(lang, path)
+---
+
+<span
+  class="inline-flex items-center gap-1 text-xs text-muted-foreground"
+  data-page-view-counter
+  data-page-view-path={pagePath}
+  aria-live="polite"
+>
+  <Icon name="eye" class="size-3.5 shrink-0" />
+  <span data-page-view-count>...</span>
+</span>
+
+<script>
+  import { formatPageViewCount } from "@/utils/page-view-counter"
+
+  declare global {
+    interface Window {
+      __polyglowPageViewCounter?: boolean
+    }
+  }
+
+  ;(() => {
+    const track = async () => {
+      const element = document.querySelector("[data-page-view-counter]")
+      if (!(element instanceof HTMLElement)) return
+      if (element.dataset.tracked === "true") return
+      const countElement = element.querySelector("[data-page-view-count]")
+      if (!(countElement instanceof HTMLElement)) return
+
+      const path = element.dataset.pageViewPath
+      if (!path) return
+
+      element.dataset.tracked = "true"
+
+      try {
+        const response = await fetch("/api/page-view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path }),
+          keepalive: true,
+        })
+        if (!response.ok) throw new Error("Page view request failed")
+
+        const data = (await response.json()) as { count?: unknown }
+        if (typeof data.count !== "number") throw new Error("Invalid response")
+
+        countElement.textContent = formatPageViewCount(data.count)
+      } catch {
+        element.hidden = true
+      }
+    }
+
+    if (!window.__polyglowPageViewCounter) {
+      window.__polyglowPageViewCounter = true
+      document.addEventListener("astro:page-load", track)
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", track, { once: true })
+      }
+    }
+
+    queueMicrotask(track)
+  })()
+</script>

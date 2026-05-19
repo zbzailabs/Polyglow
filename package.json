@@ -1,7 +1,7 @@
 {
   "name": "polyglow",
   "type": "module",
-  "version": "1.0.0",
+  "version": "6.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
     "typecheck": "astro check",
     "check": "pnpm build",
     "deploy": "pnpm build && wrangler deploy"
@@ -42,6 +43,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "sharp": "^0.34.5",
     "typescript": "~6.0.3",
+    "vitest": "^4.1.6",
     "wrangler": "^4.90.0"
   }
 }
