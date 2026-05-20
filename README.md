@@ -158,8 +158,7 @@ x402 metadata support is optional and disabled by default. The widget publishes
 machine-readable payment metadata when imported into a page or layout, while
 keeping Polyglow a static site. It is not mounted in the shared layout by
 default. It does not enforce HTTP 402 payment by itself; payment enforcement
-requires a server middleware integration such as x402 middleware or the EmDash
-x402 Astro integration on Cloudflare.
+requires a separate server middleware integration such as x402 middleware.
 
 Configure it with public environment variables:
 
