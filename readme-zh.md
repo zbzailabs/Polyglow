@@ -151,8 +151,8 @@ PUBLIC_ADSENSE_CLIENT_ID=ca-pub-0000000000000000
 ### x402
 
 x402 元数据支持默认关闭。该 widget 被导入到具体页面或布局后，会在页面 head 中发布机器可读的支付元数据，同时保持
-Polyglow 为静态站点。它默认不挂载到共享布局。它本身不执行 HTTP 402 支付拦截；真正的支付校验需要接入 x402
-middleware，或在 Cloudflare 上使用 EmDash x402 Astro integration。
+Polyglow 为静态站点。它默认不挂载到共享布局。它本身不执行 HTTP 402 支付拦截；真正的支付校验需要单独接入 x402
+middleware。
 
 通过公开环境变量配置：
 
