@@ -145,6 +145,9 @@ function validateHtml(file) {
     /<meta[^>]+http-equiv="content-language"[^>]+>/i
   )?.[0]
   const noindex = /content="[^"]*noindex/i.test(robots ?? "")
+  const isEnglishTaxonomyPostList =
+    locale === "en" &&
+    /^dist\/en\/(category|tags)\/[^/]+\/(\d+\/)?index\.html$/.test(rel)
   const alternates = [...html.matchAll(/<link[^>]+rel="alternate"[^>]+>/gi)]
     .map((match) => match[0])
     .map((tag) => ({
@@ -191,6 +194,17 @@ function validateHtml(file) {
     (descriptionContent.length < 140 || descriptionContent.length > 160)
   ) {
     fail(`${rel}: article meta description length is outside 140-160 characters`)
+  }
+  if (isEnglishTaxonomyPostList) {
+    if (title && (title.length < 40 || title.length > 60)) {
+      fail(`${rel}: taxonomy title length is outside 40-60 characters`)
+    }
+    if (descriptionContent.length < 140 || descriptionContent.length > 160) {
+      fail(`${rel}: taxonomy meta description length is outside 140-160 characters`)
+    }
+    if (!/<h3\b/i.test(html)) {
+      fail(`${rel}: taxonomy page missing h3 heading`)
+    }
   }
   if (!html.includes('name="twitter:site"')) {
     fail(`${rel}: missing twitter:site meta`)

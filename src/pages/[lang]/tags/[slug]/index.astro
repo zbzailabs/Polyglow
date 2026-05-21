@@ -9,6 +9,7 @@ import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
 import { TAXONOMY, getTag } from "@/config/taxonomy"
 import { getPaginationLinks, getTotalPages } from "@/utils/pagination"
 import { getPostsByTag } from "@/utils/posts"
+import { taxonomyMetaDescription, taxonomyMetaTitle } from "@/utils/seo"
 
 export async function getStaticPaths() {
   const paths = []
@@ -30,6 +31,8 @@ export async function getStaticPaths() {
 
 const { lang, slug } = Astro.props as { lang: Locale; slug: string }
 const tag = getTag(slug)
+const tagLabel = tag?.labelByLocale[lang] ?? slug
+const tagDescription = tag?.descriptionByLocale[lang] ?? ""
 const posts = await getPostsByTag(lang, slug)
 const pagePosts = posts.slice(0, TAXONOMY_POSTS_PER_PAGE)
 const totalPages = getTotalPages(posts.length, TAXONOMY_POSTS_PER_PAGE)
@@ -39,20 +42,23 @@ const pagination = getPaginationLinks({
   buildPageUrl: (page) =>
     page === 1 ? `/${lang}/tags/${slug}/` : `/${lang}/tags/${slug}/${page}/`,
 })
+const seoTitle = lang === "en" ? taxonomyMetaTitle(tagLabel) : tagLabel
+const seoDescription =
+  lang === "en" ? taxonomyMetaDescription(tagLabel, tagDescription) : tagDescription
 ---
 
 <Layout
   lang={lang}
   path={`/tags/${slug}/`}
-  title={tag?.labelByLocale[lang] ?? slug}
-  description={tag?.descriptionByLocale[lang]}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection>
     <PageHeader
-      title={tag?.labelByLocale[lang] ?? slug}
-      subtitle={tag?.descriptionByLocale[lang]}
+      title={tagLabel}
+      subtitle={tagDescription}
     />
-    <PostCardGrid posts={pagePosts} />
+    <PostCardGrid posts={pagePosts} headingLevel={3} />
     {
       totalPages > 1 && (
         <Pagination

@@ -9,6 +9,7 @@ import { LOCALES, type Locale } from "@/config/locales"
 import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
 import { TAXONOMY, getPrimaryCategories, getTag } from "@/config/taxonomy"
 import { getPostsByTag } from "@/utils/posts"
+import { taxonomyMetaDescription, taxonomyMetaTitle } from "@/utils/seo"
 import { t } from "@/utils/translations"
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
@@ -39,23 +40,34 @@ const { lang, slug, page } = Astro.props as {
   }
 }
 const tag = getTag(slug)
+const tagLabel = tag?.labelByLocale[lang] ?? slug
+const tagDescription = tag?.descriptionByLocale[lang] ?? ""
 const categories = getPrimaryCategories()
 const categoryLinks = categories.map((category) => ({
   href: `/${lang}/category/${category.slug}/`,
   label: category.labelByLocale[lang],
 }))
+const seoTitle =
+  lang === "en"
+    ? taxonomyMetaTitle(tagLabel, page.currentPage)
+    : `${tagLabel} ${page.currentPage}`
+const seoDescription =
+  lang === "en"
+    ? taxonomyMetaDescription(tagLabel, tagDescription, page.currentPage)
+    : tagDescription
 ---
 
 <Layout
   lang={lang}
   path={`/tags/${slug}/${page.currentPage}/`}
-  title={`${tag?.labelByLocale[lang] ?? slug} ${page.currentPage}`}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection>
     <PageHeader
       eyebrow={t(lang, "pages.tags.eyebrow")}
-      title={tag?.labelByLocale[lang] ?? slug}
-      subtitle={tag?.descriptionByLocale[lang]}
+      title={tagLabel}
+      subtitle={tagDescription}
       description={t(lang, "common.pagination.pageLabel", {
         page: page.currentPage,
       })}
@@ -67,7 +79,7 @@ const categoryLinks = categories.map((category) => ({
       items={categoryLinks}
       label={t(lang, "pages.tags.browseCategories")}
     />
-    <PostCardGrid posts={page.data} />
+    <PostCardGrid posts={page.data} headingLevel={3} />
     <Pagination
       prev={page.currentPage === 2 ? `/${lang}/tags/${slug}/` : page.url.prev}
       next={page.url.next}

@@ -9,6 +9,7 @@ import { LOCALES, type Locale } from "@/config/locales"
 import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
 import { TAXONOMY, getCategory, getTagsForCategory } from "@/config/taxonomy"
 import { getPostsByCategory } from "@/utils/posts"
+import { taxonomyMetaDescription, taxonomyMetaTitle } from "@/utils/seo"
 import { t } from "@/utils/translations"
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
@@ -39,23 +40,34 @@ const { lang, slug, page } = Astro.props as {
   }
 }
 const category = getCategory(slug)
+const categoryLabel = category?.labelByLocale[lang] ?? slug
+const categoryDescription = category?.descriptionByLocale[lang] ?? ""
 const relatedTags = getTagsForCategory(slug)
 const relatedTagLinks = relatedTags.map((tag) => ({
   href: `/${lang}/tags/${tag.slug}/`,
   label: tag.labelByLocale[lang],
 }))
+const seoTitle =
+  lang === "en"
+    ? taxonomyMetaTitle(categoryLabel, page.currentPage)
+    : `${categoryLabel} ${page.currentPage}`
+const seoDescription =
+  lang === "en"
+    ? taxonomyMetaDescription(categoryLabel, categoryDescription, page.currentPage)
+    : categoryDescription
 ---
 
 <Layout
   lang={lang}
   path={`/category/${slug}/${page.currentPage}/`}
-  title={`${category?.labelByLocale[lang] ?? slug} ${page.currentPage}`}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection>
     <PageHeader
       eyebrow={t(lang, "pages.categories.eyebrow")}
-      title={category?.labelByLocale[lang] ?? slug}
-      subtitle={category?.descriptionByLocale[lang]}
+      title={categoryLabel}
+      subtitle={categoryDescription}
       description={t(lang, "common.pagination.pageLabel", {
         page: page.currentPage,
       })}
@@ -67,7 +79,7 @@ const relatedTagLinks = relatedTags.map((tag) => ({
       items={relatedTagLinks}
       label={t(lang, "pages.categories.relatedTags")}
     />
-    <PostCardGrid posts={page.data} />
+    <PostCardGrid posts={page.data} headingLevel={3} />
     <Pagination
       prev={page.currentPage === 2
         ? `/${lang}/category/${slug}/`
