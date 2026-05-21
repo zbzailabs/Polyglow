@@ -2,7 +2,7 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Navigating life, entrepreneurship, and the fog of investing",
+    "description": "Polyglow is a multilingual Astro content theme for essays, research notes, and knowledge archives with fast static pages, search, RSS, and SEO structure.",
     "twitter": {
       "site": "@polyglow",
       "creator": "@polyglow"

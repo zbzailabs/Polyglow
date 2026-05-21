@@ -35,7 +35,7 @@ const archivePosts = posts.slice(0, POSTS_PER_PAGE)
 <Layout
   lang={lang}
   path="/"
-  title="Polyglow"
+  title="Polyglow - Multilingual Astro Content Theme"
   description={t(lang, "site.description")}
   image={lead?.data.heroImage}
 >
@@ -103,7 +103,7 @@ const archivePosts = posts.slice(0, POSTS_PER_PAGE)
           ))}
         </div>
         {gridPosts.length > 0 && (
-          <PostCardGrid posts={gridPosts} class="mt-6" />
+          <PostCardGrid posts={gridPosts} headingLevel={3} class="mt-6" />
         )}
         {totalPages > 1 && (
           <Pagination

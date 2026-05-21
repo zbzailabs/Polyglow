@@ -40,7 +40,9 @@ const localeMeta = getLocaleMeta(lang)
 const alternates = buildAlternates(path)
 const pageDescription = description ?? t(lang, "site.description")
 const pageTitle =
-  title === SITE_CONFIG.name ? title : `${title} | ${SITE_CONFIG.name}`
+  title === SITE_CONFIG.name || title.includes(SITE_CONFIG.name)
+    ? title
+    : `${title} | ${SITE_CONFIG.name}`
 const canonical = canonicalUrl(lang, path)
 const isUnsplashImage = image.startsWith("https://images.unsplash.com/")
 const absoluteImage = image.startsWith("http")

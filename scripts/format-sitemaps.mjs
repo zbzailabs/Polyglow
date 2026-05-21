@@ -1,4 +1,10 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
+import {
+  copyFileSync,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs"
 import { resolve } from "node:path"
 
 const distDir = resolve(process.cwd(), "dist")
@@ -52,4 +58,10 @@ const sitemapFiles = readdirSync(distDir)
 for (const file of sitemapFiles) {
   const xml = readFileSync(file, "utf8")
   writeFileSync(file, formatXml(xml))
+}
+
+const sitemapIndex = resolve(distDir, "sitemap-index.xml")
+const sitemapAlias = resolve(distDir, "sitemap.xml")
+if (existsSync(sitemapIndex)) {
+  copyFileSync(sitemapIndex, sitemapAlias)
 }

@@ -28,13 +28,13 @@ const primaryCategories = getPrimaryCategories()
       >
         <Image
           src={logo}
-          alt=""
+          alt={`${SITE_CONFIG.name} logo`}
           width={24}
           height={24}
           class="size-6"
           loading="lazy"
         />
-        <span>{SITE_CONFIG.name}</span>
+        <span aria-hidden="true">{SITE_CONFIG.name}</span>
       </a>
       <div class="flex items-center gap-4">
         <a

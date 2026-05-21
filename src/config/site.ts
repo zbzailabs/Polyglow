@@ -46,7 +46,7 @@ export const SITE_CONFIG = {
     import.meta.env.PUBLIC_SITE_URL ?? "https://polyglow.realrip.com"
   ).replace(/\/$/, ""),
   description:
-    "A multilingual Astro content site with glassmorphism cards and static publishing.",
+    "Polyglow is a multilingual Astro content theme for essays, research notes, and knowledge archives with fast static pages, search, RSS, and SEO structure.",
   repository: "https://github.com/realriplab/Polyglow",
   social: {
     x: socialXUrl,

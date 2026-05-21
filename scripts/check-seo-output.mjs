@@ -99,6 +99,9 @@ function validateImages(file, html) {
   const images = [...html.matchAll(/<img\b[^>]*>/gi)].map((match) => match[0])
   for (const image of images) {
     if (!hasAttr(image, "alt")) fail(`${rel}: image missing alt attribute`)
+    if (/(\s)alt(=("")?)?(\s|>|\/)/i.test(image)) {
+      fail(`${rel}: image has empty alt attribute`)
+    }
   }
 }
 
@@ -167,6 +170,21 @@ function validateHtml(file) {
   }
 
   if (!description) fail(`${rel}: missing meta description`)
+  if (locale === "en" && rel === "dist/en/index.html") {
+    if (title && (title.length < 40 || title.length > 60)) {
+      fail(`${rel}: homepage title length is outside 40-60 characters`)
+    }
+    const descriptionContent = extractAttr(description ?? "", "content") ?? ""
+    if (
+      descriptionContent.length < 140 ||
+      descriptionContent.length > 160
+    ) {
+      fail(`${rel}: homepage meta description length is outside 140-160 characters`)
+    }
+    if (!/<h3\b/i.test(html)) {
+      fail(`${rel}: homepage missing h3 heading`)
+    }
+  }
   if (!html.includes('name="twitter:site"')) {
     fail(`${rel}: missing twitter:site meta`)
   }
@@ -250,6 +268,11 @@ function validateHreflangReciprocity() {
 }
 
 function readSitemapXml() {
+  const aliasPath = join(distDir, "sitemap.xml")
+  if (!existsSync(aliasPath)) {
+    fail("dist/sitemap.xml: missing conventional sitemap alias")
+  }
+
   const indexPath = join(distDir, "sitemap-index.xml")
   if (!existsSync(indexPath)) {
     fail("dist/sitemap-index.xml: missing sitemap index")

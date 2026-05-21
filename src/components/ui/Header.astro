@@ -33,13 +33,13 @@ const primaryCategories = getPrimaryCategories()
     >
       <Image
         src={logo}
-        alt=""
+        alt={`${SITE_CONFIG.name} logo`}
         width={24}
         height={24}
         class="size-6"
         loading="eager"
       />
-      <span class="truncate">{SITE_CONFIG.name}</span>
+      <span class="truncate" aria-hidden="true">{SITE_CONFIG.name}</span>
     </a>
     <nav
       class="hidden items-center gap-7 justify-self-center text-sm lg:col-start-2 lg:flex"

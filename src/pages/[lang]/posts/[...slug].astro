@@ -159,7 +159,7 @@ const jsonLd = articleJsonLd({
             >
               <Image
                 src={authorImage}
-                alt=""
+                alt={author?.data.name ?? SITE_CONFIG.name}
                 width={32}
                 height={32}
                 class="size-8 rounded-full object-cover ring-1 ring-border"
