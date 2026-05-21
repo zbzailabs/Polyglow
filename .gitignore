@@ -4,6 +4,7 @@ dist/
 # generated types
 .astro/
 astro_cache/
+.superpowers/
 .wrangler/
 
 # dependencies
