@@ -1,9 +1,10 @@
 import { getCollection, type CollectionEntry } from "astro:content"
 
 import type { Locale } from "@/config/locales"
+import { normalizeContentSlug } from "@/utils/content-slug"
 
 export async function getPage(locale: Locale, slug: string): Promise<CollectionEntry<"page"> | undefined> {
-  return (await getCollection("page", (entry) => !entry.data.draft)).find((page) => page.data.locale === locale && (page.data.slug ?? page.id.replace(/\.(md|mdx|markdown)$/i, "").replace(`${locale}/`, "")) === slug)
+  return (await getCollection("page", (entry) => !entry.data.draft)).find((page) => page.data.locale === locale && normalizeContentSlug(page.id, page.data.locale) === slug)
 }
 
 export async function getAuthor(locale: Locale, slug = "default"): Promise<CollectionEntry<"author"> | undefined> {

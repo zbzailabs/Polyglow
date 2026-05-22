@@ -1,7 +1,7 @@
 ---
-import { Image } from "astro:assets"
 import Layout from "@/layouts/main.astro"
 import Icon from "@/components/icons/Icon.astro"
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
 import PageHeader from "@/components/layout/PageHeader.astro"
 import PageSection from "@/components/layout/PageSection.astro"
 import { LOCALES, type Locale } from "@/config/locales"
@@ -17,11 +17,10 @@ export async function getStaticPaths() {
 const { lang } = Astro.props as { lang: Locale }
 const author = await getAuthor(lang)
 const title = t(lang, "pages.author.title")
-const seoTitle =
-  lang === "en" ? "Polyglow Editorial Author Profile | Polyglow" : title
+const seoTitle = lang === "en" ? "Rip Author Profile | Polyglow" : title
 const seoDescription =
   lang === "en"
-    ? "Read the Polyglow editorial author profile, recent publishing activity, social links, and articles across building, investing, technology, and systems."
+    ? "Read Rip's author profile, recent publishing activity, social links, and articles on startup, investing, and life."
     : author?.data.bio
 const writingActivityLabel = t(lang, "pages.author.writingActivity")
 const publishedText = t(lang, "post.publishedAt")
@@ -48,38 +47,34 @@ const dateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
     date.getDate()
   ).padStart(2, "0")}`
+const getCalendarStart = (year: number) => {
+  const calendarStart = new Date(year, 0, 1)
+  calendarStart.setDate(calendarStart.getDate() - calendarStart.getDay())
+  return calendarStart
+}
+const getCalendarEnd = (year: number) => {
+  const calendarEnd = new Date(year, 11, 31)
+  calendarEnd.setDate(calendarEnd.getDate() + (6 - calendarEnd.getDay()))
+  return calendarEnd
+}
+const getWeekCount = (calendarStart: Date, calendarEnd: Date) =>
+  Math.floor(
+    (calendarEnd.getTime() - calendarStart.getTime()) /
+      (7 * 24 * 60 * 60 * 1000)
+  ) + 1
+const getWeekOffset = (calendarStart: Date, date: Date) =>
+  Math.floor(
+    (date.getTime() - calendarStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
+  )
+const activityGridWidth = (weekCount: number) =>
+  `${Math.max(52, weekCount * 0.75 + Math.max(weekCount - 1, 0) * 0.25).toFixed(
+    2
+  )}rem`
 const publishedByDate = authorPosts.reduce((map, post) => {
   const key = dateKey(post.data.pubDate)
   map.set(key, (map.get(key) ?? 0) + 1)
   return map
 }, new Map<string, number>())
-const yearPostCount = authorPosts.filter(
-  (post) => post.data.pubDate.getFullYear() === activeYear
-).length
-const calendarStart = new Date(activeYear, 0, 1)
-calendarStart.setDate(calendarStart.getDate() - calendarStart.getDay())
-const calendarEnd = new Date(activeYear, 11, 31)
-calendarEnd.setDate(calendarEnd.getDate() + (6 - calendarEnd.getDay()))
-const weekCount =
-  Math.floor(
-    (calendarEnd.getTime() - calendarStart.getTime()) /
-      (7 * 24 * 60 * 60 * 1000)
-  ) + 1
-const activityWeeks = Array.from({ length: weekCount }, (_, week) =>
-  Array.from({ length: 7 }, (_, day) => {
-    const date = new Date(calendarStart)
-    date.setDate(calendarStart.getDate() + week * 7 + day)
-    const count =
-      date.getFullYear() === activeYear
-        ? (publishedByDate.get(dateKey(date)) ?? 0)
-        : 0
-    return {
-      key: dateKey(date),
-      count,
-      label: `${publishedText}: ${dateFormatter.format(date)}`,
-    }
-  })
-)
 const activityLevelClass = (count: number) => {
   if (count >= 4) return "bg-[#216e39] dark:bg-[#39d353]"
   if (count === 3) return "bg-[#30a14e] dark:bg-[#26a641]"
@@ -87,7 +82,78 @@ const activityLevelClass = (count: number) => {
   if (count === 1) return "bg-[#9be9a8] dark:bg-[#0e4429]"
   return "bg-[#ebedf0] ring-1 ring-[#d0d7de] dark:bg-[#161b22] dark:ring-[#30363d]"
 }
-const recentPublishedPosts = authorPosts.slice(0, 6)
+const displayYears = publicationYears.length > 0 ? publicationYears : [activeYear]
+const buildActivityMonths = (year: number, weekCount: number) => {
+  const calendarStart = getCalendarStart(year)
+
+  return activityMonths.map((label, month) => {
+    const monthStart = new Date(year, month, 1)
+    const nextMonthStart =
+      month === 11 ? getCalendarEnd(year) : new Date(year, month + 1, 1)
+    const columnStart = getWeekOffset(calendarStart, monthStart) + 1
+    const nextColumnStart =
+      month === 11
+        ? weekCount + 1
+        : getWeekOffset(calendarStart, nextMonthStart) + 1
+
+    return {
+      label,
+      columnStart,
+      columnSpan: Math.max(1, nextColumnStart - columnStart),
+    }
+  })
+}
+const buildActivityWeeks = (year: number) => {
+  const calendarStart = getCalendarStart(year)
+  const calendarEnd = getCalendarEnd(year)
+  const weekCount = getWeekCount(calendarStart, calendarEnd)
+
+  return Array.from({ length: weekCount }, (_, week) =>
+    Array.from({ length: 7 }, (_, day) => {
+      const date = new Date(calendarStart)
+      date.setDate(calendarStart.getDate() + week * 7 + day)
+      const count =
+        date.getFullYear() === year ? (publishedByDate.get(dateKey(date)) ?? 0) : 0
+
+      return {
+        key: dateKey(date),
+        count,
+        label: `${publishedText}: ${dateFormatter.format(date)}`,
+        levelClass: activityLevelClass(count),
+      }
+    })
+  )
+}
+const buildYearActivity = (year: number) => {
+  const posts = authorPosts.filter(
+    (post) => post.data.pubDate.getFullYear() === year
+  )
+  const counts = Object.fromEntries(
+    [...publishedByDate.entries()].filter(([key]) => key.startsWith(`${year}-`))
+  )
+
+  return {
+    count: posts.length,
+    summary: t(lang, "pages.author.contributionsInYear", {
+      count: posts.length,
+      year,
+    }),
+    counts,
+    posts: posts.slice(0, 6).map((post) => ({
+      href: postUrl(post),
+      title: post.data.title,
+      publishedAt: `${publishedText}: ${dateFormatter.format(post.data.pubDate)}`,
+    })),
+  }
+}
+const activityByYear = Object.fromEntries(
+  displayYears.map((year) => [String(year), buildYearActivity(year)])
+)
+const currentActivity = activityByYear[String(activeYear)]
+const currentActivityWeeks = buildActivityWeeks(activeYear)
+const currentActivityMonths = buildActivityMonths(activeYear, currentActivityWeeks.length)
+const currentActivityGridWidth = activityGridWidth(currentActivityWeeks.length)
+const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
 ---
 
 <Layout
@@ -102,11 +168,13 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
       class="author-card mx-auto mt-16 grid max-w-5xl gap-8 rounded-[2rem] bg-background/90 p-8 ring-1 ring-border sm:p-12 md:grid-cols-[11rem_minmax(0,1fr)] md:items-center lg:p-16 dark:bg-white/[0.03]"
       data-author-card
     >
-      <Image
+      <OptimizedPicture
         src={authorImage}
         alt={author?.data.name ?? title}
         width={160}
         height={160}
+        widths={[144, 160, 288, 320]}
+        sizes="(max-width: 767px) 144px, 160px"
         class="mx-auto size-36 rounded-full object-cover ring-4 ring-muted md:size-40"
       />
       <div class="text-center md:text-left">
@@ -149,6 +217,8 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
     <section
       class="mx-auto mt-24 max-w-5xl rounded-[2rem] bg-muted/30 p-6 ring-1 ring-border sm:p-10 dark:bg-white/[0.03]"
       data-writing-activity
+      data-activity-locale={lang}
+      data-activity-published-text={publishedText}
     >
       <div
         class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
@@ -174,19 +244,19 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
             data-activity-year-list
           >
             {
-              (publicationYears.length > 0
-                ? publicationYears
-                : [activeYear]
-              ).map((year, index) => (
-                <span
-                  class={`inline-flex h-10 shrink-0 snap-start items-center justify-center rounded-full px-6 text-sm font-semibold ${
+              displayYears.map((year, index) => (
+                <button
+                  type="button"
+                  class={`inline-flex h-10 shrink-0 snap-start items-center justify-center rounded-full px-6 text-sm font-semibold transition hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                     index === 0
                       ? "bg-foreground text-background"
                       : "border border-border text-muted-foreground"
                   }`}
+                  aria-pressed={index === 0 ? "true" : "false"}
+                  data-activity-year={year}
                 >
                   {year}
-                </span>
+                </button>
               ))
             }
           </div>
@@ -201,17 +271,34 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
         </div>
       </div>
       <div class="mt-7 overflow-x-auto pb-2">
-        <div class="min-w-[52rem]">
-          <div class="mb-3 grid grid-cols-12 gap-4 text-sm text-foreground/80">
-            {activityMonths.map((month) => <span>{month}</span>)}
-          </div>
-          <div class="flex gap-1" aria-hidden="true">
+        <div
+          class="min-w-[52rem]"
+          style={`width: ${currentActivityGridWidth};`}
+          data-activity-grid
+        >
+          <div
+            class="mb-3 grid gap-1 text-sm text-foreground/80"
+            style={`grid-template-columns: repeat(${currentActivityWeeks.length}, minmax(0, 0.75rem)); column-gap: 0.25rem;`}
+            data-activity-months
+          >
             {
-              activityWeeks.map((week) => (
+              currentActivityMonths.map((month) => (
+                <span
+                  class="min-w-0 whitespace-nowrap"
+                  style={`grid-column: ${month.columnStart} / span ${month.columnSpan};`}
+                >
+                  {month.label}
+                </span>
+              ))
+            }
+          </div>
+          <div class="flex gap-1" aria-hidden="true" data-activity-heatmap>
+            {
+              currentActivityWeeks.map((week) => (
                 <div class="grid shrink-0 gap-1">
                   {week.map((day) => (
                     <span
-                      class={`size-3 rounded-[0.2rem] ${activityLevelClass(day.count)}`}
+                      class={`size-3 rounded-[0.2rem] ${day.levelClass}`}
                       data-day={day.key}
                       title={`${day.label}: ${day.count}`}
                     />
@@ -223,6 +310,8 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
         </div>
         <div
           class="mt-3 flex min-w-[52rem] flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground"
+          style={`width: ${currentActivityGridWidth};`}
+          data-activity-legend
         >
           <div class="flex items-center gap-2">
             <span>{t(lang, "pages.author.less")}</span>
@@ -238,28 +327,21 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
             ></span>
             <span>{t(lang, "pages.author.more")}</span>
           </div>
-          <p>
-            {
-              t(lang, "pages.author.contributionsInYear", {
-                count: yearPostCount,
-                year: activeYear,
-              })
-            }
-          </p>
+          <p data-activity-summary>{currentActivity.summary}</p>
         </div>
         {
-          recentPublishedPosts.length > 0 && (
+          currentActivity.posts.length > 0 && (
             <div class="mt-8 grid gap-3" data-author-published-list>
-              {recentPublishedPosts.map((post) => (
+              {currentActivity.posts.map((post) => (
                 <a
-                  href={postUrl(post)}
+                  href={post.href}
                   class="grid gap-1 rounded-lg border border-border bg-background/70 px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:bg-accent/70 dark:bg-white/[0.03]"
                 >
                   <span class="text-xs font-medium text-muted-foreground">
-                    {publishedText}: {dateFormatter.format(post.data.pubDate)}
+                    {post.publishedAt}
                   </span>
                   <h3 class="font-semibold text-foreground">
-                    {post.data.title}
+                    {post.title}
                   </h3>
                 </a>
               ))}
@@ -267,6 +349,12 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
           )
         }
       </div>
+      <script
+        is:inline
+        type="application/json"
+        data-activity-data
+        set:html={activityDataJson}
+      />
     </section>
   </PageSection>
 </Layout>
@@ -281,12 +369,191 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
         const list = nav.querySelector("[data-activity-year-list]")
         const prev = nav.querySelector('[data-activity-year-scroll="left"]')
         const next = nav.querySelector('[data-activity-year-scroll="right"]')
+        const section = nav.closest("[data-writing-activity]")
         if (
           !(list instanceof HTMLElement) ||
           !(prev instanceof HTMLButtonElement) ||
-          !(next instanceof HTMLButtonElement)
+          !(next instanceof HTMLButtonElement) ||
+          !(section instanceof HTMLElement)
         ) {
           return
+        }
+        const heatmap = section.querySelector("[data-activity-heatmap]")
+        const monthLabels = section.querySelector("[data-activity-months]")
+        const activityGrid = section.querySelector("[data-activity-grid]")
+        const activityLegend = section.querySelector("[data-activity-legend]")
+        const summary = section.querySelector("[data-activity-summary]")
+        const publishedList = section.querySelector("[data-author-published-list]")
+        const dataScript = section.querySelector("[data-activity-data]")
+        const yearButtons = Array.from(
+          list.querySelectorAll("[data-activity-year]")
+        ).filter((button) => button instanceof HTMLButtonElement)
+        const activityData = dataScript?.textContent
+          ? JSON.parse(dataScript.textContent)
+          : {}
+        const activityLocale = section.dataset.activityLocale || undefined
+        const publishedText = section.dataset.activityPublishedText || ""
+        const dateFormatter = new Intl.DateTimeFormat(activityLocale, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+        const monthFormatter = new Intl.DateTimeFormat(activityLocale, {
+          month: "short",
+        })
+        const activityLevelClass = (count) => {
+          if (count >= 4) return "bg-[#216e39] dark:bg-[#39d353]"
+          if (count === 3) return "bg-[#30a14e] dark:bg-[#26a641]"
+          if (count === 2) return "bg-[#40c463] dark:bg-[#006d32]"
+          if (count === 1) return "bg-[#9be9a8] dark:bg-[#0e4429]"
+          return "bg-[#ebedf0] ring-1 ring-[#d0d7de] dark:bg-[#161b22] dark:ring-[#30363d]"
+        }
+        const dateKey = (date) =>
+          `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+            date.getDate()
+          ).padStart(2, "0")}`
+        const getCalendarStart = (year) => {
+          const calendarStart = new Date(year, 0, 1)
+          calendarStart.setDate(calendarStart.getDate() - calendarStart.getDay())
+          return calendarStart
+        }
+        const getCalendarEnd = (year) => {
+          const calendarEnd = new Date(year, 11, 31)
+          calendarEnd.setDate(calendarEnd.getDate() + (6 - calendarEnd.getDay()))
+          return calendarEnd
+        }
+        const getWeekOffset = (calendarStart, date) =>
+          Math.floor(
+            (date.getTime() - calendarStart.getTime()) /
+              (7 * 24 * 60 * 60 * 1000)
+          )
+        const activityGridWidth = (weekCount) =>
+          `${Math.max(52, weekCount * 0.75 + Math.max(weekCount - 1, 0) * 0.25).toFixed(
+            2
+          )}rem`
+        const buildMonthMarkers = (year, weekCount) => {
+          const calendarStart = getCalendarStart(year)
+          return Array.from({ length: 12 }, (_, month) => {
+            const monthStart = new Date(year, month, 1)
+            const nextMonthStart =
+              month === 11 ? getCalendarEnd(year) : new Date(year, month + 1, 1)
+            const columnStart = getWeekOffset(calendarStart, monthStart) + 1
+            const nextColumnStart =
+              month === 11
+                ? weekCount + 1
+                : getWeekOffset(calendarStart, nextMonthStart) + 1
+
+            return {
+              label: monthFormatter.format(monthStart),
+              columnStart,
+              columnSpan: Math.max(1, nextColumnStart - columnStart),
+            }
+          })
+        }
+        const buildWeeks = (year, counts) => {
+          const calendarStart = getCalendarStart(year)
+          const calendarEnd = getCalendarEnd(year)
+          const weekCount =
+            Math.floor(
+              (calendarEnd.getTime() - calendarStart.getTime()) /
+                (7 * 24 * 60 * 60 * 1000)
+            ) + 1
+
+          return Array.from({ length: weekCount }, (_, week) =>
+            Array.from({ length: 7 }, (_, day) => {
+              const date = new Date(calendarStart)
+              date.setDate(calendarStart.getDate() + week * 7 + day)
+              const key = dateKey(date)
+              const count = date.getFullYear() === year ? counts[key] || 0 : 0
+
+              return {
+                key,
+                count,
+                label: `${publishedText}: ${dateFormatter.format(date)}`,
+                levelClass: activityLevelClass(count),
+              }
+            })
+          )
+        }
+
+        const renderMonthLabels = (year, weekCount) => {
+          if (!(monthLabels instanceof HTMLElement)) return
+          monthLabels.style.gridTemplateColumns = `repeat(${weekCount}, minmax(0, 0.75rem))`
+          monthLabels.style.columnGap = "0.25rem"
+          monthLabels.replaceChildren(
+            ...buildMonthMarkers(year, weekCount).map((month) => {
+              const label = document.createElement("span")
+              label.className = "min-w-0 whitespace-nowrap"
+              label.style.gridColumn = `${month.columnStart} / span ${month.columnSpan}`
+              label.textContent = month.label
+              return label
+            })
+          )
+        }
+
+        const renderHeatmap = (weeks) => {
+          if (!(heatmap instanceof HTMLElement)) return
+          heatmap.replaceChildren(
+            ...weeks.map((week) => {
+              const column = document.createElement("div")
+              column.className = "grid shrink-0 gap-1"
+              for (const day of week) {
+                const cell = document.createElement("span")
+                cell.className = `size-3 rounded-[0.2rem] ${day.levelClass}`
+                cell.dataset.day = day.key
+                cell.title = `${day.label}: ${day.count}`
+                column.append(cell)
+              }
+              return column
+            })
+          )
+        }
+
+        const renderPublishedList = (posts) => {
+          if (!(publishedList instanceof HTMLElement)) return
+          publishedList.replaceChildren(
+            ...posts.map((post) => {
+              const link = document.createElement("a")
+              link.href = post.href
+              link.className =
+                "grid gap-1 rounded-lg border border-border bg-background/70 px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:bg-accent/70 dark:bg-white/[0.03]"
+
+              const meta = document.createElement("span")
+              meta.className = "text-xs font-medium text-muted-foreground"
+              meta.textContent = post.publishedAt
+
+              const title = document.createElement("h3")
+              title.className = "font-semibold text-foreground"
+              title.textContent = post.title
+
+              link.append(meta, title)
+              return link
+            })
+          )
+        }
+
+        const setActiveYear = (year) => {
+          const activity = activityData[String(year)]
+          if (!activity) return
+
+          yearButtons.forEach((button) => {
+            const active = button.dataset.activityYear === String(year)
+            button.setAttribute("aria-pressed", active ? "true" : "false")
+            button.classList.toggle("bg-foreground", active)
+            button.classList.toggle("text-background", active)
+            button.classList.toggle("border", !active)
+            button.classList.toggle("border-border", !active)
+            button.classList.toggle("text-muted-foreground", !active)
+          })
+          const weeks = buildWeeks(Number(year), activity.counts || {})
+          const gridWidth = activityGridWidth(weeks.length)
+          if (activityGrid instanceof HTMLElement) activityGrid.style.width = gridWidth
+          if (activityLegend instanceof HTMLElement) activityLegend.style.width = gridWidth
+          renderMonthLabels(Number(year), weeks.length)
+          renderHeatmap(weeks)
+          renderPublishedList(activity.posts)
+          if (summary) summary.textContent = activity.summary
+          history.replaceState(null, "", `#activity-${year}`)
         }
 
         const update = () => {
@@ -308,13 +575,18 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
         next.addEventListener("click", () => {
           list.scrollBy({ left: list.clientWidth * 0.75, behavior: "smooth" })
         })
+        yearButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            setActiveYear(button.dataset.activityYear)
+          })
+        })
         list.addEventListener("scroll", update, { passive: true })
         window.addEventListener("resize", update)
+        const initialYear = location.hash.match(/^#activity-(\d{4})$/)?.[1]
+        if (initialYear) setActiveYear(initialYear)
         update()
       })
     }
-
     setupYearNav()
-    document.addEventListener("astro:page-load", setupYearNav)
   })()
 </script>

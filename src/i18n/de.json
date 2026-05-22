@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Vorwärts durch den Ozean des Lebens, die Wellen des Unternehmertums und den Nebel der Investitionen",
+    "description": "Vorwärts durch die Wellen der Startup-Welt, den Nebel des Investierens und den Ozean des Lebens.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "Leben",
     "invest": "Investieren",
-    "build": "Aufbauen",
+    "build": "Startup",
     "startup": "Startup"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "Startseite",
       "h1": "Polyglow",
-      "h2": "Vorwärts durch den Ozean des Lebens, die Wellen des Unternehmertums und den Nebel der Investitionen"
+      "h2": "Vorwärts durch die Wellen der Startup-Welt, den Nebel des Investierens und den Ozean des Lebens."
     },
     "build": {
-      "h1": "Aufbauen",
+      "h1": "Startup",
       "h2": "Der Weg von null auf eins – Chancen und Herausforderungen erkennen"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "Aufbauen",
+    "build": "Startup",
     "invest": "Investieren",
     "life": "Leben"
   },

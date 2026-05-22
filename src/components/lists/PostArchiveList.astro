@@ -2,7 +2,7 @@
 import { getCategory, getTag } from "@/config/taxonomy"
 import type { Locale } from "@/config/locales"
 import type { PostEntry } from "@/utils/posts"
-import { postUrl } from "@/utils/posts"
+import { postCategorySlug, postTagSlugs, postUrl } from "@/utils/posts"
 
 interface Props {
   posts: PostEntry[]
@@ -20,9 +20,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, {
 <div class="archive-list">
   {
     posts.map((post) => {
-      const category = getCategory(post.data.category)
-      const categoryLabel = category?.labelByLocale[lang] ?? post.data.category
-      const tagLabels = post.data.tags
+      const categorySlug = postCategorySlug(post)
+      const category = getCategory(categorySlug)
+      const categoryLabel = category?.labelByLocale[lang] ?? categorySlug
+      const tagLabels = postTagSlugs(post)
         .map((slug) => getTag(slug)?.labelByLocale[lang] ?? slug)
         .slice(0, 3)
         .join(" / ")

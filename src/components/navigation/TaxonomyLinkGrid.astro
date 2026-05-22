@@ -26,7 +26,15 @@ const {
   overviewTitle,
   class: className = "",
 } = Astro.props
-const hiddenDescriptions = descriptionItems.filter((item) => item.description)
+const hiddenDescriptions = descriptionItems.filter(
+  (item) =>
+    item.description &&
+    !items.some(
+      (visibleItem) =>
+        visibleItem.label === item.label &&
+        visibleItem.description === item.description
+    )
+)
 ---
 
 <section class={`mt-8 ${className}`}>
@@ -35,36 +43,25 @@ const hiddenDescriptions = descriptionItems.filter((item) => item.description)
     {
       items.map((item) => (
         <a class="taxonomy-link" href={item.href}>
-          <h3>{item.label}</h3>
-          <span class="taxonomy-link__count">{item.count}</span>
+          <span class="taxonomy-link__body">
+            <span class="taxonomy-link__title">{item.label}</span>
+            {item.description && (
+              <span class="taxonomy-link__description">
+                {item.description}
+              </span>
+            )}
+          </span>
+          <span class="taxonomy-link__count" aria-label={`${item.count}`}>
+            {item.count}
+          </span>
         </a>
       ))
     }
   </div>
   {
-    overviewTitle && hiddenDescriptions.length > 0 && (
-      <section class="mt-8 grid gap-4" aria-labelledby="taxonomy-overview">
-        <h2 id="taxonomy-overview" class="text-lg font-semibold text-foreground">
-          {overviewTitle}
-        </h2>
-        <div class="grid gap-3 sm:grid-cols-2">
-          {hiddenDescriptions.map((item) => (
-            <article class="rounded-lg border border-border bg-background/70 p-4 dark:bg-white/[0.03]">
-              <h3 class="text-sm font-semibold text-foreground">
-                {item.label}
-              </h3>
-              <p class="mt-2 text-sm leading-6 text-muted-foreground">
-                {item.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-    )
-  }
-  {
-    hiddenDescriptions.length > 0 && !overviewTitle && (
+    hiddenDescriptions.length > 0 && (
       <div class="sr-only">
+        {overviewTitle && <p>{overviewTitle}</p>}
         {hiddenDescriptions.map((item) => (
           <p>
             {item.label} {item.description}

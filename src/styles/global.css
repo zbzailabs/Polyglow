@@ -249,15 +249,15 @@
   @apply inline-flex items-center rounded-full bg-white/25 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md;
 }
 
-.polyglow-prose {
+.realrip-prose {
   @apply max-w-3xl text-foreground;
 }
 
-.polyglow-prose.article-prose {
+.realrip-prose.article-prose {
   @apply max-w-none;
 }
 
-.polyglow-prose.prose-neutral {
+.realrip-prose.prose-neutral {
   color: var(--foreground);
 }
 
@@ -281,18 +281,18 @@
 
 @supports (text-autospace: normal) {
   :where(html[lang="zh"], html[lang="ja"], html[lang="ko"]),
-  :where(html[lang="zh"], html[lang="ja"], html[lang="ko"]) .polyglow-prose {
+  :where(html[lang="zh"], html[lang="ja"], html[lang="ko"]) .realrip-prose {
     text-autospace: normal;
   }
 }
 
-:where(html[lang="zh"], html[lang="ja"], html[lang="ko"]) .polyglow-prose {
+:where(html[lang="zh"], html[lang="ja"], html[lang="ko"]) .realrip-prose {
   text-align: justify;
   text-justify: inter-ideograph;
 }
 
 :where(html[lang="zh"], html[lang="ja"], html[lang="ko"])
-  .polyglow-prose
+  .realrip-prose
   :where(p, li) {
   text-align: justify;
   text-justify: inter-ideograph;
@@ -307,7 +307,7 @@
     html[lang="de"],
     html[lang="id"]
   )
-  .polyglow-prose,
+  .realrip-prose,
 :where(
     html[lang="en"],
     html[lang="fr"],
@@ -317,13 +317,13 @@
     html[lang="de"],
     html[lang="id"]
   )
-  .polyglow-prose
+  .realrip-prose
   :where(p, li) {
   text-align: left;
 }
 
-html[dir="rtl"] .polyglow-prose,
-html[dir="rtl"] .polyglow-prose :where(p, li) {
+html[dir="rtl"] .realrip-prose,
+html[dir="rtl"] .realrip-prose :where(p, li) {
   text-align: start;
 }
 
@@ -340,75 +340,75 @@ html[dir="rtl"] .polyglow-prose :where(p, li) {
   @apply w-full;
 }
 
-.polyglow-prose :where(h2) {
+.realrip-prose :where(h2) {
   @apply mt-12 mb-4 text-2xl leading-tight font-semibold text-foreground;
 }
 
-.polyglow-prose :where(h3) {
+.realrip-prose :where(h3) {
   @apply mt-9 mb-3 text-xl leading-tight font-semibold text-foreground;
 }
 
-.polyglow-prose :where(h4) {
+.realrip-prose :where(h4) {
   @apply mt-8 mb-2 text-lg leading-tight font-semibold text-foreground;
 }
 
-.polyglow-prose :where(p) {
+.realrip-prose :where(p) {
   @apply my-6 leading-8 text-foreground/85;
 }
 
-.polyglow-prose :where(ul, ol) {
+.realrip-prose :where(ul, ol) {
   @apply my-6 ps-6;
 }
 
-.polyglow-prose :where(li) {
+.realrip-prose :where(li) {
   @apply my-2 leading-8 text-foreground/85;
 }
 
-.polyglow-prose :where(li)::marker {
+.realrip-prose :where(li)::marker {
   color: var(--muted-foreground);
 }
 
-.polyglow-prose :where(strong) {
+.realrip-prose :where(strong) {
   @apply font-semibold text-foreground;
 }
 
-.polyglow-prose :where(a) {
+.realrip-prose :where(a) {
   @apply font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground;
 }
 
-.polyglow-prose :where(:not(pre) > code) {
+.realrip-prose :where(:not(pre) > code) {
   @apply rounded-md bg-muted px-1.5 py-0.5 text-sm text-foreground;
 }
 
-.polyglow-prose :where(pre) {
+.realrip-prose :where(pre) {
   @apply my-8 overflow-x-auto rounded-2xl border border-border bg-muted/70 p-4 shadow-sm;
 }
 
-.polyglow-prose :where(pre code) {
+.realrip-prose :where(pre code) {
   @apply bg-transparent p-0 text-sm text-foreground;
 }
 
-.polyglow-prose :where(blockquote) {
+.realrip-prose :where(blockquote) {
   @apply my-8 rounded-2xl border-s-4 border-border bg-muted/50 px-5 py-3 text-foreground/80;
 }
 
-.polyglow-prose :where(hr) {
+.realrip-prose :where(hr) {
   @apply my-10 border-border;
 }
 
-.polyglow-prose :where(table) {
+.realrip-prose :where(table) {
   @apply my-8 text-sm;
 }
 
-.polyglow-prose :where(th) {
+.realrip-prose :where(th) {
   @apply border-b border-border px-3 py-2 text-start font-semibold text-foreground;
 }
 
-.polyglow-prose :where(td) {
+.realrip-prose :where(td) {
   @apply border-b border-border px-3 py-2 text-foreground/80;
 }
 
-.polyglow-prose :where(img) {
+.realrip-prose :where(img) {
   @apply my-8 rounded-2xl shadow-sm ring-1 ring-border;
 }
 
@@ -442,15 +442,27 @@ html[dir="rtl"] .polyglow-prose :where(p, li) {
 }
 
 .taxonomy-link-grid {
-  @apply grid gap-3 md:grid-cols-3;
+  @apply grid gap-3 md:grid-cols-2 lg:grid-cols-3;
 }
 
 .taxonomy-link {
-  @apply flex min-h-10 items-center justify-between rounded-full border border-border bg-background px-4 text-sm text-foreground transition hover:-translate-y-0.5 hover:bg-accent/70 dark:bg-white/[0.03];
+  @apply flex min-h-24 items-start justify-between gap-4 rounded-lg border border-border bg-background/70 p-4 text-sm text-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/70 hover:shadow-md dark:bg-white/[0.03];
+}
+
+.taxonomy-link__body {
+  @apply grid min-w-0 gap-2;
+}
+
+.taxonomy-link__title {
+  @apply text-base font-semibold text-foreground;
+}
+
+.taxonomy-link__description {
+  @apply text-sm leading-6 text-muted-foreground;
 }
 
 .taxonomy-link__count {
-  @apply inline-flex size-6 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground;
+  @apply inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground;
 }
 
 .taxonomy-pill {

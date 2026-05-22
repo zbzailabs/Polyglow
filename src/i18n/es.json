@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Avanzando en el océano de la vida, las olas del emprenAstroento y la niebla de la inversión",
+    "description": "Avanzar entre las olas de las startups, la niebla de la inversión y el océano de la vida.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "Vida",
     "invest": "Invertir",
-    "build": "Construir",
+    "build": "Startup",
     "startup": "Startup"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "Inicio",
       "h1": "Polyglow",
-      "h2": "Avanzando en la vida, el emprenAstroento y la niebla de la inversión"
+      "h2": "Avanzar entre las olas de las startups, la niebla de la inversión y el océano de la vida."
     },
     "build": {
-      "h1": "Construir",
+      "h1": "Startup",
       "h2": "El camino de cero a uno, detectando oportunidades y desafíos"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "Construir",
+    "build": "Startup",
     "invest": "Invertir",
     "life": "Vida"
   },

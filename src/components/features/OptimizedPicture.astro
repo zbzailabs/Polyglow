@@ -7,8 +7,11 @@ interface Props {
   alt: string
   width?: number
   height?: number
+  widths?: number[]
+  sizes?: string
   class?: string
   loading?: "eager" | "lazy"
+  decoding?: "async" | "sync" | "auto"
 }
 
 const {
@@ -16,54 +19,76 @@ const {
   alt,
   width,
   height,
+  widths,
+  sizes,
   class: className,
   loading = "lazy",
+  decoding = "async",
 } = Astro.props
 const isString = typeof src === "string"
 const stringSrc = isString ? (src as string) : undefined
 const isUnsplashImage = stringSrc?.startsWith("https://images.unsplash.com/")
+const assetFormat = isString ? undefined : (src as ImageMetadata).format
+const isSvgAsset = assetFormat === "svg"
+const isSvgString = stringSrc?.toLowerCase().split("?")[0]?.endsWith(".svg")
+const isSvgImage = isSvgAsset || isSvgString
 const resolvedSrc = stringSrc ? optimizeRemoteImageUrl(stringSrc, width) : src
 const imageWidth = width ?? (isString ? 1200 : undefined)
 const imageHeight = height ?? (isString ? 800 : undefined)
-const imageWidths = isString
-  ? [420, 640, 720, 960, 1200]
-  : [480, 768, 1024, 1400]
-const imageSizes = isString
-  ? "(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) 50vw, 720px"
-  : "(max-width: 768px) 100vw, 50vw"
+const imageWidths =
+  widths ?? (isString ? [420, 640, 720, 960, 1200] : [480, 768, 1024, 1400])
+const imageSizes =
+  sizes ??
+  (isString
+    ? "(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) 50vw, 720px"
+    : "(max-width: 768px) 100vw, 50vw")
 const fetchpriority = loading === "eager" ? "high" : undefined
 const crossOrigin = isUnsplashImage ? "anonymous" : undefined
+const imageFormats = ["avif"]
+const svgSrc = isString ? (resolvedSrc as string) : (resolvedSrc as ImageMetadata).src
 ---
 
 {
-  isString ? (
+  isSvgImage ? (
+    <img
+      src={svgSrc}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchpriority}
+      crossorigin={crossOrigin}
+      class={className}
+    />
+  ) : isString ? (
     <Picture
       src={resolvedSrc as string}
       alt={alt}
       width={imageWidth as number}
       height={imageHeight as number}
       loading={loading}
-      decoding="async"
+      decoding={decoding}
       fetchpriority={fetchpriority}
       crossorigin={crossOrigin}
       class={className}
       widths={imageWidths}
       sizes={imageSizes}
-      formats={["avif", "webp"]}
-      fallbackFormat="webp"
+      formats={imageFormats}
+      fallbackFormat="avif"
     />
   ) : (
     <Picture
       src={resolvedSrc as ImageMetadata}
       alt={alt}
       loading={loading}
-      decoding="async"
+      decoding={decoding}
       fetchpriority={fetchpriority}
       class={className}
       widths={imageWidths}
       sizes={imageSizes}
-      formats={["avif", "webp"]}
-      fallbackFormat="webp"
+      formats={imageFormats}
+      fallbackFormat="avif"
     />
   )
 }

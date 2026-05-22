@@ -35,9 +35,10 @@ const archivePosts = posts.slice(0, POSTS_PER_PAGE)
 <Layout
   lang={lang}
   path="/"
-  title="Polyglow - Multilingual Astro Content Theme"
+  title={t(lang, "site.name")}
   description={t(lang, "site.description")}
   image={lead?.data.heroImage}
+  dynamicGlass={homepageLayout === "cover"}
 >
   {
     homepageLayout === "archive" ? (
@@ -90,7 +91,7 @@ const archivePosts = posts.slice(0, POSTS_PER_PAGE)
         data-pagefind-ignore
         data-home-surface
       >
-        <h1 class="sr-only">Polyglow</h1>
+        <h1 class="sr-only">{t(lang, "site.name")}</h1>
         {lead && <PostCardCover post={lead} priority variant="lead" />}
         <div class="mt-6 grid grid-cols-12 gap-6">
           {widePosts.map((post) => (

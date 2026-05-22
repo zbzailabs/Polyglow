@@ -12,7 +12,7 @@ import {
   getPaginationLinks,
   getTotalPages,
 } from "@/utils/pagination"
-import { getPostsForLocale } from "@/utils/posts"
+import { getPostsForLocale, postCategorySlug } from "@/utils/posts"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
 
@@ -24,13 +24,13 @@ const { lang } = Astro.props as { lang: Locale }
 const posts = await getPostsForLocale(lang)
 const countByCategory = new Map<string, number>()
 for (const post of posts) {
+  const categorySlug = postCategorySlug(post)
   countByCategory.set(
-    post.data.category,
-    (countByCategory.get(post.data.category) ?? 0) + 1
+    categorySlug,
+    (countByCategory.get(categorySlug) ?? 0) + 1
   )
 }
 const categoryLinks = TAXONOMY.categories
-  .filter((category) => (countByCategory.get(category.slug) ?? 0) > 0)
   .map((category) => ({
     href: localePath(lang, `/category/${category.slug}/`),
     label: category.labelByLocale[lang],
@@ -56,10 +56,8 @@ const seoTitle =
   lang === "en" ? "Content Categories and Topic Groups | Polyglow" : title
 const seoDescription =
   lang === "en"
-    ? "Browse Polyglow categories for build, invest, and life articles, with grouped paths into essays, research notes, and long-term content archives."
+    ? "Browse Polyglow categories for startup, investing, and life articles across essays, notes, and long-term archives."
     : t(lang, "pages.categories.description")
-const overviewTitle =
-  lang === "en" ? "Category Overview" : t(lang, "pages.categories.title")
 ---
 
 <Layout
@@ -78,7 +76,6 @@ const overviewTitle =
       title={t(lang, "pages.categories.h2")}
       items={pageLinks}
       descriptionItems={categoryDescriptions}
-      overviewTitle={overviewTitle}
     />
     {totalPages > 1 && (
       <Pagination

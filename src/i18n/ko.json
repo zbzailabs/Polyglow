@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "삶의 바다, 창업의 파도, 투자의 안개 속을 나아갑니다",
+    "description": "스타트업의 파도, 투자의 안개, 삶의 바다를 헤쳐 나아갑니다.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "인생",
     "invest": "투자",
-    "build": "창업",
+    "build": "스타트업",
     "startup": "스타트업"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "홈",
       "h1": "Polyglow",
-      "h2": "삶의 바다, 창업의 파도, 투자의 안개 속을 나아갑니다"
+      "h2": "스타트업의 파도, 투자의 안개, 삶의 바다를 헤쳐 나아갑니다."
     },
     "build": {
-      "h1": "창업",
+      "h1": "스타트업",
       "h2": "제로에서 일로 가는 길, 기회와 도전을 포착"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "창업",
+    "build": "스타트업",
     "invest": "투자",
     "life": "인생"
   },

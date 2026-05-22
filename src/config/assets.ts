@@ -21,6 +21,7 @@ export const ASSET_CONFIG = {
   publicAssetBaseUrl,
   allowedRemoteHosts: [
     ...(configuredAssetHost ? [configuredAssetHost] : []),
+    "cos.realrip.com",
     "images.unsplash.com",
   ],
   objectKeyPattern: "posts/{locale}/{slug}/{hash}.{ext}",

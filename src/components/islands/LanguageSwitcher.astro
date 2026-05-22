@@ -24,14 +24,14 @@ const flags: Record<Locale, string> = {
 }
 ---
 
-<div class="relative" data-polyglow-menu>
+<div class="relative" data-realrip-menu>
   <button
     type="button"
     class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     aria-label={t(lang, "language.switch")}
     aria-haspopup="menu"
     aria-expanded="false"
-    data-polyglow-menu-trigger
+    data-realrip-menu-trigger
   >
     <span class="text-sm leading-none" aria-hidden="true">{flags[lang]}</span>
   </button>
@@ -39,7 +39,7 @@ const flags: Record<Locale, string> = {
     class="nav-dropdown absolute top-full right-0 z-50 mt-2 grid w-44 gap-1 rounded-xl border border-white/10 p-2 shadow-xl"
     role="menu"
     hidden
-    data-polyglow-menu-content
+    data-realrip-menu-content
   >
     {
       LOCALES.map((locale) => (
@@ -59,12 +59,12 @@ const flags: Record<Locale, string> = {
 
 <script is:inline>
   ;(() => {
-    if (window.__polyglowMenu) return
-    window.__polyglowMenu = true
+    if (window.__realripMenu) return
+    window.__realripMenu = true
 
     const closeMenu = (menu) => {
-      const trigger = menu.querySelector("[data-polyglow-menu-trigger]")
-      const content = menu.querySelector("[data-polyglow-menu-content]")
+      const trigger = menu.querySelector("[data-realrip-menu-trigger]")
+      const content = menu.querySelector("[data-realrip-menu-content]")
       if (
         !(trigger instanceof HTMLElement) ||
         !(content instanceof HTMLElement)
@@ -75,14 +75,14 @@ const flags: Record<Locale, string> = {
     }
 
     const closeAll = (except) => {
-      document.querySelectorAll("[data-polyglow-menu]").forEach((menu) => {
+      document.querySelectorAll("[data-realrip-menu]").forEach((menu) => {
         if (menu !== except) closeMenu(menu)
       })
     }
 
     const openMenu = (menu) => {
-      const trigger = menu.querySelector("[data-polyglow-menu-trigger]")
-      const content = menu.querySelector("[data-polyglow-menu-content]")
+      const trigger = menu.querySelector("[data-realrip-menu-trigger]")
+      const content = menu.querySelector("[data-realrip-menu-content]")
       if (
         !(trigger instanceof HTMLElement) ||
         !(content instanceof HTMLElement)
@@ -97,10 +97,10 @@ const flags: Record<Locale, string> = {
       const target = event.target
       if (!(target instanceof Element)) return
 
-      const trigger = target.closest("[data-polyglow-menu-trigger]")
+      const trigger = target.closest("[data-realrip-menu-trigger]")
       if (trigger instanceof HTMLElement) {
-        const menu = trigger.closest("[data-polyglow-menu]")
-        const content = menu?.querySelector("[data-polyglow-menu-content]")
+        const menu = trigger.closest("[data-realrip-menu]")
+        const content = menu?.querySelector("[data-realrip-menu-content]")
         if (!(menu instanceof HTMLElement) || !(content instanceof HTMLElement))
           return
         if (content.hidden) openMenu(menu)
@@ -108,15 +108,15 @@ const flags: Record<Locale, string> = {
         return
       }
 
-      if (!target.closest("[data-polyglow-menu]")) closeAll()
+      if (!target.closest("[data-realrip-menu]")) closeAll()
     })
 
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return
       const openMenuContent = document.querySelector(
-        "[data-polyglow-menu-content]:not([hidden])"
+        "[data-realrip-menu-content]:not([hidden])"
       )
-      const menu = openMenuContent?.closest("[data-polyglow-menu]")
+      const menu = openMenuContent?.closest("[data-realrip-menu]")
       if (!(menu instanceof HTMLElement)) return
       closeMenu(menu)
       menu.querySelector("button")?.focus()

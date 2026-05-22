@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Menyusuri lautan kehidupan, gelombang kewirausahaan, dan kabut investasi",
+    "description": "Melaju melewati gelombang startup, kabut investasi, dan samudra kehidupan.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "Kehidupan",
     "invest": "Investasi",
-    "build": "Membangun",
+    "build": "Startup",
     "startup": "Startup"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "Beranda",
       "h1": "Polyglow",
-      "h2": "Menyusuri lautan kehidupan, gelombang kewirausahaan, dan kabut investasi"
+      "h2": "Melaju melewati gelombang startup, kabut investasi, dan samudra kehidupan."
     },
     "build": {
-      "h1": "Membangun",
+      "h1": "Startup",
       "h2": "Jalan dari nol ke satu, menangkap peluang dan tantangan"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "Membangun",
+    "build": "Startup",
     "invest": "Investasi",
     "life": "Kehidupan"
   },

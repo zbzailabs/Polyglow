@@ -17,30 +17,30 @@ export const TAXONOMY = {
       slug: "build",
       order: 0,
       labelByLocale: localized({
-        zh: "建设",
-        en: "Build",
-        fr: "Construire",
-        es: "Construir",
-        ru: "Строить",
-        ja: "構築",
-        ko: "구축",
-        pt: "Construir",
-        de: "Aufbauen",
-        id: "Membangun",
-        ar: "البناء",
+        zh: "创业",
+        en: "Startup",
+        fr: "Startup",
+        es: "Startup",
+        ru: "Стартап",
+        ja: "スタートアップ",
+        ko: "스타트업",
+        pt: "Startup",
+        de: "Startup",
+        id: "Startup",
+        ar: "الشركات الناشئة",
       }),
       descriptionByLocale: localized({
-        zh: "产品、团队与系统。",
-        en: "Products, teams, and systems.",
-        fr: "Produits, équipes et systèmes.",
-        es: "Productos, equipos y sistemas.",
-        ru: "Продукты, команды и системы.",
-        ja: "プロダクト、チーム、システム。",
-        ko: "제품, 팀, 시스템.",
-        pt: "Produtos, equipes e sistemas.",
-        de: "Produkte, Teams und Systeme.",
-        id: "Produk, tim, dan sistem.",
-        ar: "المنتجات والفرق والأنظمة.",
+        zh: "从零到一，产品、团队与系统的持续打造。",
+        en: "From zero to one: products, teams, and systems.",
+        fr: "De zéro à un : produits, équipes et systèmes.",
+        es: "De cero a uno: productos, equipos y sistemas.",
+        ru: "От нуля к единице: продукты, команды и системы.",
+        ja: "ゼロからイチへ。プロダクト、チーム、システム。",
+        ko: "제로에서 일로: 제품, 팀, 시스템.",
+        pt: "Do zero ao um: produtos, equipes e sistemas.",
+        de: "Von null auf eins: Produkte, Teams und Systeme.",
+        id: "Dari nol ke satu: produk, tim, dan sistem.",
+        ar: "من الصفر إلى الواحد: المنتجات والفرق والأنظمة.",
       }),
     },
     {
@@ -71,36 +71,6 @@ export const TAXONOMY = {
         de: "Die Kunst, Wert zu erfassen, zwischen Kapital- und Industrielogik.",
         id: "Seni menangkap nilai, dengan logika ganda modal dan industri.",
         ar: "فن اقتناص القيمة بين منطق رأس المال ومنطق الصناعة.",
-      }),
-    },
-    {
-      slug: "startup",
-      order: 2,
-      labelByLocale: localized({
-        zh: "创业",
-        en: "Startup",
-        fr: "Startup",
-        es: "Startup",
-        ru: "Стартап",
-        ja: "スタートアップ",
-        ko: "스타트업",
-        pt: "Startup",
-        de: "Startup",
-        id: "Startup",
-        ar: "الشركات الناشئة",
-      }),
-      descriptionByLocale: localized({
-        zh: "公司建设与经营。",
-        en: "Company building and operations.",
-        fr: "Création et exploitation d'entreprise.",
-        es: "Creación y operación de empresas.",
-        ru: "Создание и операционная работа компании.",
-        ja: "会社づくりと運営。",
-        ko: "회사 구축과 운영.",
-        pt: "Construção e operação de empresas.",
-        de: "Unternehmensaufbau und Betrieb.",
-        id: "Pembangunan dan operasional perusahaan.",
-        ar: "بناء الشركات وتشغيلها.",
       }),
     },
     {
@@ -455,6 +425,92 @@ export function getCategory(slug: string): TaxonomyItem | undefined {
 
 export function getTag(slug: string): TaxonomyItem | undefined {
   return TAXONOMY.tags.find((item) => item.slug === slug)
+}
+
+const normalizeKey = (value: string): string =>
+  value.trim().toLowerCase().replace(/[\s_]+/g, "-")
+
+const categoryAliases: Record<string, string> = {
+  "建设": "build",
+  building: "build",
+  bauen: "build",
+  "construire": "build",
+  "construir": "build",
+  "строить": "build",
+  "構築": "build",
+  "구축": "build",
+  "membangun": "build",
+  "البناء": "build",
+  startup: "build",
+  startups: "build",
+  "start-up": "build",
+  entrepreneurship: "build",
+  entrepreneuriat: "build",
+  emprendimiento: "build",
+  empreendedorismo: "build",
+  "предпринимательство": "build",
+  unternehmertum: "build",
+  kewirausahaan: "build",
+  "起業家精神": "build",
+  "기업가 정신": "build",
+  "ريادة الأعمال": "build",
+  "スタートアップ": "build",
+  "스타트업": "build",
+  "стартап": "build",
+  "стартапы": "build",
+  "démarrage": "build",
+  "puesta-en-marcha": "build",
+  memulai: "build",
+  comece: "build",
+  inicio: "build",
+  "gründung": "build",
+  "بدء-التشغيل": "build",
+  "شركة-ناشئة": "build",
+  "شركات-ناشئة": "build",
+  investment: "invest",
+  investissement: "invest",
+  "inversión": "invest",
+  investimento: "invest",
+  investition: "invest",
+  "инвестиции": "invest",
+  "استثمار": "invest",
+  "人生": "life",
+  "인생": "life",
+  hidup: "life",
+  "حياة": "life",
+}
+
+const tagAliases: Record<string, string> = {}
+
+function buildTaxonomyLookup(
+  items: readonly TaxonomyItem[],
+  aliases: Record<string, string>
+): Map<string, string> {
+  const lookup = new Map<string, string>()
+
+  for (const item of items) {
+    lookup.set(normalizeKey(item.slug), item.slug)
+    for (const label of Object.values(item.labelByLocale)) {
+      lookup.set(normalizeKey(label), item.slug)
+    }
+  }
+
+  for (const [alias, slug] of Object.entries(aliases)) {
+    lookup.set(normalizeKey(alias), slug)
+  }
+
+  return lookup
+}
+
+const categoryLookup = buildTaxonomyLookup(TAXONOMY.categories, categoryAliases)
+const tagLookup = buildTaxonomyLookup(TAXONOMY.tags, tagAliases)
+
+export function normalizeCategorySlug(value: string): string {
+  return categoryLookup.get(normalizeKey(value)) ?? normalizeKey(value)
+}
+
+export function normalizeTagSlug(value: string): string {
+  return tagLookup.get(normalizeKey(value)) ?? normalizeKey(value)
 }
 
 export function getPrimaryCategories(): TaxonomyItem[] {

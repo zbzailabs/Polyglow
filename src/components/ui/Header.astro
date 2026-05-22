@@ -1,10 +1,10 @@
 ---
-import { Image } from "astro:assets"
 import type { Locale } from "@/config/locales"
 import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
 import { SITE_CONFIG } from "@/config/site"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
 import Icon from "@/components/icons/Icon.astro"
 import MobileNav from "@/components/islands/MobileNav.astro"
 import LanguageSwitcher from "@/components/islands/LanguageSwitcher.astro"
@@ -32,11 +32,13 @@ const primaryCategories = getPrimaryCategories()
       class="flex min-w-0 items-center gap-2.5 justify-self-start text-lg font-semibold tracking-tight text-foreground"
       data-header-brand
     >
-      <Image
+      <OptimizedPicture
         src={logo}
         alt={`${SITE_CONFIG.name} logo`}
         width={24}
         height={24}
+        widths={[24, 48]}
+        sizes="24px"
         class="size-6"
         loading="eager"
       />

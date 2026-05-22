@@ -1,6 +1,6 @@
 ---
 import type { PostEntry } from "@/utils/posts"
-import { postUrl } from "@/utils/posts"
+import { postCategorySlug, postUrl } from "@/utils/posts"
 import { getCategory } from "@/config/taxonomy"
 import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
 
@@ -19,18 +19,21 @@ const {
   headingLevel = 2,
   class: className = "",
 } = Astro.props
-const category = getCategory(post.data.category)
+const categorySlug = postCategorySlug(post)
+const category = getCategory(categorySlug)
 const categoryLabel =
-  category?.labelByLocale[post.data.locale] ?? post.data.category
+  category?.labelByLocale[post.data.locale] ?? categorySlug
 const dateLabel = new Intl.DateTimeFormat(post.data.locale, {
   month: "short",
   day: "numeric",
   year: "numeric",
 }).format(post.data.pubDate)
+const portraitCardShape =
+  "h-[25rem] rounded-3xl sm:h-auto sm:aspect-[3/4] sm:min-h-[24rem]"
 const cardShape = {
   lead: "h-[27rem] rounded-[1.75rem] sm:h-auto sm:aspect-[16/9] sm:min-h-[27rem]",
-  wide: "h-[20rem] rounded-3xl sm:h-auto sm:aspect-[16/10] sm:min-h-[20rem]",
-  portrait: "h-[25rem] rounded-3xl sm:h-auto sm:aspect-[3/4] sm:min-h-[24rem]",
+  wide: `${portraitCardShape} xl:aspect-[16/10] xl:min-h-[20rem]`,
+  portrait: portraitCardShape,
 }[variant]
 const contentShape =
   variant === "lead"
@@ -40,6 +43,16 @@ const titleClass =
   variant === "lead"
     ? "line-clamp-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl"
     : "line-clamp-3 text-xl font-semibold leading-tight tracking-tight"
+const imageWidths = {
+  lead: [640, 768, 960, 1200],
+  wide: [420, 640, 720, 960, 1200],
+  portrait: [320, 420, 640, 768],
+}[variant]
+const imageSizes = {
+  lead: "(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) calc(100vw - 3rem), 1152px",
+  wide: "(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 4.5rem) / 2), 576px",
+  portrait: "(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 384px",
+}[variant]
 const TitleTag = headingLevel === 3 ? "h3" : "h2"
 ---
 
@@ -56,6 +69,8 @@ const TitleTag = headingLevel === 3 ? "h3" : "h2"
     alt={post.data.heroImageAlt}
     width={post.data.heroImageWidth}
     height={post.data.heroImageHeight}
+    widths={imageWidths}
+    sizes={imageSizes}
     loading={priority ? "eager" : "lazy"}
     class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out"
   />
@@ -70,7 +85,7 @@ const TitleTag = headingLevel === 3 ? "h3" : "h2"
     <div
       class="mb-3 flex w-full items-center justify-between gap-3 text-xs text-white/75"
     >
-      <span class="card-meta-pill" data-category={post.data.category}
+      <span class="card-meta-pill" data-category={categorySlug}
         >{categoryLabel}</span
       >
       <time class="shrink-0 text-end" datetime={post.data.pubDate.toISOString()}

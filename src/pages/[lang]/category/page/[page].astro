@@ -13,7 +13,7 @@ import {
   getTotalPages,
   pageRange,
 } from "@/utils/pagination"
-import { getPostsForLocale } from "@/utils/posts"
+import { getPostsForLocale, postCategorySlug } from "@/utils/posts"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
 
@@ -21,18 +21,10 @@ export async function getStaticPaths() {
   const paths = []
 
   for (const lang of LOCALES) {
-    const posts = await getPostsForLocale(lang)
-    const countByCategory = new Map<string, number>()
-    for (const post of posts) {
-      countByCategory.set(
-        post.data.category,
-        (countByCategory.get(post.data.category) ?? 0) + 1
-      )
-    }
-    const categoryCount = TAXONOMY.categories.filter(
-      (category) => (countByCategory.get(category.slug) ?? 0) > 0
-    ).length
-    const totalPages = getTotalPages(categoryCount, TAXONOMY_TERMS_PER_PAGE)
+    const totalPages = getTotalPages(
+      TAXONOMY.categories.length,
+      TAXONOMY_TERMS_PER_PAGE
+    )
 
     for (const page of pageRange(totalPages).filter((item) => item > 1)) {
       paths.push({
@@ -57,13 +49,13 @@ const {
 const posts = await getPostsForLocale(lang)
 const countByCategory = new Map<string, number>()
 for (const post of posts) {
+  const categorySlug = postCategorySlug(post)
   countByCategory.set(
-    post.data.category,
-    (countByCategory.get(post.data.category) ?? 0) + 1
+    categorySlug,
+    (countByCategory.get(categorySlug) ?? 0) + 1
   )
 }
 const categoryLinks = TAXONOMY.categories
-  .filter((category) => (countByCategory.get(category.slug) ?? 0) > 0)
   .map((category) => ({
     href: localePath(lang, `/category/${category.slug}/`),
     label: category.labelByLocale[lang],
@@ -84,6 +76,7 @@ const pagination = getPaginationLinks({
       : localePath(lang, `/category/page/${page}/`),
 })
 const categoryDescriptions = TAXONOMY.categories.map((category) => ({
+  label: category.labelByLocale[lang],
   description: category.descriptionByLocale[lang],
 }))
 const title = `${t(lang, "pages.categories.title")} ${currentPage}`

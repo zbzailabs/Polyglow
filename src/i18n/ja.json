@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "人生という大海、起業の波、投資の霧の中を進む",
+    "description": "スタートアップの波、投資の霧、人生の海を進み続ける。",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "人生",
     "invest": "投資",
-    "build": "起業",
+    "build": "スタートアップ",
     "startup": "スタートアップ"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "ホーム",
       "h1": "Polyglow",
-      "h2": "人生という大海、起業の波、投資の霧の中を進む"
+      "h2": "スタートアップの波、投資の霧、人生の海を進み続ける。"
     },
     "build": {
-      "h1": "起業",
+      "h1": "スタートアップ",
       "h2": "ゼロからイチへの道、機会と課題を見極める"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "起業",
+    "build": "スタートアップ",
     "invest": "投資",
     "life": "人生"
   },

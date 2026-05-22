@@ -1,5 +1,5 @@
 {
-  "name": "polyglow",
+  "name": "realrip",
   "type": "module",
   "version": "6.0.0",
   "license": "MIT",
@@ -22,11 +22,13 @@
     "astro": "astro",
     "test": "vitest run",
     "typecheck": "astro check",
+    "images:check": "node scripts/check-content-images.mjs",
     "seo:check": "node scripts/check-seo-output.mjs",
     "design:lint": "pnpm dlx @google/design.md lint DESIGN.md",
     "design:theme": "node scripts/export-design-theme.mjs",
     "check": "pnpm build",
-    "deploy": "pnpm build && wrangler deploy"
+    "deploy": "pnpm build && pnpm run deploy:worker",
+    "deploy:worker": "node scripts/deploy-worker.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
@@ -38,8 +40,9 @@
     "astro": "^6.3.5",
     "astro-expressive-code": "^0.42.0",
     "astro-icon": "^1.1.5",
-    "astro-pagefind": "^1.8.6",
     "astro-seo": "^1.1.0",
+    "pagefind": "^1.5.2",
+    "sirv": "^3.0.2",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

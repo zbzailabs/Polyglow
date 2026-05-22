@@ -1,7 +1,7 @@
 ---
-import { Image } from "astro:assets"
 import type { Locale } from "@/config/locales"
 import Icon from "@/components/icons/Icon.astro"
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
 import { SITE_CONFIG } from "@/config/site"
 import { getPrimaryCategories, getTagsForCategory } from "@/config/taxonomy"
 import { localePath } from "@/utils/routes"
@@ -19,52 +19,8 @@ const primaryCategories = getPrimaryCategories()
 
 <footer class="w-full" data-pagefind-ignore>
   <div
-    class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-12 text-sm text-muted-foreground sm:px-6 md:grid-cols-[1.8fr_1fr_1fr_1fr_1fr]"
+    class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-12 text-sm text-muted-foreground sm:px-6 xl:grid-cols-[1.8fr_1fr_1fr_1fr_1fr]"
   >
-    <div class="col-span-2 flex flex-col gap-6 md:col-span-1">
-      <a
-        href={localePath(lang, "/")}
-        class="flex w-fit items-center gap-2.5 text-lg font-semibold text-foreground"
-      >
-        <Image
-          src={logo}
-          alt={`${SITE_CONFIG.name} logo`}
-          width={24}
-          height={24}
-          class="size-6"
-          loading="lazy"
-        />
-        <span aria-hidden="true">{SITE_CONFIG.name}</span>
-      </a>
-      <div class="flex items-center gap-4">
-        <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          href={SITE_CONFIG.repository}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-        >
-          <Icon name="github" class="size-4" dataIcon="inline-start" />
-        </a>
-        <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          href={SITE_CONFIG.social.x}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="X"
-        >
-          <Icon name="x" class="size-4" dataIcon="inline-start" />
-        </a>
-        <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          href={`/${lang}/rss.xml`}
-          aria-label="RSS"
-        >
-          <Icon name="rss" class="size-4" dataIcon="inline-start" />
-        </a>
-      </div>
-      <p class="text-xs">© {year} {SITE_CONFIG.name}</p>
-    </div>
     {
       primaryCategories.map((category) => (
         <nav
@@ -101,5 +57,51 @@ const primaryCategories = getPrimaryCategories()
         >{t(lang, "footer.author")}</a
       >
     </nav>
+    <div class="col-span-2 flex flex-col gap-6 xl:order-first xl:col-span-1">
+      <a
+        href={localePath(lang, "/")}
+        class="flex w-fit items-center gap-2.5 text-lg font-semibold text-foreground"
+      >
+        <OptimizedPicture
+          src={logo}
+          alt={`${SITE_CONFIG.name} logo`}
+          width={24}
+          height={24}
+          widths={[24, 48]}
+          sizes="24px"
+          class="size-6"
+          loading="lazy"
+        />
+        <span aria-hidden="true">{SITE_CONFIG.name}</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={SITE_CONFIG.repository}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+        >
+          <Icon name="github" class="size-4" dataIcon="inline-start" />
+        </a>
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={SITE_CONFIG.social.x}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="X"
+        >
+          <Icon name="x" class="size-4" dataIcon="inline-start" />
+        </a>
+        <a
+          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          href={`/${lang}/rss.xml`}
+          aria-label="RSS"
+        >
+          <Icon name="rss" class="size-4" dataIcon="inline-start" />
+        </a>
+      </div>
+      <p class="text-xs">© {year} {SITE_CONFIG.name}</p>
+    </div>
   </div>
 </footer>

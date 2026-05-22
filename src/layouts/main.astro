@@ -1,7 +1,6 @@
 ---
 import "@/styles/global.css"
 import { SEO } from "astro-seo"
-import { ClientRouter } from "astro:transitions"
 import { optimizeRemoteImageUrl } from "@/config/assets"
 import { LOCALES, getLocaleMeta, type Locale } from "@/config/locales"
 import { SITE_CONFIG } from "@/config/site"
@@ -14,6 +13,7 @@ import DynamicGlass from "@/components/features/DynamicGlass.astro"
 import GTMHead from "@/components/widgets/GTMHead.astro"
 import GTMBody from "@/components/widgets/GTMBody.astro"
 import Adsense from "@/components/widgets/Adsense.astro"
+import X402 from "@/components/widgets/X402.astro"
 
 interface Props {
   lang: Locale
@@ -24,6 +24,7 @@ interface Props {
   ogType?: "website" | "article"
   noindex?: boolean
   jsonLd?: unknown
+  dynamicGlass?: boolean
 }
 
 const {
@@ -35,6 +36,7 @@ const {
   ogType = "website",
   noindex = false,
   jsonLd,
+  dynamicGlass = false,
 } = Astro.props
 const localeMeta = getLocaleMeta(lang)
 const alternates = buildAlternates(path)
@@ -133,7 +135,6 @@ const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
         imageAlt: pageTitle,
       }}
     />
-    <ClientRouter fallback="swap" />
     <script is:inline>
       ;(() => {
         const theme = localStorage.getItem("theme") || "system"
@@ -153,6 +154,7 @@ const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
     />
     <GTMHead />
     <Adsense />
+    <X402 />
   </head>
   <body>
     <GTMBody />
@@ -161,6 +163,6 @@ const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
       <slot />
     </main>
     <Footer lang={lang} />
-    <DynamicGlass />
+    {dynamicGlass && <DynamicGlass />}
   </body>
 </html>

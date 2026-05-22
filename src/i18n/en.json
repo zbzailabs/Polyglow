@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Polyglow is a multilingual Astro content theme for essays, research notes, and knowledge archives with fast static pages, search, RSS, and SEO structure.",
+    "description": "Pressing forward through the waves of startup, the fog of investing, and the ocean of life.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "Life",
     "invest": "Invest",
-    "build": "Build",
+    "build": "Startup",
     "startup": "Startup"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "Home",
       "h1": "Polyglow",
-      "h2": "Navigating life, entrepreneurship, and the fog of investing"
+      "h2": "Pressing forward through the waves of startup, the fog of investing, and the ocean of life."
     },
     "build": {
-      "h1": "Build",
+      "h1": "Startup",
       "h2": "The path from zero to one, spotting opportunities and challenges"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "Build",
+    "build": "Startup",
     "invest": "Invest",
     "life": "Life"
   },

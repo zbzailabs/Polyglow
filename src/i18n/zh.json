@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "在生活的海洋，创业的波涛和投资的迷雾中前行",
+    "description": "在创业的波涛，投资的迷雾和生活的海洋中奋力前行",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -47,7 +47,7 @@
     "home": {
       "title": "首页",
       "h1": "Polyglow",
-      "h2": "在生活的海洋，创业的波涛和投资的迷雾中前行"
+      "h2": "在创业的波涛，投资的迷雾和生活的海洋中奋力前行"
     },
     "build": {
       "h1": "创业",

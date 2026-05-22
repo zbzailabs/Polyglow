@@ -38,9 +38,9 @@ const title = t(lang, "common.pagination.pageTitle", {
 })
 ---
 
-<Layout lang={lang} path={`/${page.currentPage}/`} title={title}>
+<Layout lang={lang} path={`/${page.currentPage}/`} title={title} dynamicGlass>
   <PageSection class="py-10 sm:px-6">
-    <h1 class="mb-8 text-3xl font-semibold">{title}</h1>
+    <h1 class="sr-only">{t(lang, "pages.posts.title")} - {title}</h1>
     <PostCardGrid posts={page.data} />
     <Pagination
       prev={page.currentPage === 2 ? `/${lang}/` : page.url.prev}

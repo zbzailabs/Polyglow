@@ -1,14 +1,23 @@
 ---
 import { SITE_CONFIG } from "@/config/site"
 
-const { enabled, payTo, network, price, description, facilitatorUrl } =
-  SITE_CONFIG.payments.x402
+const {
+  enabled,
+  payTo,
+  network,
+  price,
+  description,
+  facilitatorUrl,
+  chargeMode,
+  botScoreThreshold,
+} = SITE_CONFIG.payments.x402
 const shouldRender =
   enabled &&
   payTo.length > 0 &&
   network.length > 0 &&
   price.length > 0 &&
   facilitatorUrl.length > 0
+const botOnly = chargeMode === "bot-only"
 const paymentMetadata = {
   protocol: "x402",
   version: "1",
@@ -24,6 +33,9 @@ const paymentMetadata = {
       payTo,
     },
   ],
+  chargeMode,
+  botOnly,
+  botScoreThreshold,
 }
 ---
 
@@ -34,9 +46,19 @@ const paymentMetadata = {
       <meta name="x402:network" content={network} />
       <meta name="x402:price" content={price} />
       <meta name="x402:facilitator-url" content={facilitatorUrl} />
+      <meta name="x402:charge-mode" content={chargeMode} />
+      {botOnly && <meta name="x402:bot-only" content="true" />}
+      {
+        botOnly && (
+          <meta
+            name="x402:bot-score-threshold"
+            content={String(botScoreThreshold)}
+          />
+        )
+      }
       <script
         is:inline
-        id="polyglow-x402"
+        id="realrip-x402"
         type="application/json"
         set:html={JSON.stringify(paymentMetadata)}
       />

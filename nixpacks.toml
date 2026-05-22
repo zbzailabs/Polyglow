@@ -1,0 +1,13 @@
+# Dokploy/Nixpacks builds the static site, then the Procfile release process
+# uploads the prebuilt dist directory to Cloudflare Workers with Wrangler.
+providers = ['node']
+
+[phases.setup]
+nixPkgs = ['nodejs_24']
+
+[phases.install]
+cmds = ['npx --yes pnpm@11.0.9 --config.registry="${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}" install --frozen-lockfile --prod=false']
+
+[phases.build]
+cmds = ['npm run build']
+cacheDirectories = ['...', 'node_modules/.astro', '.astro', 'node_modules/.cache']

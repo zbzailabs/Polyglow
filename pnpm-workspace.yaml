@@ -1,3 +1,13 @@
+packages:
+  - "."
+
+networkConcurrency: 8
+fetchRetries: 5
+fetchRetryFactor: 2
+fetchRetryMintimeout: 10000
+fetchRetryMaxtimeout: 120000
+fetchTimeout: 120000
+
 allowBuilds:
   esbuild: true
   sharp: true

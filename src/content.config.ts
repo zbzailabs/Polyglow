@@ -57,7 +57,6 @@ const post = defineCollection({
       seoTitle: z.string().optional(),
       seoDescription: z.string().optional(),
       locale,
-      slug: z.string().optional(),
       draft: z.boolean().default(false),
       featured: z.boolean().default(false),
     })
@@ -74,7 +73,6 @@ const page = defineCollection({
     title: z.string(),
     description: z.string(),
     locale,
-    slug: z.string().optional(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
     noindex: z.boolean().default(false),

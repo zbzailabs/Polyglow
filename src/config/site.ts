@@ -1,4 +1,5 @@
 export type HomepageLayout = "cover" | "archive" | "text"
+export type X402ChargeMode = "all" | "bot-only"
 
 function normalizeGoogleTagManagerId(value: string | undefined): string {
   const id = (value ?? "").trim()
@@ -12,6 +13,17 @@ function normalizeGoogleAdsenseClientId(value: string | undefined): string {
 
 function normalizePublicString(value: string | undefined): string {
   return (value ?? "").trim()
+}
+
+function normalizeX402ChargeMode(value: string | undefined): X402ChargeMode {
+  const mode = normalizePublicString(value).toLowerCase()
+  return mode === "bot-only" || mode === "bots" ? "bot-only" : "all"
+}
+
+function normalizeBotScoreThreshold(value: string | undefined): number {
+  const threshold = Number.parseInt(normalizePublicString(value), 10)
+  if (!Number.isFinite(threshold)) return 30
+  return Math.min(99, Math.max(1, threshold))
 }
 
 const googleTagManagerId = normalizeGoogleTagManagerId(
@@ -35,18 +47,23 @@ const x402Description = normalizePublicString(
 const x402FacilitatorUrl = normalizePublicString(
   import.meta.env.PUBLIC_X402_FACILITATOR_URL
 )
-const socialXUrl = "https://x.com/realriplabs"
+const x402ChargeMode = normalizeX402ChargeMode(
+  import.meta.env.PUBLIC_X402_CHARGE_MODE
+)
+const x402BotScoreThreshold = normalizeBotScoreThreshold(
+  import.meta.env.PUBLIC_X402_BOT_SCORE_THRESHOLD
+)
+const socialXUrl = "https://x.com/realriplab"
 const socialXHandle = `@${
-  new URL(socialXUrl).pathname.split("/").filter(Boolean)[0] ?? "realriplabs"
+  new URL(socialXUrl).pathname.split("/").filter(Boolean)[0] ?? "realriplab"
 }`
 
 export const SITE_CONFIG = {
   name: "Polyglow",
   url: (
-    import.meta.env.PUBLIC_SITE_URL ?? "https://polyglow.realrip.com"
+    import.meta.env.PUBLIC_SITE_URL ?? "https://realrip.com"
   ).replace(/\/$/, ""),
-  description:
-    "Polyglow is a multilingual Astro content theme for essays, research notes, and knowledge archives with fast static pages, search, RSS, and SEO structure.",
+  description: "在创业的波涛，投资的迷雾和生活的海洋中奋力前行",
   repository: "https://github.com/realriplab/Polyglow",
   social: {
     x: socialXUrl,
@@ -74,6 +91,8 @@ export const SITE_CONFIG = {
       price: x402Price,
       description: x402Description,
       facilitatorUrl: x402FacilitatorUrl,
+      chargeMode: x402ChargeMode,
+      botScoreThreshold: x402BotScoreThreshold,
     },
   },
 }

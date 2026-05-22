@@ -12,7 +12,7 @@ import {
   getPaginationLinks,
   getTotalPages,
 } from "@/utils/pagination"
-import { getPostsForLocale } from "@/utils/posts"
+import { getPostsForLocale, postTagSlugs } from "@/utils/posts"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
 
@@ -24,25 +24,10 @@ const { lang } = Astro.props as { lang: Locale }
 const posts = await getPostsForLocale(lang)
 const countByTag = new Map<string, number>()
 for (const post of posts) {
-  for (const tag of post.data.tags)
+  for (const tag of postTagSlugs(post))
     countByTag.set(tag, (countByTag.get(tag) ?? 0) + 1)
 }
-const tagOrder = [
-  "reflect",
-  "media",
-  "roam",
-  "risk",
-  "strategy",
-  "allocation",
-  "innovation",
-  "model",
-  "management",
-]
-const visibleTags = tagOrder.flatMap((slug) => {
-  const tag = TAXONOMY.tags.find((item) => item.slug === slug)
-  return tag && (countByTag.get(tag.slug) ?? 0) > 0 ? [tag] : []
-})
-const tagLinks = visibleTags.map((tag) => ({
+const tagLinks = TAXONOMY.tags.map((tag) => ({
   href: localePath(lang, `/tags/${tag.slug}/`),
   label: tag.labelByLocale[lang],
   count: countByTag.get(tag.slug) ?? 0,
@@ -66,9 +51,8 @@ const title = t(lang, "pages.tags.title")
 const seoTitle = lang === "en" ? "Content Tags and Research Topics | Polyglow" : title
 const seoDescription =
   lang === "en"
-    ? "Browse Polyglow tags for strategy, risk, media, innovation, and related themes across essays, research notes, and long-term content archives."
+    ? "Browse Polyglow tags for strategy, risk, media, innovation, and related themes across essays, notes, and long-term archives."
     : t(lang, "pages.tags.description")
-const overviewTitle = lang === "en" ? "Tag Overview" : t(lang, "pages.tags.title")
 ---
 
 <Layout
@@ -87,7 +71,6 @@ const overviewTitle = lang === "en" ? "Tag Overview" : t(lang, "pages.tags.title
       title={t(lang, "pages.tags.h2")}
       items={pageLinks}
       descriptionItems={tagDescriptions}
-      overviewTitle={overviewTitle}
     />
     {totalPages > 1 && (
       <Pagination

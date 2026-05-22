@@ -2,10 +2,10 @@
   "site": {
     "name": "Polyglow",
     "titleTemplate": "%s · Polyglow",
-    "description": "Avancer dans l’océan de la vie, les vagues de l’entrepreneuriat et les brumes de l’investissement",
+    "description": "Avancer à travers les vagues des startups, le brouillard de l’investissement et l’océan de la vie.",
     "twitter": {
-      "site": "@polyglow",
-      "creator": "@polyglow"
+      "site": "@realriplab",
+      "creator": "@realriplab"
     }
   },
   "language": {
@@ -28,7 +28,7 @@
   "categories": {
     "life": "Vie",
     "invest": "Investir",
-    "build": "Construire",
+    "build": "Startup",
     "startup": "Startup"
   },
   "tags": {
@@ -47,10 +47,10 @@
     "home": {
       "title": "Accueil",
       "h1": "Polyglow",
-      "h2": "Avancer dans l'océan de la vie, les vagues de l'entrepreneuriat et le brouillard de l'investissement"
+      "h2": "Avancer à travers les vagues des startups, le brouillard de l’investissement et l’océan de la vie."
     },
     "build": {
-      "h1": "Construire",
+      "h1": "Startup",
       "h2": "De zéro à un, détecter les opportunités et les défis"
     },
     "innovation": {
@@ -99,7 +99,7 @@
     }
   },
   "navigation": {
-    "build": "Construire",
+    "build": "Startup",
     "invest": "Investir",
     "life": "Vie"
   },

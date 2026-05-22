@@ -96,6 +96,5 @@
     if (document.readyState === "loading")
       document.addEventListener("DOMContentLoaded", scheduleInit)
     else scheduleInit()
-    document.addEventListener("astro:page-load", scheduleInit)
   })()
 </script>

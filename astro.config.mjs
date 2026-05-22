@@ -3,9 +3,9 @@ import mdx from "@astrojs/mdx"
 import partytown from "@astrojs/partytown"
 import sitemap from "@astrojs/sitemap"
 import tailwindcss from "@tailwindcss/vite"
-import pagefind from "astro-pagefind"
 import { defineConfig, svgoOptimizer } from "astro/config"
 import icon from "astro-icon"
+import pagefind from "./src/integrations/pagefind.mjs"
 
 const assetHost = (() => {
   if (!process.env.PUBLIC_ASSET_BASE_URL) return undefined
@@ -36,7 +36,7 @@ const sitemapLocaleMap = {
 
 export default defineConfig({
   output: "static",
-  site: process.env.PUBLIC_SITE_URL ?? "https://polyglow.realrip.com",
+  site: process.env.PUBLIC_SITE_URL ?? "https://realrip.com",
   trailingSlash: "always",
   prefetch: {
     prefetchAll: true,
@@ -49,7 +49,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   i18n: {
-    defaultLocale: "en",
+    defaultLocale: "zh",
     locales: ["zh", "en", "fr", "es", "ru", "ja", "ko", "pt", "de", "id", "ar"],
     routing: {
       prefixDefaultLocale: true,
@@ -61,6 +61,7 @@ export default defineConfig({
     layout: "constrained",
     remotePatterns: [
       ...(assetHost ? [{ protocol: "https", hostname: assetHost }] : []),
+      { protocol: "https", hostname: "cos.realrip.com" },
       { protocol: "https", hostname: "*.unsplash.com" },
     ],
     service: {
@@ -130,13 +131,13 @@ export default defineConfig({
         return pathname !== "/" && !pathname.endsWith("/search/")
       },
       i18n: {
-        defaultLocale: "en",
+        defaultLocale: "zh",
         locales: sitemapLocaleMap,
       },
       serialize: (item) => {
         if (!item.links?.length) return item
         const links = new Map(item.links.map((link) => [link.lang, link.url]))
-        const defaultUrl = links.get(sitemapLocaleMap.en)
+        const defaultUrl = links.get(sitemapLocaleMap.zh)
         if (defaultUrl) links.set("x-default", defaultUrl)
         return {
           ...item,

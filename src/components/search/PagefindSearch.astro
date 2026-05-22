@@ -38,13 +38,13 @@ const hint = getLocaleMeta(lang).searchHint
       if (!target) return
       if (target.dataset.pagefindStatus === "loading") return
 
-      const activeSearch = window.__polyglowPagefindSearch
+      const activeSearch = window.__realripPagefindSearch
       if (
         activeSearch?.instance &&
         (activeSearch.locale !== lang || activeSearch.id !== id)
       ) {
         activeSearch.instance.destroy?.()
-        window.__polyglowPagefindSearch = undefined
+        window.__realripPagefindSearch = undefined
       }
 
       if (
@@ -68,7 +68,7 @@ const hint = getLocaleMeta(lang).searchHint
           showImages: false,
           showSubResults: true,
         })
-        window.__polyglowPagefindSearch = { id, instance, locale: lang }
+        window.__realripPagefindSearch = { id, instance, locale: lang }
 
         window.requestAnimationFrame(() => {
           if (target.querySelector(".pagefind-ui__search-input")) {
@@ -77,13 +77,13 @@ const hint = getLocaleMeta(lang).searchHint
           }
           target.innerHTML = fallback
           target.dataset.pagefindStatus = "fallback"
-          window.__polyglowPagefindSearch = undefined
+          window.__realripPagefindSearch = undefined
         })
       } catch {
         target.innerHTML = fallback
         target.dataset.pagefindStatus = "fallback"
         target.dataset.pagefindLocale = ""
-        window.__polyglowPagefindSearch = undefined
+        window.__realripPagefindSearch = undefined
       }
     }
 
@@ -94,7 +94,5 @@ const hint = getLocaleMeta(lang).searchHint
     } else {
       initPagefindSearch()
     }
-
-    document.addEventListener("astro:page-load", initPagefindSearch)
   })()
 </script>

@@ -1,3 +1,5 @@
+import { normalizeCategorySlug, normalizeTagSlug } from "@/config/taxonomy"
+
 type NavigablePost = {
   id: string
   data: {
@@ -18,13 +20,16 @@ export function selectAdjacentPosts<TPost extends NavigablePost>(posts: readonly
 }
 
 export function selectRelatedPosts<TPost extends NavigablePost>(posts: readonly TPost[], current: TPost, limit = 3): TPost[] {
-  const currentTags = new Set(current.data.tags)
+  const currentTags = new Set(current.data.tags.map((tag) => normalizeTagSlug(tag)))
+  const currentCategory = normalizeCategorySlug(current.data.category)
 
   return posts
     .filter((post) => post.id !== current.id && post.data.locale === current.data.locale)
     .map((post) => {
-      const sharedTagCount = post.data.tags.filter((tag) => currentTags.has(tag)).length
-      const categoryScore = post.data.category === current.data.category ? 10 : 0
+      const sharedTagCount = post.data.tags
+        .map((tag) => normalizeTagSlug(tag))
+        .filter((tag) => currentTags.has(tag)).length
+      const categoryScore = normalizeCategorySlug(post.data.category) === currentCategory ? 10 : 0
 
       return {
         post,
