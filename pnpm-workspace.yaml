@@ -1,18 +1,19 @@
 packages:
-  - "."
-
-networkConcurrency: 8
-fetchRetries: 5
-fetchRetryFactor: 2
-fetchRetryMintimeout: 10000
-fetchRetryMaxtimeout: 120000
-fetchTimeout: 120000
-
+  - .
 allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
-
+fetchRetries: 5
+fetchRetryFactor: 2
+fetchRetryMaxtimeout: 120000
+fetchRetryMintimeout: 10000
+fetchTimeout: 120000
+networkConcurrency: 8
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
 overrides:
   devalue: 5.8.1
   ws: 8.20.1
