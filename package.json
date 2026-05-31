@@ -17,10 +17,10 @@
   "homepage": "https://github.com/realriplab/Polyglow#readme",
   "scripts": {
     "dev": "astro dev",
+    "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "pnpm build",
     "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {
