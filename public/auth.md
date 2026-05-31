@@ -20,13 +20,44 @@ Polyglow publishes public editorial pages and optional x402 protected API probes
 
 Polyglow accepts anonymous agent discovery and x402-paid API access. No human account, dashboard account, or pre-registration is required for read-only content discovery.
 
-Agents that require a registration document can use this file as the registration entrypoint:
+Agents that require a registration document can use this file as the registration entrypoint.
 
-- Registration URI: `https://polyglow.realrip.com/auth.md`
-- Supported identity type: `anonymous`
-- Credential type: `x402`
-- Protected API probes: `/api`, `/api/v1`
-- Payment challenge location: HTTP 402 `payment-required` response header
+Registration endpoint: `https://polyglow.realrip.com/auth.md`
+
+register_uri: `https://polyglow.realrip.com/auth.md`
+
+Supported identity types:
+
+- `anonymous`
+
+Supported credential types:
+
+- `x402`
+
+Credential claim URI:
+
+- `https://polyglow.realrip.com/api`
+
+Revocation URI:
+
+- Not applicable. Polyglow does not issue persistent bearer credentials.
+
+Protected API probes:
+
+- `/api`
+- `/api/v1`
+
+Payment challenge location:
+
+- HTTP 402 `payment-required` response header
+
+How agents register:
+
+1. No pre-registration is required for public content discovery.
+2. For paid API access, request `/api` or `/api/v1`.
+3. Read the HTTP 402 `payment-required` header.
+4. Complete the x402 payment challenge.
+5. Retry the same endpoint with the x402 payment proof.
 
 ## OAuth and OIDC Discovery
 
