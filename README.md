@@ -309,7 +309,10 @@ theme is implemented in `src/styles/global.css`.
 ## Search and SEO
 
 Pagefind is generated at build time by `src/integrations/pagefind.ts`. The
-current index covers localized about pages and post detail pages.
+current index covers localized about pages and post detail pages. Each supported
+locale gets its own `/pagefind/<locale>/` search bundle, so multilingual sites
+can update language-specific search fragments without rewriting one global
+Pagefind package.
 
 `src/layouts/main.astro` uses `astro-seo` for standard SEO metadata and keeps
 project-owned JSON-LD generation in `src/utils/structured-data.ts`. `x-default`

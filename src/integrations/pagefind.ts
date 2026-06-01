@@ -4,15 +4,29 @@ import { readFile, readdir, rm } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
 import type { AstroIntegration } from "astro"
+import { LOCALES, type Locale } from "../config/locales"
 
 const SEARCHABLE_PAGE_PATTERN =
-  /^(en|zh|fr|es|ru|ja|ko|pt|de|id|ar)\/(?:about|posts\/(?!\d+\/)[^/]+)\/index\.html$/
+  /^(?:about|posts\/(?!\d+\/)[^/]+)\/index\.html$/
 
 type PagefindOptions = {
   indexConfig?: Parameters<typeof createIndex>[0]
 }
 
 const toPosixPath = (value: string) => value.split(path.sep).join("/")
+
+const getLocaleSearchableFiles = (
+  htmlFiles: string[],
+  outDir: string,
+  locale: Locale
+) =>
+  htmlFiles.filter((file) => {
+    const relativePath = toPosixPath(path.relative(outDir, file))
+    const localePrefix = `${locale}/`
+    if (!relativePath.startsWith(localePrefix)) return false
+
+    return SEARCHABLE_PAGE_PATTERN.test(relativePath.slice(localePrefix.length))
+  })
 
 const collectHtmlFiles = async (directory: string): Promise<string[]> => {
   const entries = await readdir(directory, { withFileTypes: true })
@@ -72,47 +86,50 @@ export default function pagefind({
       },
       "astro:build:done": async ({ dir, logger }) => {
         const outDir = fileURLToPath(dir)
-        const outputPath = path.join(outDir, "pagefind")
-        await rm(outputPath, { force: true, recursive: true })
-
-        const { index, errors: createErrors } = await createIndex(indexConfig)
-        if (!index) {
-          logger.error("Pagefind failed to create index")
-          createErrors.forEach((error) => logger.error(error))
-          return
-        }
-
+        await rm(path.join(outDir, "pagefind"), { force: true, recursive: true })
         const htmlFiles = await collectHtmlFiles(outDir)
-        const searchableFiles = htmlFiles.filter((file) => {
-          const relativePath = toPosixPath(path.relative(outDir, file))
-          return SEARCHABLE_PAGE_PATTERN.test(relativePath)
-        })
 
-        for (const file of searchableFiles) {
-          const relativePath = toPosixPath(path.relative(outDir, file))
-          const content = await readFile(file, "utf8")
-          const { errors } = await index.addHTMLFile({
-            url: `/${relativePath.replace(/index\.html$/, "")}`,
-            content,
-          })
-
-          if (errors.length) {
-            logger.error(`Pagefind failed to index ${path.relative(outDir, file)}`)
-            errors.forEach((error) => logger.error(error))
+        for (const locale of LOCALES) {
+          const outputPath = path.join(outDir, "pagefind", locale)
+          const { index, errors: createErrors } = await createIndex(indexConfig)
+          if (!index) {
+            logger.error(`Pagefind failed to create index for ${locale}`)
+            createErrors.forEach((error) => logger.error(error))
+            continue
           }
+
+          const searchableFiles = getLocaleSearchableFiles(htmlFiles, outDir, locale)
+
+          for (const file of searchableFiles) {
+            const relativePath = toPosixPath(path.relative(outDir, file))
+            const content = await readFile(file, "utf8")
+            const { errors } = await index.addHTMLFile({
+              url: `/${relativePath.replace(/index\.html$/, "")}`,
+              content,
+            })
+
+            if (errors.length) {
+              logger.error(
+                `Pagefind failed to index ${path.relative(outDir, file)} for ${locale}`
+              )
+              errors.forEach((error) => logger.error(error))
+            }
+          }
+
+          logger.info(
+            `Pagefind indexed ${searchableFiles.length} pages for ${locale}`
+          )
+
+          const { outputPath: writtenPath, errors: writeErrors } =
+            await index.writeFiles({ outputPath })
+          if (writeErrors.length) {
+            logger.error(`Pagefind failed to write index for ${locale}`)
+            writeErrors.forEach((error) => logger.error(error))
+            continue
+          }
+
+          logger.info(`Pagefind wrote ${locale} index to ${writtenPath}`)
         }
-
-        logger.info(`Pagefind indexed ${searchableFiles.length} pages`)
-
-        const { outputPath: writtenPath, errors: writeErrors } =
-          await index.writeFiles({ outputPath })
-        if (writeErrors.length) {
-          logger.error("Pagefind failed to write index")
-          writeErrors.forEach((error) => logger.error(error))
-          return
-        }
-
-        logger.info(`Pagefind wrote index to ${writtenPath}`)
       },
     },
   }

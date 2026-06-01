@@ -277,7 +277,7 @@ Polyglow 发布静态 API 发现文件，供代理自动读取：
 
 ## 搜索和 SEO
 
-Pagefind 由 `src/integrations/pagefind.ts` 在构建阶段生成。当前索引范围包含各语言 about 页面和文章详情页。
+Pagefind 由 `src/integrations/pagefind.ts` 在构建阶段生成。当前索引范围包含各语言 about 页面和文章详情页。每个支持语言都会生成独立的 `/pagefind/<locale>/` 搜索包，便于多语言站点只更新对应语言的搜索 fragment。
 
 `src/layouts/main.astro` 使用 `astro-seo` 输出标准 SEO 元数据，项目自有 JSON-LD 生成保留在 `src/utils/structured-data.ts`。`x-default` 指向英文默认语言。
 
