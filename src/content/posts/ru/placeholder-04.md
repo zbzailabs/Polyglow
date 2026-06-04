@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+heroImage: "https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba"
 heroImageAlt: "Изображение обложки для заполнительной статьи 04"
 heroImageWidth: 1600
 heroImageHeight: 1067

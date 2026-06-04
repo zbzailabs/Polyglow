@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+heroImage: "https://images.unsplash.com/photo-1607024301817-3bbc081205cd"
 heroImageAlt: "Imagem de capa do artigo placeholder 07"
 heroImageWidth: 1600
 heroImageHeight: 1067

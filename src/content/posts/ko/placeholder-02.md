@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+heroImage: "https://images.unsplash.com/photo-1620207418302-439b387441b0"
 heroImageAlt: "플레이스홀더 기사 02의 커버 이미지"
 heroImageWidth: 1600
 heroImageHeight: 1067

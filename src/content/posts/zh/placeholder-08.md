@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+heroImage: "https://images.unsplash.com/photo-1541727687969-ce40493cd847"
 heroImageAlt: "占位示例文章 08 的封面图"
 heroImageWidth: 1600
 heroImageHeight: 1067

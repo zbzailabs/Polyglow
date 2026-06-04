@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+heroImage: "https://images.unsplash.com/photo-1501349800519-48093d60bde0"
 heroImageAlt: "Titelbild für Platzhalterartikel 05"
 heroImageWidth: 1600
 heroImageHeight: 1067

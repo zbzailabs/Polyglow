@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1489515217757-5fd1be406fef"
+heroImage: "https://images.unsplash.com/photo-1614850715649-1d0106293bd1"
 heroImageAlt: "Imagen de portada del artículo marcador 09"
 heroImageWidth: 1600
 heroImageHeight: 1067

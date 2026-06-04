@@ -9,7 +9,7 @@ tags:
 pubDate: 2026-06-01
 authors:
   - "default"
-heroImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+heroImage: "https://images.unsplash.com/photo-1620207418302-439b387441b0"
 heroImageAlt: "Cover image for placeholder article 02"
 heroImageWidth: 1600
 heroImageHeight: 1067
