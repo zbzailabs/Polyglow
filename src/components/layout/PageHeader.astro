@@ -25,7 +25,7 @@ const alignment = align === "center" ? "mx-auto text-center" : ""
   {
     eyebrow && (
       <p
-        class="mb-3 text-[12px] font-medium tracking-widest-caps text-zinc-500 uppercase"
+        class="mb-3 text-[12px] font-normal tracking-widest-caps text-zinc-500 uppercase"
         data-page-eyebrow
       >
         {eyebrow}
@@ -35,7 +35,7 @@ const alignment = align === "center" ? "mx-auto text-center" : ""
   <h1 class="text-[clamp(2rem,5vw,3rem)] leading-tight font-semibold tracking-tightest text-foreground">{title}</h1>
   {
     subtitle && (
-      <h2 class="mx-auto mt-3 max-w-3xl text-[clamp(1.125rem,2.4vw,1.25rem)] leading-7 font-medium text-foreground/75">
+      <h2 class="mx-auto mt-3 max-w-3xl text-[clamp(1.0625rem,2.4vw,1.25rem)] leading-[1.47] font-normal tracking-[-0.012em] text-foreground/75">
         {subtitle}
       </h2>
     )
@@ -50,7 +50,7 @@ const alignment = align === "center" ? "mx-auto text-center" : ""
   {
     stat && (
       <p
-        class="mt-5 inline-flex min-h-8 items-center text-[12px] font-medium tracking-widest-caps text-zinc-500 uppercase"
+        class="mt-5 inline-flex min-h-8 items-center text-[12px] font-normal tracking-widest-caps text-zinc-500 uppercase"
         data-page-stat
       >
         {stat}

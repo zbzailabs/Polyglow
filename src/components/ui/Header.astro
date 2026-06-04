@@ -21,15 +21,15 @@ const primaryCategories = getPrimaryCategories()
 ---
 
 <header
-  class="header-surface hairline-b relative z-40 w-full bg-white/70 backdrop-blur-[20px] backdrop-saturate-150 dark:bg-black/70"
+  class="header-surface hairline-b relative z-40 w-full bg-white/70 backdrop-blur-[20px] backdrop-saturate-[180%] dark:bg-black/70"
   data-pagefind-ignore
 >
   <div
-    class="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr]"
+    class="mx-auto grid h-11 max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr]"
   >
     <a
       href={localePath(lang, "/")}
-      class="flex min-w-0 items-center gap-2.5 justify-self-start text-lg font-semibold tracking-tight text-foreground"
+      class="flex min-w-0 items-center gap-2.5 justify-self-start text-sm font-semibold tracking-tight text-foreground"
       data-header-brand
     >
       <OptimizedPicture
@@ -45,21 +45,21 @@ const primaryCategories = getPrimaryCategories()
       <span class="truncate" aria-hidden="true">{SITE_CONFIG.name}</span>
     </a>
     <nav
-      class="hidden items-center gap-7 justify-self-center text-sm lg:col-start-2 lg:flex"
+      class="hidden items-center gap-7 justify-self-center text-[12px] leading-none tracking-[-0.01em] lg:col-start-2 lg:flex"
       aria-label="Primary navigation"
     >
       {
         primaryCategories.map((item) => (
           <div class="group relative py-4">
             <a
-              class="nav-link font-medium"
+              class="nav-link font-normal"
               href={localePath(lang, `/category/${item.slug}/`)}
             >
               {item.labelByLocale[lang]}
             </a>
             <div class="nav-dropdown pointer-events-none absolute top-full left-1/2 grid min-w-48 -translate-x-1/2 translate-y-2 gap-1 rounded-xl p-2 opacity-0 transition-all duration-200 ease-apple-spring group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
               <a
-                class="rounded-lg px-3 py-2 text-sm font-medium text-foreground transition-opacity duration-300 hover:opacity-70"
+                class="rounded-lg px-3 py-2 text-[12px] font-normal text-foreground transition-opacity duration-300 hover:opacity-70"
                 href={localePath(lang, `/category/${item.slug}/`)}
               >
                 {item.labelByLocale[lang]}
@@ -76,7 +76,7 @@ const primaryCategories = getPrimaryCategories()
           </div>
         ))
       }
-      <a class="nav-link font-medium" href={localePath(lang, "/posts/")}>
+      <a class="nav-link font-normal" href={localePath(lang, "/posts/")}>
         {t(lang, "pages.posts.title")}
       </a>
     </nav>
@@ -85,7 +85,7 @@ const primaryCategories = getPrimaryCategories()
       data-header-actions
     >
       <a
-        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
         href={localePath(lang, "/search/")}
         aria-label="Search"
       >

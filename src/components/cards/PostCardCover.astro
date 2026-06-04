@@ -29,9 +29,9 @@ const dateLabel = new Intl.DateTimeFormat(post.data.locale, {
   year: "numeric",
 }).format(post.data.pubDate)
 const portraitCardShape =
-  "aspect-[3/4] rounded-xl sm:min-h-[24rem] sm:rounded-2xl"
+  "aspect-[3/4] rounded-none sm:min-h-[24rem]"
 const cardShape = {
-  lead: "aspect-[3/4] rounded-xl sm:aspect-[16/9] sm:min-h-[27rem] sm:rounded-2xl",
+  lead: "aspect-[3/4] rounded-none sm:aspect-[16/9] sm:min-h-[27rem]",
   wide: `${portraitCardShape} xl:aspect-[16/10] xl:min-h-[20rem]`,
   portrait: portraitCardShape,
 }[variant]
@@ -57,7 +57,7 @@ const TitleTag = headingLevel === 3 ? "h3" : "h2"
 ---
 
 <article
-  class={`post-card group relative w-full min-w-0 max-w-full overflow-hidden transition-transform duration-300 ease-apple-spring active:scale-[0.98] ${cardShape} ${className}`}
+  class={`post-card group relative w-full min-w-0 max-w-full overflow-hidden transition-transform duration-300 ease-apple-spring active:scale-[0.95] ${cardShape} ${className}`}
 >
   <a
     href={postUrl(post)}
@@ -74,7 +74,7 @@ const TitleTag = headingLevel === 3 ? "h3" : "h2"
     class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out"
   />
   <div
-    class="absolute inset-0 bg-gradient-to-t from-zinc-950/75 via-zinc-950/20 to-transparent"
+    class="absolute inset-0 bg-black/35"
   >
   </div>
   <div

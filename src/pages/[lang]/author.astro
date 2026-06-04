@@ -193,7 +193,7 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
           {
             author?.data.socials.map((social) => (
               <a
-                class="inline-flex size-11 items-center justify-center rounded-full text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+                class="inline-flex size-11 items-center justify-center rounded-full text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
                 href={social.url}
                 aria-label={social.label}
                 target={social.url.startsWith("http") ? "_blank" : undefined}
@@ -238,7 +238,7 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
           >
             <button
               type="button"
-              class="hidden size-10 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
+              class="hidden size-10 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95] disabled:pointer-events-none disabled:opacity-35"
               aria-label={previousYearsLabel}
               data-activity-year-scroll="left"
             >
@@ -252,7 +252,7 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
                 displayYears.map((year, index) => (
                   <button
                     type="button"
-                    class={`inline-flex h-10 w-[4.5rem] shrink-0 snap-start cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition-transform duration-300 ease-apple-spring active:scale-[0.98] ${
+                    class={`inline-flex h-10 w-[4.5rem] shrink-0 snap-start cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition-transform duration-300 ease-apple-spring active:scale-[0.95] ${
                       index === 0
                         ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
                         : "text-muted-foreground"
@@ -267,7 +267,7 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
             </div>
             <button
               type="button"
-              class="hidden size-10 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
+              class="hidden size-10 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95] disabled:pointer-events-none disabled:opacity-35"
               aria-label={nextYearsLabel}
               data-activity-year-scroll="right"
             >
@@ -343,9 +343,9 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
               {currentActivity.posts.map((post) => (
                 <a
                   href={post.href}
-                  class="grid gap-1 rounded-lg bg-transparent px-4 py-3 text-sm transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+                  class="grid gap-1 rounded-lg bg-transparent px-4 py-3 text-sm transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
                 >
-                  <span class="text-xs font-medium text-muted-foreground">
+                  <span class="text-xs font-normal text-muted-foreground">
                     {post.publishedAt}
                   </span>
                   <h3 class="font-semibold text-foreground">
@@ -528,10 +528,10 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
               const link = document.createElement("a")
               link.href = post.href
               link.className =
-                "grid gap-1 rounded-lg bg-transparent px-4 py-3 text-sm transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+                "grid gap-1 rounded-lg bg-transparent px-4 py-3 text-sm transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
 
               const meta = document.createElement("span")
-              meta.className = "text-xs font-medium text-muted-foreground"
+              meta.className = "text-xs font-normal text-muted-foreground"
               meta.textContent = post.publishedAt
 
               const title = document.createElement("h3")

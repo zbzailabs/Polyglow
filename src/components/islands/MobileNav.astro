@@ -17,7 +17,7 @@ const primaryCategories = getPrimaryCategories()
 <div class="lg:hidden" data-mobile-nav>
   <button
     type="button"
-    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
     aria-label="Menu"
     aria-haspopup="dialog"
     aria-expanded="false"
@@ -45,7 +45,7 @@ const primaryCategories = getPrimaryCategories()
       </p>
       <button
         type="button"
-        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.98]"
+        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-transform duration-300 ease-apple-spring active:scale-[0.95]"
         aria-label="Close menu"
         data-mobile-nav-close
       >
@@ -59,7 +59,7 @@ const primaryCategories = getPrimaryCategories()
       {
         primaryCategories.map((category) => (
           <details class="group rounded-lg">
-            <summary class="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-sm font-medium text-foreground transition-opacity duration-300 hover:opacity-70">
+            <summary class="flex min-h-10 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-sm font-normal text-foreground transition-opacity duration-300 hover:opacity-70">
               <span>{category.labelByLocale[lang]}</span>
               <Icon
                 name="chevron-down"
@@ -80,13 +80,13 @@ const primaryCategories = getPrimaryCategories()
         ))
       }
       <a
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-opacity duration-300 hover:opacity-70"
+        class="rounded-lg px-3 py-2 text-sm font-normal transition-opacity duration-300 hover:opacity-70"
         href={localePath(lang, "/posts/")}
       >
         {t(lang, "pages.posts.title")}
       </a>
       <a
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-opacity duration-300 hover:opacity-70"
+        class="rounded-lg px-3 py-2 text-sm font-normal transition-opacity duration-300 hover:opacity-70"
         href={localePath(lang, "/search/")}
       >
         {t(lang, "search.title")}
