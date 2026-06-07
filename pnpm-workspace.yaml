@@ -11,8 +11,10 @@ fetchRetryMintimeout: 10000
 fetchTimeout: 120000
 networkConcurrency: 8
 onlyBuiltDependencies:
+  - bufferutil
   - esbuild
   - sharp
+  - utf-8-validate
   - workerd
 overrides:
   devalue: 5.8.1
