@@ -11,6 +11,7 @@ const sampleArticlePath = join(distDir, "en/posts/20150714-agiot/index.html")
 const siteOrigin = "https://polyglow.zbz.ai"
 const minDescriptionBytes = 80
 const failures = []
+const indexableUrls = new Set()
 
 function fail(message) {
   failures.push(message)
@@ -21,6 +22,14 @@ function walkHtmlFiles(dir) {
     const path = join(dir, entry.name)
     if (entry.isDirectory()) return walkHtmlFiles(path)
     return entry.name.endsWith(".html") ? [path] : []
+  })
+}
+
+function walkFiles(dir, extension) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    if (entry.isDirectory()) return walkFiles(path, extension)
+    return entry.name.endsWith(extension) ? [path] : []
   })
 }
 
@@ -78,13 +87,20 @@ function assertAbsoluteUrl(value, label, filePath) {
   return url
 }
 
-function assertExistingHtmlUrl(value, label, filePath) {
-  const url = assertAbsoluteUrl(value, label, filePath)
-  if (!url) return
-  const localPath = join(distDir, url.pathname, "index.html")
-  if (!existsSync(localPath)) {
-    fail(`${label} points to missing page in ${pagePath(filePath)}: ${url.pathname}`)
-  }
+function htmlPathForUrl(url) {
+  return join(distDir, url.pathname, "index.html")
+}
+
+function isNoindexHtml(html) {
+  return attr(html, "robots")?.includes("noindex") ?? false
+}
+
+function isOfficialIndexablePath(pathname) {
+  if (pathname === "/") return false
+  if (pathname.endsWith("/404/")) return false
+  if (pathname.endsWith("/search/")) return false
+  if (pathname.endsWith("/rss.xml/")) return false
+  return true
 }
 
 function checkLayoutPage(filePath, html) {
@@ -140,6 +156,8 @@ function checkLayoutPage(filePath, html) {
 
   if (isNoindex) return
 
+  indexableUrls.add(canonical)
+
   const alternates = [
     ...html.matchAll(
       /<link\s+rel=["']alternate["']\s+hreflang=["']([^"']+)["']\s+href=["']([^"']+)["']/gi
@@ -149,7 +167,60 @@ function checkLayoutPage(filePath, html) {
 
   for (const [, hrefLang, href] of alternates) {
     if (hrefLang === "x-default") continue
-    assertExistingHtmlUrl(href, `hreflang ${hrefLang}`, filePath)
+    const url = assertAbsoluteUrl(href, `hreflang ${hrefLang}`, filePath)
+    if (!url) continue
+
+    const targetPath = htmlPathForUrl(url)
+    if (!existsSync(targetPath)) {
+      fail(`hreflang ${hrefLang} points to missing page in ${path}: ${url.pathname}`)
+      continue
+    }
+
+    const targetHtml = readFileSync(targetPath, "utf8")
+    if (isNoindexHtml(targetHtml)) {
+      fail(`hreflang ${hrefLang} points to noindex page in ${path}: ${url.pathname}`)
+    }
+  }
+}
+
+function sitemapUrls() {
+  const xmlFiles = walkFiles(distDir, ".xml").filter((filePath) =>
+    filePath.includes("sitemap")
+  )
+  return new Set(
+    xmlFiles.flatMap((filePath) => {
+      const xml = readFileSync(filePath, "utf8")
+      if (!xml.includes("<urlset")) return []
+      return [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1])
+    })
+  )
+}
+
+function checkSitemaps() {
+  const urls = sitemapUrls()
+  if (!urls.size) fail("Missing sitemap URLs")
+
+  for (const urlValue of urls) {
+    const url = assertAbsoluteUrl(urlValue, "Sitemap URL", sampleArticlePath)
+    if (!url) continue
+
+    const targetPath = htmlPathForUrl(url)
+    if (!existsSync(targetPath)) {
+      fail(`Sitemap URL points to missing HTML page: ${url.pathname}`)
+      continue
+    }
+
+    const html = readFileSync(targetPath, "utf8")
+    if (!isOfficialIndexablePath(url.pathname)) {
+      fail(`Sitemap includes non-indexable route: ${url.pathname}`)
+    }
+    if (isNoindexHtml(html)) {
+      fail(`Sitemap includes noindex page: ${url.pathname}`)
+    }
+  }
+
+  for (const url of indexableUrls) {
+    if (!urls.has(url)) fail(`Indexable page missing from sitemap: ${url}`)
   }
 }
 
@@ -225,6 +296,7 @@ for (const filePath of htmlFiles) {
   checkLayoutPage(filePath, html)
 }
 checkArticlePage()
+checkSitemaps()
 
 if (failures.length) {
   throw new Error(

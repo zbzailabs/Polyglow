@@ -24,6 +24,14 @@ const sitemapLocaleMap = {
   id: "id-ID",
   ar: "ar",
 }
+const sitemapExcludedPathPatterns = [
+  /^\/$/,
+  /\/404\/$/,
+  /\/search\/$/,
+  /\/rss\.xml\/$/,
+  /\/tags\/market\/$/,
+  /\/posts\/placeholder-[^/]+\/$/,
+]
 
 export default defineConfig({
   output: "static",
@@ -110,7 +118,9 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         const { pathname } = new URL(page)
-        return pathname !== "/" && !pathname.endsWith("/search/")
+        return !sitemapExcludedPathPatterns.some((pattern) =>
+          pattern.test(pathname)
+        )
       },
       i18n: {
         defaultLocale: "en",

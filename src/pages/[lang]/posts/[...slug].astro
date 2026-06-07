@@ -35,6 +35,7 @@ const { post } = Astro.props
 const { Content, headings } = await render(post)
 const author = await getAuthor(post.data.locale, post.data.authors[0])
 const path = postPath(post)
+const noindex = postSlug(post).startsWith("placeholder-")
 const allPosts = await getPublishedPosts()
 const alternates = postLocaleAlternates(post, allPosts)
 const localePosts = allPosts.filter((entry) => entry.data.locale === post.data.locale)
@@ -120,6 +121,7 @@ const jsonLd = articleJsonLd({
     section: categoryLabel,
     tags: tagLabels,
   }}
+  noindex={noindex}
   jsonLd={jsonLd}
   alternates={alternates}
   dynamicGlass
