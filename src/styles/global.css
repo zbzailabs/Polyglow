@@ -244,7 +244,10 @@
   box-shadow: var(--glass-shadow-hover);
 }
 
-.card-title,
+.card-title {
+  @apply text-2xl leading-tight font-semibold tracking-tight;
+}
+
 .article-title {
   @apply text-3xl leading-tight font-semibold tracking-tight;
 }
@@ -474,7 +477,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .taxonomy-link__title {
-  @apply text-3xl leading-tight font-semibold tracking-tight text-foreground;
+  @apply text-2xl leading-tight font-semibold tracking-tight text-foreground;
 }
 
 .taxonomy-link__description {
