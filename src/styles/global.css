@@ -245,18 +245,23 @@
 }
 
 .card-title {
-  @apply text-2xl leading-tight font-semibold tracking-tight;
+  @apply text-2xl leading-tight font-semibold tracking-normal;
 }
 
+.page-title,
 .article-title {
-  @apply text-3xl leading-tight font-semibold tracking-tight;
+  @apply text-3xl leading-tight font-semibold tracking-normal;
 }
 
-html:lang(zh) :where(.card-title, .article-title, .taxonomy-link__title),
-html:lang(ja) :where(.card-title, .article-title, .taxonomy-link__title),
-html:lang(ko) :where(.card-title, .article-title, .taxonomy-link__title),
-html:lang(ar) :where(.card-title, .article-title, .taxonomy-link__title) {
-  @apply leading-snug tracking-normal;
+.page-title {
+  @apply text-foreground;
+}
+
+html:lang(zh) :where(.card-title, .page-title, .article-title),
+html:lang(ja) :where(.card-title, .page-title, .article-title),
+html:lang(ko) :where(.card-title, .page-title, .article-title),
+html:lang(ar) :where(.card-title, .page-title, .article-title) {
+  @apply leading-snug;
 }
 
 .article-hero__content.post-card__content {
@@ -360,19 +365,19 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .content-prose :where(h1) {
-  @apply mt-12 mb-6 text-3xl leading-tight font-semibold text-foreground;
+  @apply mt-12 mb-6 text-3xl leading-tight font-semibold tracking-normal text-foreground;
 }
 
 .content-prose :where(h2) {
-  @apply mt-12 mb-4 text-2xl leading-tight font-semibold text-foreground;
+  @apply mt-12 mb-4 text-2xl leading-tight font-semibold tracking-normal text-foreground;
 }
 
 .content-prose :where(h3) {
-  @apply mt-9 mb-3 text-xl leading-tight font-semibold text-foreground;
+  @apply mt-9 mb-3 text-xl leading-tight font-semibold tracking-normal text-foreground;
 }
 
 .content-prose :where(h4) {
-  @apply mt-8 mb-2 text-lg leading-tight font-semibold text-foreground;
+  @apply mt-8 mb-2 text-lg leading-tight font-semibold tracking-normal text-foreground;
 }
 
 .content-prose :where(p) {
@@ -477,7 +482,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .taxonomy-link__title {
-  @apply text-2xl leading-tight font-semibold tracking-tight text-foreground;
+  @apply text-foreground;
 }
 
 .taxonomy-link__description {
