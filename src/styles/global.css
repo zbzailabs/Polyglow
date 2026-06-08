@@ -246,7 +246,7 @@
 
 .card-title,
 .article-title {
-  @apply text-4xl leading-tight font-semibold tracking-tight;
+  @apply text-3xl leading-tight font-semibold tracking-tight;
 }
 
 html:lang(zh) :where(.card-title, .article-title, .taxonomy-link__title),
@@ -357,7 +357,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .content-prose :where(h1) {
-  @apply mt-12 mb-6 text-4xl leading-tight font-semibold text-foreground;
+  @apply mt-12 mb-6 text-3xl leading-tight font-semibold text-foreground;
 }
 
 .content-prose :where(h2) {
@@ -474,7 +474,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .taxonomy-link__title {
-  @apply text-4xl leading-tight font-semibold tracking-tight text-foreground;
+  @apply text-3xl leading-tight font-semibold tracking-tight text-foreground;
 }
 
 .taxonomy-link__description {
