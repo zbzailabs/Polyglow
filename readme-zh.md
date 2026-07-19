@@ -75,6 +75,8 @@ pnpm deploy   # 构建后通过 Wrangler 部署 dist
 Astro 6 风格的 HTML 空白行为。Astro 7 的 Rust 编译器、队列渲染、
 Advanced Routing 和 Satteri Markdown 管线均使用正式默认能力，不再配置
 Astro 6 的 `rustCompiler`、`queuedRendering` 实验开关。
+Astro 7.1 已为 Markdown 内容集合启用延迟渲染，以降低内容同步时的内存占用；
+`pnpm dev:parallel -- --port <端口>` 可启动一个独立的第二开发服务器。
 
 ## 项目结构
 

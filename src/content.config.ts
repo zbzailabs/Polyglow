@@ -37,6 +37,7 @@ const post = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx,markdown}",
     base: "./src/content/posts",
+    deferRender: true,
     generateId,
   }),
   schema: z
@@ -67,6 +68,7 @@ const page = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx,markdown}",
     base: "./src/content/pages",
+    deferRender: true,
     generateId,
   }),
   schema: z.object({
@@ -84,6 +86,7 @@ const author = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx,markdown}",
     base: "./src/content/authors",
+    deferRender: true,
     generateId,
   }),
   schema: z.object({

@@ -35,6 +35,7 @@ addresses.
 - Install dependencies: `pnpm install`
 - Start development server: `pnpm dev`
 - Start managed background development server: `pnpm dev:background`
+- Start an independent parallel development server: `pnpm dev:parallel -- --port <port>`
 - Check managed development server: `pnpm dev:status`
 - Read managed development server logs: `pnpm dev:logs`
 - Stop managed development server: `pnpm dev:stop`

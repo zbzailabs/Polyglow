@@ -89,6 +89,8 @@ The configuration keeps `compressHTML: true` after the Astro 7 upgrade so the
 existing theme keeps Astro 6 style HTML whitespace behavior. Astro 7's Rust
 compiler, queued rendering, advanced routing, and Satteri Markdown pipeline are
 used as stable defaults without the removed Astro 6 experimental flags.
+Astro 7.1 defers Markdown rendering for lower content-sync memory usage, and
+`pnpm dev:parallel -- --port <port>` starts an independent second dev server.
 
 ## Project Structure
 
