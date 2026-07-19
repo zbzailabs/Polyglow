@@ -210,12 +210,16 @@ text. Use the dark tokens as design references; runtime switching stays in CSS.
 
 The project uses a system sans stack throughout. This keeps startup fast,
 supports all configured locales, and avoids external font loading.
+Available optical sizing is enabled at the document root.
 
 Article prose uses `1rem` type with `2rem` line height. Chinese, Japanese, and
 Korean prose uses justified text where supported. Arabic pages rely on the
 document `dir="rtl"` value and start-aligned prose. Headings are compact and
 strong. Navigation and metadata stay small, with normal or slight positive
 tracking only where the current UI already uses uppercase labels.
+
+Article links keep a visible muted underline, soften on press, and show a clear
+outline for keyboard focus.
 
 Do not use viewport-scaled font sizes. Do not use negative letter spacing.
 

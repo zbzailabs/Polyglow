@@ -110,6 +110,7 @@
 
   html {
     @apply font-sans antialiased;
+    font-optical-sizing: auto;
   }
 
   html[dir="rtl"] {
@@ -429,7 +430,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .content-prose :where(a) {
-  @apply font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground;
+  @apply font-medium text-foreground underline decoration-muted-foreground underline-offset-4 transition-colors hover:decoration-foreground active:text-foreground/70 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
 }
 
 .content-prose :where(:not(pre) > code) {
