@@ -15,9 +15,10 @@ interface Props {
 }
 
 const { lang, prev, next, pages = [], currentPage, totalPages } = Astro.props
-const itemClass =
+const itemBaseClass =
   "inline-flex size-10 items-center justify-center rounded-lg bg-background/80 text-sm font-medium text-foreground shadow-sm backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-accent disabled:pointer-events-none disabled:opacity-40 dark:bg-white/5"
-const disabledClass = `${itemClass} opacity-35`
+const itemClass = `heos-press ${itemBaseClass}`
+const disabledClass = `${itemBaseClass} opacity-35`
 const pageItems =
   pages.length > 0
     ? pages

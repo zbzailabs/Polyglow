@@ -615,6 +615,30 @@ html:lang(ar) .article-prose :where(p, li) {
   @apply inline-flex items-center rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold tracking-wide text-white uppercase transition-opacity duration-150 hover:opacity-90 dark:bg-neutral-100 dark:text-neutral-950;
 }
 
+.heos-press {
+  transform-origin: center;
+  transition-property:
+    scale, opacity, color, background-color, border-color, transform, translate,
+    filter, backdrop-filter;
+  transition-duration: 60ms, 60ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms,
+    150ms;
+  transition-timing-function: ease-out;
+}
+
+.heos-press:active {
+  scale: 0.985;
+  opacity: 0.88;
+}
+
+.heos-press:focus-visible,
+.heos-press:has(> a:focus-visible) {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 4px var(--background),
+    0 0 0 6px var(--foreground);
+}
+
 .blur-placeholder {
   @apply scale-110 blur-[20px] transition-opacity duration-[400ms] ease-out;
 }

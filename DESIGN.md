@@ -275,6 +275,22 @@ dropdown items use 8px, regular cards use 10px to 14px, image cards use 24px to
 - **Icons:** use `src/components/ui/Icon.astro` and the Lucide allowlist in
   `astro.config.mjs`.
 
+### HeOS response states
+
+- **Rest:** preserve the entry's established color, opacity, position, and
+  geometry.
+- **Press:** respond in the first rendered frame with a restrained compositor
+  scale and opacity change. Apply this language consistently to header action
+  controls, post cards, archive rows, taxonomy entries, pagination, and primary
+  action buttons.
+- **Cancel:** when a pointer leaves the target or the gesture is cancelled,
+  return directly to rest without triggering an action.
+- **Commit:** after a successful release, let the native link or control action
+  own the next state. Do not add a second bounce, displacement, or delayed
+  confirmation.
+- Keep `:focus-visible` treatment clear during every state. Press feedback must
+  not change box dimensions, spacing, or document flow.
+
 The prose wrapper class is `content-prose`. Treat it as a stable CSS API
 unless the rename is part of a deliberate cleanup across components, CSS, and
 tests.
