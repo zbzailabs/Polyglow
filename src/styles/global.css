@@ -201,6 +201,18 @@
   -webkit-backdrop-filter: blur(var(--glass-blur-lg));
 }
 
+[data-mobile-nav-panel][data-mobile-nav-state="closed"] {
+  transform: translateX(100%);
+}
+
+html[dir="rtl"] [data-mobile-nav-panel][data-mobile-nav-state="closed"] {
+  transform: translateX(-100%);
+}
+
+[data-mobile-nav-panel][data-mobile-nav-state="open"] {
+  transform: translateX(0);
+}
+
 :root:not(.dark) .nav-dropdown,
 :root:not(.dark) .mobile-nav-glass {
   background: rgba(255, 255, 255, 0.86);
@@ -480,7 +492,7 @@ html:lang(ar) .article-prose :where(p, li) {
 }
 
 .archive-row__category {
-  @apply hidden min-w-0 truncate text-right text-foreground/70 md:block;
+  @apply hidden min-w-0 truncate text-end text-foreground/70 md:block;
 }
 
 .taxonomy-card {

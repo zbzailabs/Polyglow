@@ -35,12 +35,13 @@ const currentNavigationKey = getPrimaryNavigationKey(path)
   >
   </div>
   <aside
-    class="mobile-nav-glass fixed top-0 right-0 z-50 flex h-dvh w-full max-w-sm translate-x-full flex-col transition-transform duration-200"
+    class="mobile-nav-glass fixed top-0 end-0 z-50 flex h-dvh w-full max-w-sm flex-col transition-transform duration-200"
     role="dialog"
     aria-modal="true"
     aria-labelledby="mobile-nav-title"
     hidden
     data-mobile-nav-panel
+    data-mobile-nav-state="closed"
   >
     <div
       class="flex items-center justify-between gap-4 p-4"
@@ -158,7 +159,7 @@ const currentNavigationKey = getPrimaryNavigationKey(path)
       document.documentElement.style.overflow = "hidden"
       const frame = requestAnimationFrame(() => {
         openingFrames.delete(panel)
-        panel.classList.remove("translate-x-full")
+        panel.dataset.mobileNavState = "open"
       })
       openingFrames.set(panel, frame)
       trigger.setAttribute("aria-expanded", "true")
@@ -177,7 +178,7 @@ const currentNavigationKey = getPrimaryNavigationKey(path)
       if (openingFrame) cancelAnimationFrame(openingFrame)
       openingFrames.delete(panel)
       closeCompletions.get(panel)?.()
-      panel.classList.add("translate-x-full")
+      panel.dataset.mobileNavState = "closed"
       trigger.setAttribute("aria-expanded", "false")
       let active = true
       const cleanup = () => {
@@ -185,7 +186,7 @@ const currentNavigationKey = getPrimaryNavigationKey(path)
         closeCompletions.delete(panel)
       }
       const finish = () => {
-        if (!active || !panel.classList.contains("translate-x-full")) return
+        if (!active || panel.dataset.mobileNavState !== "closed") return
         active = false
         closeCompletions.delete(panel)
         overlay.hidden = true

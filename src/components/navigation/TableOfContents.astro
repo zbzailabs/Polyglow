@@ -27,7 +27,7 @@ const title = titleByLocale[lang]
 ---
 
 <nav
-  class="toc-nav sticky top-24 flex flex-col gap-2 py-1 pl-4"
+  class="toc-nav sticky top-24 flex flex-col gap-2 py-1 ps-4"
   aria-label={title}
 >
   <p class="text-xs font-semibold text-muted-foreground">
@@ -40,7 +40,7 @@ const title = titleByLocale[lang]
           <a
             class:list={[
               "block rounded-sm py-1.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
-              heading.depth === 3 ? "pl-3 text-xs" : "",
+              heading.depth === 3 ? "ps-3 text-xs" : "",
             ]}
             href={`#${heading.slug}`}
             title={heading.text}

@@ -39,7 +39,7 @@ const pageItems =
         rel="prev"
         aria-label={t(lang, "common.pagination.previousPage")}
       >
-        &lsaquo;
+        <span class="inline-block rtl:rotate-180">&lsaquo;</span>
       </a>
     ) : (
       <span
@@ -47,7 +47,7 @@ const pageItems =
         aria-disabled="true"
         aria-label={t(lang, "common.pagination.previousPage")}
       >
-        &lsaquo;
+        <span class="inline-block rtl:rotate-180">&lsaquo;</span>
       </span>
     )
   }
@@ -91,7 +91,7 @@ const pageItems =
         rel="next"
         aria-label={t(lang, "common.pagination.nextPage")}
       >
-        &rsaquo;
+        <span class="inline-block rtl:rotate-180">&rsaquo;</span>
       </a>
     ) : (
       <>
@@ -100,7 +100,7 @@ const pageItems =
           aria-disabled="true"
           aria-label={t(lang, "common.pagination.nextPage")}
         >
-          &rsaquo;
+          <span class="inline-block rtl:rotate-180">&rsaquo;</span>
         </span>
       </>
     )

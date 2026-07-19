@@ -291,6 +291,18 @@ dropdown items use 8px, regular cards use 10px to 14px, image cards use 24px to
 - Keep `:focus-visible` treatment clear during every state. Press feedback must
   not change box dimensions, spacing, or document flow.
 
+### HeOS RTL spatial mapping
+
+- Treat inline start and inline end as the source of truth for drawer origins,
+  disclosure anchors, spacing, alignment, and directional navigation icons.
+- Mobile drawers enter from the logical end side and leave along the same path:
+  right in LTR and left in RTL.
+- Header disclosures remain attached to their trigger and inside the viewport in
+  both directions. Visual mirroring must not reorder keyboard focus or change
+  the localized route order.
+- Current-location styling and category hierarchy retain the same semantics in
+  both directions; directional icons mirror without changing their action.
+
 The prose wrapper class is `content-prose`. Treat it as a stable CSS API
 unless the rename is part of a deliberate cleanup across components, CSS, and
 tests.
