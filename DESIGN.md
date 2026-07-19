@@ -303,6 +303,22 @@ dropdown items use 8px, regular cards use 10px to 14px, image cards use 24px to
 - Current-location styling and category hierarchy retain the same semantics in
   both directions; directional icons mirror without changing their action.
 
+### HeOS adaptive materials
+
+- Ordinary preferences retain the image-led glass language, translucent
+  surfaces, and backdrop blur described above.
+- `prefers-reduced-transparency: reduce` replaces functional glass surfaces
+  with opaque card or background colors and removes backdrop blur. Image-card
+  text panels use a stable dark surface so white text remains readable.
+- `prefers-contrast: more` uses solid surfaces, foreground-colored structural
+  borders, and shadow-free separation. Image-card panels use a solid dark
+  surface with a white border.
+- When both preferences are active, the stronger contrast treatment wins while
+  every covered surface remains opaque and blur-free.
+- Apply these rules to post-card panels, mobile navigation, header disclosures,
+  Pagefind search input and fallback, taxonomy entries, pagination, and other
+  functional glass badges. Preserve light, dark, LTR, and RTL semantics.
+
 The prose wrapper class is `content-prose`. Treat it as a stable CSS API
 unless the rename is part of a deliberate cleanup across components, CSS, and
 tests.

@@ -651,6 +651,107 @@ html:lang(ar) .article-prose :where(p, li) {
     0 0 0 6px var(--foreground);
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  :where(
+      .glass-card,
+      .nav-dropdown,
+      .mobile-nav-glass,
+      .post-card__content,
+      .adaptive-glass-surface,
+      .taxonomy-card,
+      .taxonomy-link,
+      .taxonomy-pill,
+      .pagefind-ui__search-input
+    ) {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  :where(
+      .glass-card,
+      .nav-dropdown,
+      .mobile-nav-glass,
+      .adaptive-glass-surface,
+      .taxonomy-card,
+      .taxonomy-link,
+      .taxonomy-pill
+    ) {
+    background: var(--card) !important;
+    border: 1px solid
+      color-mix(in oklab, var(--foreground) 24%, transparent) !important;
+  }
+
+  .post-card__content {
+    background: oklch(0.18 0 0) !important;
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  }
+
+  .pagefind-ui__search-input {
+    background: var(--background) !important;
+  }
+
+  .mobile-nav-overlay {
+    background: color-mix(
+      in oklab,
+      var(--background) 82%,
+      var(--foreground) 18%
+    ) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :where(
+      .glass-card,
+      .nav-dropdown,
+      .mobile-nav-glass,
+      .adaptive-glass-surface,
+      .taxonomy-card,
+      .taxonomy-link,
+      .taxonomy-pill
+    ) {
+    background: var(--card) !important;
+    border: 2px solid var(--foreground) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .post-card__content {
+    background: oklch(0.14 0 0) !important;
+    border: 2px solid white !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .pagefind-ui__search-input {
+    background: var(--background) !important;
+    border: 2px solid var(--foreground) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .adaptive-glass-surface[aria-disabled="true"] {
+    background: var(--muted) !important;
+    color: var(--foreground) !important;
+    border-style: dashed !important;
+    opacity: 1 !important;
+  }
+
+  .mobile-nav-overlay {
+    background: color-mix(
+      in oklab,
+      var(--background) 72%,
+      var(--foreground) 28%
+    ) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 .blur-placeholder {
   @apply scale-110 blur-[20px] transition-opacity duration-[400ms] ease-out;
 }
