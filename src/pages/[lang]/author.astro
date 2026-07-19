@@ -255,7 +255,7 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
                 displayYears.map((year, index) => (
                   <button
                     type="button"
-                    class={`inline-flex h-10 w-[4.5rem] shrink-0 snap-start cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                    class={`inline-flex h-10 w-[4.5rem] shrink-0 snap-start cursor-pointer items-center justify-center rounded-full text-sm font-semibold transition hover:bg-accent hover:text-foreground active:scale-95 active:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                       index === 0
                         ? "bg-foreground text-background"
                         : "text-muted-foreground"
@@ -596,24 +596,23 @@ const activityDataJson = JSON.stringify(activityByYear).replace(/</g, "\\u003c")
         const handleNextClick = () => {
           list.scrollBy({ left: getYearStep(), behavior: "smooth" })
         }
-        const handlePointerDown = (event) => {
+        const handleYearClick = (event) => {
           if (!(event.target instanceof Element)) return
           const button = event.target.closest("[data-activity-year]")
           if (!(button instanceof HTMLButtonElement)) return
           const year = button.dataset.activityYear
           if (!year) return
-          event.preventDefault()
           setActiveYear(year)
         }
         prev.addEventListener("click", handlePrevClick)
         next.addEventListener("click", handleNextClick)
-        list.addEventListener("pointerdown", handlePointerDown)
+        list.addEventListener("click", handleYearClick)
         list.addEventListener("scroll", update, { passive: true })
         window.addEventListener("resize", update)
         cleanups.push(() => {
           prev.removeEventListener("click", handlePrevClick)
           next.removeEventListener("click", handleNextClick)
-          list.removeEventListener("pointerdown", handlePointerDown)
+          list.removeEventListener("click", handleYearClick)
           list.removeEventListener("scroll", update)
           window.removeEventListener("resize", update)
         })
