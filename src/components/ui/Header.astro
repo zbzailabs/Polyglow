@@ -85,9 +85,9 @@ const primaryCategories = getPrimaryCategories()
       data-header-actions
     >
       <a
-        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        class="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         href={localePath(lang, "/search/")}
-        aria-label="Search"
+        aria-label={t(lang, "search.title")}
       >
         <Icon name="search" class="size-4" dataIcon="inline-start" />
       </a>

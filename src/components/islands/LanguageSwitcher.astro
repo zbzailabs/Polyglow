@@ -24,30 +24,31 @@ const flags: Record<Locale, string> = {
 }
 ---
 
-<div class="relative" data-dropdown-menu>
+<div class="relative" data-header-disclosure>
   <button
     type="button"
-    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    class="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     aria-label={t(lang, "language.switch")}
-    aria-haspopup="menu"
     aria-expanded="false"
-    data-dropdown-menu-trigger
+    aria-controls="language-switcher-content"
+    data-header-disclosure-trigger
   >
     <span class="text-sm leading-none" aria-hidden="true">{flags[lang]}</span>
   </button>
   <div
+    id="language-switcher-content"
     class="nav-dropdown absolute top-full right-0 z-50 mt-2 grid w-44 gap-1 rounded-xl p-2 shadow-xl"
-    role="menu"
+    role="group"
+    aria-label={t(lang, "language.switch")}
     hidden
-    data-dropdown-menu-content
+    data-header-disclosure-content
   >
     {
       LOCALES.map((locale) => (
         <a
-          class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+          class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
           href={localePath(locale, path)}
-          role="menuitem"
-          aria-current={locale === lang ? "true" : undefined}
+          aria-current={locale === lang ? "page" : undefined}
         >
           <span aria-hidden="true">{flags[locale]}</span>
           <span>{LOCALE_META[locale].nativeName}</span>
@@ -59,35 +60,51 @@ const flags: Record<Locale, string> = {
 
 <script is:inline>
   ;(() => {
-    window.__dropdownMenuCleanup?.()
+    window.__headerDisclosureCleanup?.()
 
-    const closeMenu = (menu) => {
-      const trigger = menu.querySelector("[data-dropdown-menu-trigger]")
-      const content = menu.querySelector("[data-dropdown-menu-content]")
+    const closeDisclosure = (
+      disclosure,
+      restoreFocus = false,
+      deferFocus = false
+    ) => {
+      const trigger = disclosure.querySelector("[data-header-disclosure-trigger]")
+      const content = disclosure.querySelector("[data-header-disclosure-content]")
       if (
         !(trigger instanceof HTMLElement) ||
         !(content instanceof HTMLElement)
       )
         return
+      const wasOpen = !content.hidden
       trigger.setAttribute("aria-expanded", "false")
       content.hidden = true
+      if (restoreFocus && wasOpen) {
+        if (deferFocus) {
+          requestAnimationFrame(() => {
+            if (trigger.isConnected) trigger.focus()
+          })
+        } else {
+          trigger.focus()
+        }
+      }
     }
 
-    const closeAll = (except) => {
-      document.querySelectorAll("[data-dropdown-menu]").forEach((menu) => {
-        if (menu !== except) closeMenu(menu)
+    const closeAll = (except, restoreFocus = false, deferFocus = false) => {
+      document.querySelectorAll("[data-header-disclosure]").forEach((disclosure) => {
+        if (disclosure !== except) {
+          closeDisclosure(disclosure, restoreFocus, deferFocus)
+        }
       })
     }
 
-    const openMenu = (menu) => {
-      const trigger = menu.querySelector("[data-dropdown-menu-trigger]")
-      const content = menu.querySelector("[data-dropdown-menu-content]")
+    const openDisclosure = (disclosure) => {
+      const trigger = disclosure.querySelector("[data-header-disclosure-trigger]")
+      const content = disclosure.querySelector("[data-header-disclosure-content]")
       if (
         !(trigger instanceof HTMLElement) ||
         !(content instanceof HTMLElement)
       )
         return
-      closeAll(menu)
+      closeAll(disclosure)
       trigger.setAttribute("aria-expanded", "true")
       content.hidden = false
     }
@@ -96,36 +113,49 @@ const flags: Record<Locale, string> = {
       const target = event.target
       if (!(target instanceof Element)) return
 
-      const trigger = target.closest("[data-dropdown-menu-trigger]")
+      const trigger = target.closest("[data-header-disclosure-trigger]")
       if (trigger instanceof HTMLElement) {
-        const menu = trigger.closest("[data-dropdown-menu]")
-        const content = menu?.querySelector("[data-dropdown-menu-content]")
-        if (!(menu instanceof HTMLElement) || !(content instanceof HTMLElement))
+        const disclosure = trigger.closest("[data-header-disclosure]")
+        const content = disclosure?.querySelector("[data-header-disclosure-content]")
+        if (
+          !(disclosure instanceof HTMLElement) ||
+          !(content instanceof HTMLElement)
+        )
           return
-        if (content.hidden) openMenu(menu)
-        else closeMenu(menu)
+        if (content.hidden) openDisclosure(disclosure)
+        else closeDisclosure(disclosure, true)
         return
       }
 
-      if (!target.closest("[data-dropdown-menu]")) closeAll()
+      const option = target.closest(
+        "[data-header-disclosure-content] a, [data-header-disclosure-content] button"
+      )
+      if (option instanceof HTMLElement) {
+        const disclosure = option.closest("[data-header-disclosure]")
+        if (disclosure instanceof HTMLElement) closeDisclosure(disclosure, true)
+        return
+      }
+
+      if (!target.closest("[data-header-disclosure]")) {
+        closeAll(undefined, true, true)
+      }
     }
 
     const handleKeydown = (event) => {
       if (event.key !== "Escape") return
-      const openMenuContent = document.querySelector(
-        "[data-dropdown-menu-content]:not([hidden])"
+      const openContent = document.querySelector(
+        "[data-header-disclosure-content]:not([hidden])"
       )
-      const menu = openMenuContent?.closest("[data-dropdown-menu]")
-      if (!(menu instanceof HTMLElement)) return
-      closeMenu(menu)
-      menu.querySelector("button")?.focus()
+      const disclosure = openContent?.closest("[data-header-disclosure]")
+      if (!(disclosure instanceof HTMLElement)) return
+      closeDisclosure(disclosure, true)
     }
 
     const handleBeforeSwap = () => closeAll()
     document.addEventListener("click", handleClick)
     document.addEventListener("keydown", handleKeydown)
     document.addEventListener("astro:before-swap", handleBeforeSwap)
-    window.__dropdownMenuCleanup = () => {
+    window.__headerDisclosureCleanup = () => {
       document.removeEventListener("click", handleClick)
       document.removeEventListener("keydown", handleKeydown)
       document.removeEventListener("astro:before-swap", handleBeforeSwap)

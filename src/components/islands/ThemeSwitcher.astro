@@ -10,14 +10,14 @@ interface Props {
 const { lang } = Astro.props
 ---
 
-<div class="relative" data-dropdown-menu>
+<div class="relative" data-header-disclosure>
   <button
     type="button"
-    class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+    class="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     aria-label={t(lang, "theme.toggle")}
-    aria-haspopup="menu"
     aria-expanded="false"
-    data-dropdown-menu-trigger
+    aria-controls="theme-switcher-content"
+    data-header-disclosure-trigger
   >
     <span data-theme-trigger-icon="light">
       <Icon name="sun" class="size-4" dataIcon="inline-start" />
@@ -30,15 +30,17 @@ const { lang } = Astro.props
     </span>
   </button>
   <div
+    id="theme-switcher-content"
     class="nav-dropdown absolute top-full right-0 z-50 mt-2 grid w-44 gap-1 rounded-xl p-2 shadow-xl"
-    role="menu"
+    role="group"
+    aria-label={t(lang, "theme.toggle")}
     hidden
-    data-dropdown-menu-content
+    data-header-disclosure-content
   >
     <button
       type="button"
-      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
-      role="menuitem"
+      class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-pressed:bg-muted aria-pressed:font-medium"
+      aria-pressed="false"
       data-theme-value="light"
     >
       <Icon name="sun" class="size-4" dataIcon="inline-start" />
@@ -46,8 +48,8 @@ const { lang } = Astro.props
     </button>
     <button
       type="button"
-      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
-      role="menuitem"
+      class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-pressed:bg-muted aria-pressed:font-medium"
+      aria-pressed="false"
       data-theme-value="dark"
     >
       <Icon name="moon" class="size-4" dataIcon="inline-start" />
@@ -55,8 +57,8 @@ const { lang } = Astro.props
     </button>
     <button
       type="button"
-      class="flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-current:bg-muted aria-current:font-medium"
-      role="menuitem"
+      class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap text-foreground hover:bg-muted focus:bg-muted focus:outline-none aria-pressed:bg-muted aria-pressed:font-medium"
+      aria-pressed="false"
       data-theme-value="system"
     >
       <Icon name="monitor" class="size-4" dataIcon="inline-start" />
@@ -76,11 +78,7 @@ const { lang } = Astro.props
       document.querySelectorAll("[data-theme-value]").forEach((option) => {
         if (!(option instanceof HTMLElement)) return
         const selected = option.dataset.themeValue === theme
-        if (selected) {
-          option.setAttribute("aria-current", "true")
-          return
-        }
-        option.removeAttribute("aria-current")
+        option.setAttribute("aria-pressed", String(selected))
       })
     }
 
@@ -116,14 +114,6 @@ const { lang } = Astro.props
       const option = target.closest("[data-theme-value]")
       if (!(option instanceof HTMLElement)) return
       applyTheme(option.dataset.themeValue || "system")
-      const menu = option.closest("[data-dropdown-menu]")
-      const trigger = menu?.querySelector("[data-dropdown-menu-trigger]")
-      const content = menu?.querySelector("[data-dropdown-menu-content]")
-      if (trigger instanceof HTMLElement) {
-        trigger.setAttribute("aria-expanded", "false")
-        trigger.focus()
-      }
-      if (content instanceof HTMLElement) content.hidden = true
     }
 
     const handleSystemThemeChange = () => {
